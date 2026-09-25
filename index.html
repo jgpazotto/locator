@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Locator</title>
+<meta name="theme-color" content="#e0600f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Locator">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#f5f4f0; --panel:#ffffff; --ink:#1d2126; --muted:#646a70; --line:#dedbd3;
+  --accent:#e0600f; --accent-soft:#fbe7d8; --ok:#2f7d4f; --ok-soft:#dff1e6; --warn:#b3261e; --warn-soft:#fbe3e1;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{ color-scheme:dark;
+    --bg:#15181b; --panel:#1e2226; --ink:#eceae4; --muted:#9aa0a6; --line:#33383d;
+    --accent:#f7843a; --accent-soft:#3a2618; --ok:#5cc08a; --ok-soft:#1c3326; --warn:#ff8a80; --warn-soft:#3b1f1d; }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 72px;display:flex;flex-direction:column;gap:18px}
+h1{font-size:26px;font-weight:800;margin:0;letter-spacing:-.01em}
+h1 span{color:var(--accent)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:600}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted)}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input[type=date],input[type=number],input[type=text],input[type=email],input[type=tel],input[type=password],select{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{width:100%;min-height:130px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:13px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel);padding:7px 12px;font-weight:600}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.link{border:none;background:none;padding:4px 6px;color:var(--muted);font-weight:500;font-size:13px}
+button.link.danger{color:var(--warn)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;overflow-x:auto}
+.tabs button{flex:1;border:none;background:transparent;padding:9px 6px;font-size:14px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--accent);color:#fff}
+.weeknav{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.weeknav .mid{text-align:center}
+.weeknav .mid b{display:block;font-size:18px}
+.weeknav button{min-width:44px;font-size:18px;padding:6px 10px}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tile{background:var(--panel);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.tile small{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.tile b{font-family:var(--mono);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.tile.hl b{color:var(--accent)}
+.tile input{width:100%;font-family:var(--mono);font-size:18px;font-weight:600;padding:3px 6px}
+.pos{color:var(--ok)} .neg{color:var(--warn)}
+@media (max-width:680px){.tiles{grid-template-columns:repeat(2,1fr)}.tile.wide{grid-column:1/-1}}
+.days{display:flex;flex-direction:column;gap:6px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.day.off{background:transparent;border-style:dashed}
+.day-sum{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center;padding:11px 14px;width:100%;border:none;border-radius:0;background:transparent;text-align:left;font-weight:400}
+button.day-sum:hover{background:var(--accent-soft)}
+.day-sum .d b{font-weight:600}
+.day-sum .d small{color:var(--muted);font-size:12px}
+.day-sum .amt{font-family:var(--mono);font-weight:600;color:var(--accent)}
+.day-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:14px}
+.rep-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);padding-top:6px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.r,th.r{text-align:right}
+td.money{font-weight:600;color:var(--accent)}
+tr.total td{font-weight:700;border-bottom:none}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.bad{background:var(--warn-soft);color:var(--warn)}
+.dup{color:var(--warn);font-size:12px;font-weight:600}
+.paste-head{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:10px}
+.paste-head label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:600}
+.paste-head input[type=date]{font-size:16px}
+.draft{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row.end{justify-content:flex-end}
+.bal{font-family:var(--mono);font-size:32px;font-weight:600}
+.form{display:grid;grid-template-columns:150px 1fr 120px auto auto;gap:8px;align-items:center}
+@media (max-width:680px){.form{grid-template-columns:1fr 1fr}.form .desc{grid-column:1/-1;order:-1}}
+.rules{display:flex;flex-wrap:wrap;gap:14px 24px}
+.rules label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.in{display:flex;align-items:center;gap:4px;color:var(--ink);font-family:var(--mono)}
+.rules input{width:110px}
+.empty{color:var(--muted);padding:18px;text-align:center}
+.sec{display:flex;flex-direction:column;gap:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:9;max-width:90vw}
+/* telas de entrada */
+.auth{max-width:420px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:48px;height:48px;border-radius:12px}
+.fields{display:flex;flex-direction:column;gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:600}
+.fields .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields input{width:100%;font-size:16px}
+.switch{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+.switch button{flex:1;border:none;background:transparent}
+.switch button[aria-selected="true"]{background:var(--accent);color:#fff}
+.msg{padding:12px 14px;border-radius:8px;background:var(--accent-soft);font-size:14px}
+.msg.ok{background:var(--ok-soft)} .msg.bad{background:var(--warn-soft);color:var(--warn)}
+.langSel{padding:5px 8px;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- ===================== ENTRAR / CADASTRO ===================== -->
+<div id="scrAuth" class="auth" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="brand"><img src="icon-192.png" alt=""><div><h1>Loca<span>tor</span></h1><div class="note" data-i18n="tagline"></div></div></div>
+    <select class="langSel" aria-label="Idioma / Language"></select>
+  </div>
+  <div class="switch" role="tablist">
+    <button type="button" id="swLogin" aria-selected="true" data-i18n="login"></button>
+    <button type="button" id="swSign" aria-selected="false" data-i18n="signup"></button>
+  </div>
+  <form id="fLogin" class="fields">
+    <label><span data-i18n="email"></span><input type="email" id="lEmail" autocomplete="email" required></label>
+    <label><span data-i18n="password"></span><input type="password" id="lPass" autocomplete="current-password" required></label>
+    <button type="submit" class="primary" data-i18n="login"></button>
+    <button type="button" class="link" id="forgot" data-i18n="forgot"></button>
+  </form>
+  <form id="fSign" class="fields" hidden>
+    <div class="two">
+      <label><span data-i18n="firstName"></span><input type="text" id="sNome" autocomplete="given-name" required></label>
+      <label><span data-i18n="lastName"></span><input type="text" id="sSobre" autocomplete="family-name" required></label>
+    </div>
+    <label><span data-i18n="phone"></span><input type="tel" id="sTel" autocomplete="tel" placeholder="(512) 555-0100" required></label>
+    <label><span data-i18n="email"></span><input type="email" id="sEmail" autocomplete="email" required></label>
+    <label><span data-i18n="passwordNew"></span><input type="password" id="sPass" autocomplete="new-password" minlength="6" required></label>
+    <button type="submit" class="primary" data-i18n="signup"></button>
+    <p class="note" data-i18n="signupNote"></p>
+  </form>
+  <div id="authMsg" class="msg" hidden></div>
+</div>
+
+<!-- ===================== AGUARDANDO LIBERAÇÃO ===================== -->
+<div id="scrWait" class="auth" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="brand"><img src="icon-192.png" alt=""><h1>Loca<span>tor</span></h1></div>
+    <select class="langSel" aria-label="Idioma / Language"></select>
+  </div>
+  <div class="panel">
+    <h2 id="waitTitle"></h2>
+    <p id="waitText"></p>
+    <div class="msg" id="payInfo"></div>
+  </div>
+  <div class="row"><button type="button" class="primary" id="recheck" data-i18n="recheck"></button><button type="button" class="link" data-logout data-i18n="logout"></button></div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="scrApp" class="wrap" hidden>
+  <header class="top">
+    <div><h1>Loca<span>tor</span></h1><p class="note" id="ruleLine"></p></div>
+    <div class="row"><span class="note" id="who"></span><select class="langSel" aria-label="Idioma / Language"></select><button type="button" class="link" data-logout data-i18n="logout"></button></div>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button type="button" role="tab" data-tab="semana" aria-selected="true" data-i18n="tabWeek"></button>
+    <button type="button" role="tab" data-tab="resumo" aria-selected="false" data-i18n="tabSummary"></button>
+    <button type="button" role="tab" data-tab="caixa" aria-selected="false" data-i18n="tabCash"></button>
+    <button type="button" role="tab" data-tab="regras" aria-selected="false" data-i18n="tabRules"></button>
+    <button type="button" role="tab" data-tab="admin" aria-selected="false" id="tabAdmin" hidden data-i18n="tabAdmin"></button>
+  </nav>
+
+  <section id="tab-semana" class="sec">
+    <div class="weeknav">
+      <button type="button" id="prevW" aria-label="‹">‹</button>
+      <div class="mid"><b id="wTitle"></b><span class="note" id="wRange"></span></div>
+      <button type="button" id="nextW" aria-label="›">›</button>
+    </div>
+    <div class="tiles" id="wTiles"></div>
+    <div class="days" id="days"></div>
+    <div class="panel">
+      <h2 data-i18n="pasteTitle"></h2>
+      <div class="paste-head">
+        <label for="pDate"><span data-i18n="serviceDay"></span><input type="date" id="pDate"></label>
+        <label for="pLoc"><span data-i18n="location"></span><input type="text" id="pLoc" list="locList" autocomplete="off" style="min-width:210px"></label>
+        <span class="note" id="pDateHint"></span>
+      </div>
+      <datalist id="locList"></datalist>
+      <textarea id="paste" placeholder="Report | Name | 7 Tickets
+2674509093 3.090 ft
+2674950133 🚩505 ft
+2674487790 100 ft
+..."></textarea>
+      <div id="drafts"></div>
+    </div>
+  </section>
+
+  <section id="tab-resumo" class="sec" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0" data-i18n="allWeeks"></h2>
+        <button type="button" id="exportBtn" data-i18n="export"></button>
+      </div>
+      <div class="tbl-wrap" id="weeksTable"></div>
+      <p class="note" data-i18n="summaryNote"></p>
+    </div>
+    <div class="panel">
+      <h2 data-i18n="byLocation"></h2>
+      <div class="tbl-wrap" id="locTable"></div>
+    </div>
+  </section>
+
+  <section id="tab-caixa" class="sec" hidden>
+    <div class="panel">
+      <h2 data-i18n="cashBalance"></h2>
+      <div class="bal" id="cxBal"></div>
+      <p class="note" data-i18n="cashNote"></p>
+    </div>
+    <div class="panel">
+      <h2 data-i18n="cashAdd"></h2>
+      <form class="form" id="cxForm">
+        <input type="date" id="cxDate">
+        <input type="text" id="cxDesc" class="desc">
+        <input type="number" id="cxVal" step="0.01" min="0" inputmode="decimal" placeholder="$">
+        <select id="cxType"><option value="out" data-i18n="expense"></option><option value="in" data-i18n="income"></option></select>
+        <button type="submit" class="primary" data-i18n="add"></button>
+      </form>
+    </div>
+    <div class="panel"><h2 data-i18n="moves"></h2><div class="tbl-wrap" id="cxList"></div></div>
+  </section>
+
+  <section id="tab-regras" class="sec" hidden>
+    <div class="panel">
+      <h2 data-i18n="payRules"></h2>
+      <div class="rules">
+        <label for="rTicket"><span data-i18n="perTicket"></span><span class="in">$<input id="rTicket" type="number" min="0" step="0.5"></span></label>
+        <label for="rSize"><span data-i18n="blockSize"></span><span class="in"><input id="rSize" type="number" min="1" step="1"> ft</span></label>
+        <label for="rCar"><span data-i18n="carWeek"></span><span class="in">$<input id="rCar" type="number" min="0" step="1"></span></label>
+        <label for="rStart"><span data-i18n="startWeek1"></span><span class="in"><input id="rStart" type="date"></span></label>
+      </div>
+      <h2 style="margin-top:20px" data-i18n="ratePeriods"></h2>
+      <div class="tbl-wrap" id="ratesTable"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="date" id="newRateFrom">
+        <span class="in">$<input type="number" id="newRateVal" min="0" step="0.5" style="width:80px"></span>
+        <button type="button" id="addRate" data-i18n="addPeriod"></button>
+      </div>
+      <p class="note" style="margin-top:14px" data-i18n="rulesNote"></p>
+    </div>
+    <div class="panel">
+      <h2 data-i18n="myData"></h2>
+      <div class="fields" style="max-width:460px">
+        <div class="two"><label><span data-i18n="firstName"></span><input type="text" id="mNome"></label><label><span data-i18n="lastName"></span><input type="text" id="mSobre"></label></div>
+        <label><span data-i18n="phone"></span><input type="tel" id="mTel"></label>
+        <div><button type="button" id="saveMe" data-i18n="saveMe"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-admin" class="sec" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0" data-i18n="tabAdmin"></h2>
+        <select id="admFilter"><option value="" data-i18n="fAll"></option><option value="pendente" data-i18n="fPending"></option><option value="ativo" data-i18n="fActive"></option><option value="bloqueado" data-i18n="fBlocked"></option></select>
+      </div>
+      <div class="tbl-wrap" id="admList"></div>
+      <p class="note" data-i18n="adminNote"></p>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO — preencher com os dados do projeto Supabase
+   ============================================================ */
+const SUPABASE_URL = "https://plzpbjpmeqowmqrsxrxm.supabase.co";            // ex.: https://abcd.supabase.co
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsenBianBtZXFvd21xcnN4cnhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNjc1MDMsImV4cCI6MjEwNTk0MzUwM30.8bGtQJDLlxiNAGy9l75Imk8_LFmYGBXApa9-EFFVzdc";  // publishable / anon key (NUNCA a secret)
+const PAGAMENTO_INFO = {
+  pt: "Para liberar seu acesso, envie o pagamento da mensalidade por Zelle para jgpazotto@gmail.com e mande o comprovante por WhatsApp. Assim que confirmarmos, seu acesso é liberado.",
+  en: "To unlock your access, send the monthly payment via Zelle to jgpazotto@gmail.com and send the receipt by WhatsApp. As soon as we confirm it, your access is unlocked.",
+  es: "Para activar tu acceso, envía el pago mensual por Zelle a jgpazotto@gmail.com y manda el comprobante por WhatsApp. En cuanto lo confirmemos, tu acceso queda activo."
+};
+
+/* ============================================================
+   IDIOMAS
+   ============================================================ */
+const I18N = {
+ pt:{ tagline:"Tickets, ft e pagamentos do técnico de locate", login:"Entrar", signup:"Criar conta", email:"E-mail", password:"Senha", passwordNew:"Senha (mínimo 6)", forgot:"Esqueci a senha",
+  firstName:"Nome", lastName:"Sobrenome", phone:"Telefone", signupNote:"Depois do cadastro, a gente libera seu acesso assim que o pagamento for confirmado.",
+  recheck:"Já paguei, verificar de novo", logout:"Sair", tabWeek:"Semana", tabSummary:"Resumo", tabCash:"Caixa", tabRules:"Regras", tabAdmin:"Cadastros",
+  pasteTitle:"Colar report", serviceDay:"Dia do serviço", allWeeks:"Todas as semanas", export:"Baixar planilha (.csv)",
+  summaryNote:"A receber = ganho − desconto do carro. Diferença = pago − a receber. Toque numa semana para abrir.",
+  cashBalance:"Saldo do caixa", cashNote:"Entra o que a empresa pagou em cada semana. Sai o que você gasta (gasolina, material, comida…).",
+  cashAdd:"Lançar no caixa", expense:"Gasto", income:"Entrada", add:"Lançar", moves:"Movimentos", descPh:"Descrição (ex.: gasolina)",
+  payRules:"Regras de pagamento", perTicket:"Cada ticket", blockSize:"Tamanho da cota", carWeek:"Desconto do carro / semana", startWeek1:"Início (semana 1)",
+  ratePeriods:"Valor da cota por período", addPeriod:"Adicionar período",
+  rulesNote:"A metragem é calculada ticket por ticket, nunca somada: ft ÷ tamanho da cota, o resto é descartado. Cada cota vale o valor do período da data do report.",
+  myData:"Meus dados", saveMe:"Salvar meus dados", fAll:"Todos", fPending:"Aguardando", fActive:"Ativos", fBlocked:"Bloqueados",
+  adminNote:"\"Liberar 30 dias\" soma 30 dias a partir de hoje (ou do vencimento atual, se ainda estiver valendo).",
+  dow:["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"], mon:["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"],
+  week:"Semana", beforeStart:"Antes do início", earned:"Ganho", tickets:"tickets", car:"Carro", toReceive:"A receber", companyPaid:"Empresa pagou", difference:"Diferença",
+  noReport:"sem report", reports:"reports", changeDay:"Mudar dia", del:"Apagar", confirmDel:"Confirmar: apagar", confirm:"Confirmar",
+  ticket:"Ticket", flag:"Marc.", blocks:"Cotas", perTicketCol:"$ ticket", perFtCol:"$ ft", total:"Total", noFtTickets:"ticket(s) sem metragem no report",
+  readOf:"de", readMismatch:(a,b)=>`Li ${a}, o report diz ${b}`, willSave:"Vai salvar em", chooseDay:"Escolha o dia do serviço", clear:"Limpar",
+  save1:"Salvar report", saveN:n=>`Salvar ${n} reports`, noWeeks:"Nenhuma semana ainda. Cole seu primeiro report na aba Semana.",
+  days:"Dias", paid:"Pago", date:"Data", description:"Descrição", value:"Valor", balance:"Saldo", weekPay:n=>`Pagamento semana ${n}`, weekTag:"semana",
+  noMoves:"Nenhum movimento ainda.", from:"A partir de", blockValue:"Valor da cota", sinceAlways:"Desde sempre", remove:"Remover",
+  name:"Nome", contact:"Contato", status:"Status", accessUntil:"Acesso até", signedUp:"Cadastro", noExpiry:"sem vencimento",
+  sActive:"ativo", sExpired:"vencido", sPending:"aguardando", sBlocked:"bloqueado", lib30:"Liberar 30 dias", libFree:"Sem vencimento", block:"Bloquear", noSignups:"Nenhum cadastro.",
+  ruleLine:(tk,sz,rates,car)=>`${tk} por ticket + cota a cada ${sz} ft (${rates}) · carro −${car}/semana`, since:"desde",
+  waDate:"Data lida da mensagem do WhatsApp. Confira.",
+  tSaved:"Report salvo", tSavedN:n=>`${n} reports salvos`, tDeleted:"Apagado", tRules:"Regras salvas", tPaid:"Pagamento salvo", tDay:"Dia alterado", tAdded:"Lançado", tMe:"Dados salvos",
+  tFill:"Preencha data, descrição e valor", tFillRate:"Preencha a data e o valor", tErr:"Não consegui salvar. Confira a internet e tente de novo.", tLoadErr:"Não consegui carregar seus dados",
+  tLib:(n,d)=>`${n} liberado até ${d}`, tLibFree:"Liberado sem vencimento", tBlocked:"Bloqueado",
+  wTitlePending:"Cadastro recebido", wTitleExpired:"Seu acesso venceu", wTitleBlocked:"Acesso bloqueado", hello:n=>`Olá, ${n}! `,
+  wPending:"Seu cadastro está aguardando liberação.", wExpired:d=>`Seu acesso venceu em ${d}.`, wBlocked:"Fale com a gente para voltar a usar.",
+  aNotConfigured:"App ainda não configurado: falta colar a URL e a chave do Supabase no index.html.", aNoProfile:"Não encontrei seu cadastro. Tente entrar de novo.",
+  aConfirm:"Confirme seu e-mail pelo link que enviamos e tente de novo.", aWrong:"E-mail ou senha incorretos.", aExists:"Esse e-mail já tem conta. Use Entrar.",
+  aFail:"Não consegui criar a conta: ", aCreated:"Conta criada! Enviamos um link para o seu e-mail. Confirme e depois entre aqui.",
+  aTypeEmail:"Digite seu e-mail acima e toque de novo em Esqueci a senha.", aResetSent:"Enviamos um link para criar uma senha nova.", aResetFail:"Não consegui enviar o e-mail.",
+  newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
+  csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
+ en:{ tagline:"Tickets, footage and pay for locate technicians", login:"Log in", signup:"Create account", email:"Email", password:"Password", passwordNew:"Password (min. 6)", forgot:"Forgot password",
+  firstName:"First name", lastName:"Last name", phone:"Phone", signupNote:"After you sign up, we unlock your access as soon as your payment is confirmed.",
+  recheck:"I paid, check again", logout:"Log out", tabWeek:"Week", tabSummary:"Summary", tabCash:"Cash", tabRules:"Rules", tabAdmin:"Sign-ups",
+  pasteTitle:"Paste report", serviceDay:"Service day", allWeeks:"All weeks", export:"Download spreadsheet (.csv)",
+  summaryNote:"To receive = earned − car deduction. Difference = paid − to receive. Tap a week to open it.",
+  cashBalance:"Cash balance", cashNote:"In: what the company paid each week. Out: what you spend (gas, supplies, food…).",
+  cashAdd:"Add to cash", expense:"Expense", income:"Income", add:"Add", moves:"Entries", descPh:"Description (e.g. gas)",
+  payRules:"Pay rules", perTicket:"Per ticket", blockSize:"Footage block size", carWeek:"Car deduction / week", startWeek1:"Start (week 1)",
+  ratePeriods:"Block value by period", addPeriod:"Add period",
+  rulesNote:"Footage is calculated per ticket, never added up: ft ÷ block size, remainder dropped. Each block is worth the rate in effect on the report date.",
+  myData:"My info", saveMe:"Save my info", fAll:"All", fPending:"Waiting", fActive:"Active", fBlocked:"Blocked",
+  adminNote:"\"Unlock 30 days\" adds 30 days from today (or from the current expiry, if still valid).",
+  dow:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], mon:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+  week:"Week", beforeStart:"Before start", earned:"Earned", tickets:"tickets", car:"Car", toReceive:"To receive", companyPaid:"Company paid", difference:"Difference",
+  noReport:"no report", reports:"reports", changeDay:"Change day", del:"Delete", confirmDel:"Confirm: delete", confirm:"Confirm",
+  ticket:"Ticket", flag:"Flag", blocks:"Blocks", perTicketCol:"$ ticket", perFtCol:"$ ft", total:"Total", noFtTickets:"ticket(s) without footage in the report",
+  readOf:"of", readMismatch:(a,b)=>`Read ${a}, report says ${b}`, willSave:"Will save on", chooseDay:"Choose the service day", clear:"Clear",
+  save1:"Save report", saveN:n=>`Save ${n} reports`, noWeeks:"No weeks yet. Paste your first report in the Week tab.",
+  days:"Days", paid:"Paid", date:"Date", description:"Description", value:"Amount", balance:"Balance", weekPay:n=>`Week ${n} payment`, weekTag:"week",
+  noMoves:"No entries yet.", from:"From", blockValue:"Block value", sinceAlways:"Always", remove:"Remove",
+  name:"Name", contact:"Contact", status:"Status", accessUntil:"Access until", signedUp:"Signed up", noExpiry:"no expiry",
+  sActive:"active", sExpired:"expired", sPending:"waiting", sBlocked:"blocked", lib30:"Unlock 30 days", libFree:"No expiry", block:"Block", noSignups:"No sign-ups.",
+  ruleLine:(tk,sz,rates,car)=>`${tk} per ticket + block every ${sz} ft (${rates}) · car −${car}/week`, since:"since",
+  waDate:"Date read from the WhatsApp message. Please check.",
+  tSaved:"Report saved", tSavedN:n=>`${n} reports saved`, tDeleted:"Deleted", tRules:"Rules saved", tPaid:"Payment saved", tDay:"Day changed", tAdded:"Added", tMe:"Info saved",
+  tFill:"Fill in date, description and amount", tFillRate:"Fill in the date and the value", tErr:"Couldn't save. Check your connection and try again.", tLoadErr:"Couldn't load your data",
+  tLib:(n,d)=>`${n} unlocked until ${d}`, tLibFree:"Unlocked with no expiry", tBlocked:"Blocked",
+  wTitlePending:"Sign-up received", wTitleExpired:"Your access expired", wTitleBlocked:"Access blocked", hello:n=>`Hi, ${n}! `,
+  wPending:"Your sign-up is waiting to be unlocked.", wExpired:d=>`Your access expired on ${d}.`, wBlocked:"Contact us to use it again.",
+  aNotConfigured:"App not configured yet: the Supabase URL and key are missing in index.html.", aNoProfile:"Couldn't find your profile. Try logging in again.",
+  aConfirm:"Confirm your email with the link we sent, then try again.", aWrong:"Wrong email or password.", aExists:"This email already has an account. Use Log in.",
+  aFail:"Couldn't create the account: ", aCreated:"Account created! We sent a link to your email. Confirm it, then log in here.",
+  aTypeEmail:"Type your email above and tap Forgot password again.", aResetSent:"We sent a link to set a new password.", aResetFail:"Couldn't send the email.",
+  newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
+  csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
+ es:{ tagline:"Tickets, pies y pagos del técnico de locate", login:"Entrar", signup:"Crear cuenta", email:"Correo", password:"Contraseña", passwordNew:"Contraseña (mínimo 6)", forgot:"Olvidé mi contraseña",
+  firstName:"Nombre", lastName:"Apellido", phone:"Teléfono", signupNote:"Después del registro, activamos tu acceso en cuanto se confirme el pago.",
+  recheck:"Ya pagué, verificar de nuevo", logout:"Salir", tabWeek:"Semana", tabSummary:"Resumen", tabCash:"Caja", tabRules:"Reglas", tabAdmin:"Registros",
+  pasteTitle:"Pegar report", serviceDay:"Día del servicio", allWeeks:"Todas las semanas", export:"Descargar planilla (.csv)",
+  summaryNote:"Por cobrar = ganado − descuento del carro. Diferencia = pagado − por cobrar. Toca una semana para abrirla.",
+  cashBalance:"Saldo de caja", cashNote:"Entra lo que la empresa pagó cada semana. Sale lo que gastas (gasolina, material, comida…).",
+  cashAdd:"Registrar en caja", expense:"Gasto", income:"Ingreso", add:"Registrar", moves:"Movimientos", descPh:"Descripción (ej.: gasolina)",
+  payRules:"Reglas de pago", perTicket:"Cada ticket", blockSize:"Tamaño del bloque", carWeek:"Descuento del carro / semana", startWeek1:"Inicio (semana 1)",
+  ratePeriods:"Valor del bloque por período", addPeriod:"Agregar período",
+  rulesNote:"Los pies se calculan ticket por ticket, nunca sumados: pies ÷ tamaño del bloque, el resto se descarta. Cada bloque vale lo del período de la fecha del report.",
+  myData:"Mis datos", saveMe:"Guardar mis datos", fAll:"Todos", fPending:"Esperando", fActive:"Activos", fBlocked:"Bloqueados",
+  adminNote:"\"Activar 30 días\" suma 30 días desde hoy (o desde el vencimiento actual, si sigue vigente).",
+  dow:["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"], mon:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
+  week:"Semana", beforeStart:"Antes del inicio", earned:"Ganado", tickets:"tickets", car:"Carro", toReceive:"Por cobrar", companyPaid:"Empresa pagó", difference:"Diferencia",
+  noReport:"sin report", reports:"reports", changeDay:"Cambiar día", del:"Borrar", confirmDel:"Confirmar: borrar", confirm:"Confirmar",
+  ticket:"Ticket", flag:"Marca", blocks:"Bloques", perTicketCol:"$ ticket", perFtCol:"$ pies", total:"Total", noFtTickets:"ticket(s) sin pies en el report",
+  readOf:"de", readMismatch:(a,b)=>`Leí ${a}, el report dice ${b}`, willSave:"Se guardará el", chooseDay:"Elige el día del servicio", clear:"Limpiar",
+  save1:"Guardar report", saveN:n=>`Guardar ${n} reports`, noWeeks:"Aún no hay semanas. Pega tu primer report en la pestaña Semana.",
+  days:"Días", paid:"Pagado", date:"Fecha", description:"Descripción", value:"Valor", balance:"Saldo", weekPay:n=>`Pago semana ${n}`, weekTag:"semana",
+  noMoves:"Aún no hay movimientos.", from:"Desde", blockValue:"Valor del bloque", sinceAlways:"Siempre", remove:"Quitar",
+  name:"Nombre", contact:"Contacto", status:"Estado", accessUntil:"Acceso hasta", signedUp:"Registro", noExpiry:"sin vencimiento",
+  sActive:"activo", sExpired:"vencido", sPending:"esperando", sBlocked:"bloqueado", lib30:"Activar 30 días", libFree:"Sin vencimiento", block:"Bloquear", noSignups:"Sin registros.",
+  ruleLine:(tk,sz,rates,car)=>`${tk} por ticket + bloque cada ${sz} pies (${rates}) · carro −${car}/semana`, since:"desde",
+  waDate:"Fecha leída del mensaje de WhatsApp. Revísala.",
+  tSaved:"Report guardado", tSavedN:n=>`${n} reports guardados`, tDeleted:"Borrado", tRules:"Reglas guardadas", tPaid:"Pago guardado", tDay:"Día cambiado", tAdded:"Registrado", tMe:"Datos guardados",
+  tFill:"Completa fecha, descripción y valor", tFillRate:"Completa la fecha y el valor", tErr:"No se pudo guardar. Revisa tu conexión e intenta de nuevo.", tLoadErr:"No se pudieron cargar tus datos",
+  tLib:(n,d)=>`${n} activo hasta ${d}`, tLibFree:"Activado sin vencimiento", tBlocked:"Bloqueado",
+  wTitlePending:"Registro recibido", wTitleExpired:"Tu acceso venció", wTitleBlocked:"Acceso bloqueado", hello:n=>`¡Hola, ${n}! `,
+  wPending:"Tu registro está esperando activación.", wExpired:d=>`Tu acceso venció el ${d}.`, wBlocked:"Contáctanos para volver a usarlo.",
+  aNotConfigured:"App aún no configurada: faltan la URL y la clave de Supabase en index.html.", aNoProfile:"No encontré tu registro. Intenta entrar de nuevo.",
+  aConfirm:"Confirma tu correo con el enlace que enviamos e intenta de nuevo.", aWrong:"Correo o contraseña incorrectos.", aExists:"Ese correo ya tiene cuenta. Usa Entrar.",
+  aFail:"No se pudo crear la cuenta: ", aCreated:"¡Cuenta creada! Enviamos un enlace a tu correo. Confírmalo y luego entra aquí.",
+  aTypeEmail:"Escribe tu correo arriba y toca de nuevo Olvidé mi contraseña.", aResetSent:"Enviamos un enlace para crear una contraseña nueva.", aResetFail:"No se pudo enviar el correo.",
+  newPass:"Escribe la nueva contraseña (mínimo 6):", passChanged:"Contraseña cambiada", passFail:"No se pudo cambiar la contraseña",
+  csvHead:["Semana","Fecha","Día","Lugar","Ticket","pies","Marca","Bloques","Valor bloque","$ ticket","$ pies","Total"], csvWeeks:["Semana","Inicio","Tickets","Ganado","Carro","Por cobrar","Pagado","Diferencia"], csvCash:["Caja: fecha","Descripción","Valor","Saldo"], noFt:"sin pies", dupSaved:"ya guardado", location:"Lugar del servicio", locPh:"Ciudad, estado (ej.: Austin, TX)", byLocation:"Por lugar", noLoc:"sin lugar", locCol:"Lugar" }
+};
+const LANGS=[["pt","Português"],["en","English"],["es","Español"]];
+function pickLang(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} if(I18N[l]) return l; const n=(navigator.language||"en").slice(0,2); return I18N[n]?n:"en"; }
+let lang=pickLang();
+const T=k=>I18N[lang][k] ?? I18N.pt[k] ?? k;
+const LOCALE=()=>lang==="pt"?"pt-BR":"en-US";
+function applyStatic(){
+  document.documentElement.lang = lang==="pt"?"pt-BR":lang;
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=T(el.dataset.i18n));
+  $("#cxDesc").placeholder=T("descPh"); $("#pLoc").placeholder=T("locPh");
+  document.querySelectorAll(".langSel").forEach(s=>{ if(!s.options.length) s.innerHTML=LANGS.map(([k,v])=>`<option value="${k}">${v}</option>`).join(""); s.value=lang; });
+}
+
+/* ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => (Math.round(n*100)/100).toLocaleString(LOCALE());
+const money = n => (n<0?"−$":"$") + Math.abs(Math.round(n*100)/100).toLocaleString(LOCALE(),{minimumFractionDigits:0,maximumFractionDigits:2});
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const parseISO = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const addDays = (s,n) => { const d=parseISO(s); d.setDate(d.getDate()+n); return iso(d); };
+const todayISO = () => iso(new Date());
+const DOW = i => T("dow")[i];
+const dLabel = s => { const d=parseISO(s), m=T("mon")[d.getMonth()]; return lang==="en" ? `${m} ${d.getDate()}` : `${d.getDate()} ${m}`; };
+const dFull = s => s ? `${dLabel(s)} ${s.slice(0,4)}` : "—";
+const weekStart = s => { const d=parseISO(s); d.setDate(d.getDate()-d.getDay()); return iso(d); };
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2800); }
+function show(id){ ["scrAuth","scrWait","scrApp"].forEach(x=>$("#"+x).hidden = x!==id); }
+
+const sb = (window.supabase && !SUPABASE_URL.startsWith("COLE")) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+let me=null, perfil=null;
+let rules = {ticket:10, size:501, car:150, start:null, rates:[{from:"2000-01-01",block:5}]};
+let reports=[], weeks={}, caixa=[], perfis=[], drafts=[], open=new Set(), curWeek=weekStart(todayISO()), pendingDel=null;
+
+/* ---------- regras de cálculo ---------- */
+const rateFor = date => { const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from)); let r=rs[0]?.block ?? 0; for(const x of rs) if(x.from<=date) r=x.block; return r; };
+const cotas = ft => Math.max(0, Math.floor((+ft||0)/rules.size));
+const tCount = r => Math.max(+r.declared||0, r.tickets.length);
+function repCalc(r){ const b=rateFor(r.date), c=r.tickets.reduce((a,t)=>a+cotas(t.ft),0), n=tCount(r); return {n, cotas:c, rate:b, tk:n*rules.ticket, ft:c*b, total:n*rules.ticket+c*b}; }
+const firstWeek = () => weekStart(rules.start || (reports.map(r=>r.date).sort()[0]) || todayISO());
+const weekNum = ws => Math.round((parseISO(ws)-parseISO(firstWeek()))/(7*864e5))+1;
+
+/* ---------- leitura do report colado ---------- */
+function parseNum(s){
+  s=s.trim().replace(/[.,]$/,""); if(!s) return 0;
+  if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) return parseFloat(s.replace(/\./g,"").replace(",","."));
+  if(/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) return parseFloat(s.replace(/,/g,""));
+  return parseFloat(s.replace(",","."))||0;
+}
+function parseReports(text){
+  const out=[]; let cur=null, waDate=null;
+  for(let line of text.split(/\r?\n/)){
+    const wa=line.match(/\[\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4}),?\s*(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?\s*\]/i);
+    if(wa){
+      const y=wa[3].length===2?"20"+wa[3]:wa[3];
+      let h=+wa[4]; if(wa[6]) h=h%12+(/pm/i.test(wa[6])?12:0);
+      let ds=`${y}-${String(+wa[1]).padStart(2,"0")}-${String(+wa[2]).padStart(2,"0")}`;
+      if(h<6) ds=addDays(ds,-1);
+      waDate=ds; line=line.slice(wa.index+wa[0].length);
+    }
+    const h=line.match(/report\s*\|\s*([^|]+?)\s*\|\s*(\d+)\s*tickets?/i);
+    if(h){ cur={tech:h[1].trim(), declared:+h[2], rows:[], waDate}; out.push(cur); continue; }
+    const t=line.trim().match(/^[^\d\[]*?(\d{10})(.*)$/);
+    if(t){
+      if(!cur){ cur={tech:perfil?`${perfil.nome} ${perfil.sobrenome}`.trim():"", declared:null, rows:[], waDate}; out.push(cur); }
+      const k=t[2].match(/^\s*(\D*?)\s*(\d[\d.,]*)\s*(ft|feet|feets|pés|pies)?\b\s*([\d.,]+)?\s*(.*)$/i);
+      let ft=0, flag=t[2].trim();
+      if(k){ ft=parseNum(k[2]); flag=(k[1]+" "+k[5]).trim(); }
+      cur.rows.push({ticket:t[1], ft, flag:flag.replace(/[\s️]+/g," ").trim()});
+    }
+  }
+  return out.filter(r=>r.rows.length||r.declared);
+}
+
+/* ---------- agregações ---------- */
+function weekData(ws){
+  const reps=reports.filter(r=>weekStart(r.date)===ws);
+  const ganho=reps.reduce((a,r)=>a+repCalc(r).total,0), tk=reps.reduce((a,r)=>a+tCount(r),0), nd=new Set(reps.map(r=>r.date)).size;
+  const carro=reps.length?rules.car:0, receber=ganho-carro, w=weeks[ws]||{}, paid=(w.paid===0||w.paid)?+w.paid:null;
+  return {ws, reps, ganho, tk, nd, carro, receber, paid, diff: paid==null?null:paid-receber};
+}
+function allWeeks(){ const s=new Set(reports.map(r=>weekStart(r.date))); Object.keys(weeks).forEach(k=>s.add(k)); return [...s].sort(); }
+function caixaMoves(){
+  const m=[];
+  Object.entries(weeks).forEach(([ws,w])=>{ if(w.paid) m.push({id:null,date:w.paidDate||addDays(ws,7),desc:T("weekPay")(weekNum(ws)),amount:+w.paid,auto:true}); });
+  caixa.forEach(c=>m.push({...c}));
+  m.sort((a,b)=>a.date.localeCompare(b.date)||(b.amount-a.amount));
+  let bal=0; m.forEach(x=>{bal+=x.amount; x.bal=bal;}); return m;
+}
+
+/* ---------- desenho ---------- */
+function renderRuleLine(){
+  const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from));
+  $("#ruleLine").textContent=T("ruleLine")(money(rules.ticket), fmt(rules.size), rs.map(r=>rs.length>1?`${money(r.block)} ${T("since")} ${dLabel(r.from)}`:money(r.block)).join(", "), money(rules.car));
+}
+function ticketTable(r, dupSet){
+  const c=repCalc(r);
+  const rows=r.tickets.map((t,i)=>{ const q=cotas(t.ft); return `<tr><td class="num">${i+1}</td><td class="num">${esc(t.ticket)}${dupSet&&dupSet.has(t.ticket)?` <span class="dup">${T("dupSaved")}</span>`:''}</td><td>${esc(t.flag)}</td><td class="r num">${t.ft?fmt(t.ft):"—"}</td><td class="r num">${q}</td><td class="r num">${money(rules.ticket)}</td><td class="r num">${money(q*c.rate)}</td><td class="r num money">${money(rules.ticket+q*c.rate)}</td></tr>`; }).join("");
+  const extra=c.n-r.tickets.length;
+  const extraRow=extra>0?`<tr><td></td><td colspan="4" class="note">+${extra} ${T("noFtTickets")}</td><td class="r num">${money(extra*rules.ticket)}</td><td></td><td class="r num money">${money(extra*rules.ticket)}</td></tr>`:"";
+  return `<div class="tbl-wrap"><table><thead><tr><th>#</th><th>${T("ticket")}</th><th>${T("flag")}</th><th class="r">ft</th><th class="r">${T("blocks")}</th><th class="r">${T("perTicketCol")}</th><th class="r">${T("perFtCol")} (${money(c.rate)})</th><th class="r">${T("total")}</th></tr></thead><tbody>${rows}${extraRow}
+  <tr class="total"><td></td><td>${c.n} ${T("tickets")}</td><td></td><td></td><td class="r num">${c.cotas}</td><td class="r num">${money(c.tk)}</td><td class="r num">${money(c.ft)}</td><td class="r num money">${money(c.total)}</td></tr></tbody></table></div>`;
+}
+function renderWeek(){
+  const W=weekData(curWeek), n=weekNum(curWeek);
+  $("#wTitle").textContent = n>=1?`${T("week")} ${n}`:T("beforeStart");
+  $("#wRange").textContent = `${DOW(0)} ${dLabel(curWeek)} – ${DOW(6)} ${dLabel(addDays(curWeek,6))}`;
+  const dc=W.diff==null?"":(W.diff<-0.005?"neg":"pos");
+  $("#wTiles").innerHTML=`
+    <div class="tile"><small>${T("earned")} · ${W.tk} ${T("tickets")}</small><b>${money(W.ganho)}</b></div>
+    <div class="tile"><small>${T("car")}</small><b>${W.carro?money(-W.carro):"$0"}</b></div>
+    <div class="tile hl"><small>${T("toReceive")}</small><b>${money(W.receber)}</b></div>
+    <div class="tile"><small>${T("companyPaid")}</small><input type="number" id="paidInput" step="0.01" min="0" inputmode="decimal" placeholder="—" value="${W.paid==null?"":W.paid}" aria-label="${T("companyPaid")}"></div>
+    <div class="tile wide"><small>${T("difference")}</small><b class="${dc}">${W.diff==null?"—":(W.diff>0?"+":"")+money(W.diff)}</b></div>`;
+  const byDay={}; W.reps.forEach(r=>(byDay[r.date]=byDay[r.date]||[]).push(r));
+  $("#days").innerHTML=[0,1,2,3,4,5,6].map(i=>addDays(curWeek,i)).map((d,i)=>{
+    const reps=byDay[d]||[];
+    if(!reps.length) return `<div class="day off"><div class="day-sum"><span class="d"><b>${DOW(i)}</b> <small>${dLabel(d)}</small></span><span class="note">${T("noReport")}</span><span></span></div></div>`;
+    const tot=reps.reduce((a,r)=>a+repCalc(r).total,0), tk=reps.reduce((a,r)=>a+tCount(r),0), isOpen=open.has(d);
+    return `<div class="day"><button type="button" class="day-sum" data-day="${d}" aria-expanded="${isOpen}"><span class="d"><b>${DOW(i)}</b> <small>${dLabel(d)}</small></span><span class="note">${tk} ${T("tickets")}${reps.length>1?` · ${reps.length} ${T("reports")}`:""}${[...new Set(reps.map(r=>r.loc).filter(Boolean))].map(l=>` · 📍 ${esc(l)}`).join("")}</span><span class="amt">${money(tot)}</span></button>
+      ${isOpen?`<div class="day-body">${reps.map(r=>`<div><div class="rep-head"><span>${esc(r.tech)}</span><span><label>📍 <input type="text" list="locList" data-editloc="${r.id}" value="${esc(r.loc)}" placeholder="${T("locPh")}" style="width:170px"></label> <label>${T("changeDay")} <input type="date" data-edit="${r.id}" value="${r.date}"></label>
+        <button type="button" class="link danger" data-del="${r.id}">${pendingDel===r.id?T("confirmDel"):T("del")}</button></span></div>${ticketTable(r)}</div>`).join("")}</div>`:""}</div>`;
+  }).join("");
+}
+function renderDrafts(){
+  const el=$("#drafts"); if(!drafts.length){ el.innerHTML=""; return; }
+  const existing=new Set(); reports.forEach(r=>r.tickets.forEach(t=>existing.add(t.ticket)));
+  const date=$("#pDate").value;
+  el.innerHTML=drafts.map(d=>{
+    const r={date:date||todayISO(), declared:d.declared, tickets:d.rows};
+    const ok=d.declared==null?"":d.declared===d.rows.length?`<span class="chip ok">${d.rows.length} ${T("readOf")} ${d.declared} ${T("tickets")} ✓</span>`:`<span class="chip bad">${T("readMismatch")(d.rows.length,d.declared)}</span>`;
+    return `<div class="draft"><div class="row"><b>${esc(d.tech)}</b>${ok}</div>${ticketTable(r,existing)}</div>`;
+  }).join("")+`<div class="draft row end" style="flex-direction:row">
+    ${date?`<span class="note">${T("willSave")} <b>${DOW(parseISO(date).getDay())} ${dLabel(date)}</b></span>`:`<span class="chip bad">${T("chooseDay")}</span>`}
+    <button type="button" class="link" id="clearDraft">${T("clear")}</button>
+    <button type="button" class="primary" id="saveDraft" ${date?"":"disabled"}>${drafts.length>1?T("saveN")(drafts.length):T("save1")}</button></div>`;
+}
+function renderLocList(){
+  const locs=[...new Set(reports.map(r=>r.loc).filter(Boolean))].sort();
+  $("#locList").innerHTML=locs.map(l=>`<option value="${esc(l)}"></option>`).join("");
+  const el=$("#pLoc"); if(el && !el.value){ let last=null; try{ last=localStorage.getItem("locator.loc"); }catch(e){} el.value = last || ([...reports].sort((a,b)=>b.date.localeCompare(a.date)).find(r=>r.loc)?.loc || ""); }
+}
+function renderLocTable(){
+  const m={}; reports.forEach(r=>{ const k=r.loc||""; const o=m[k]=m[k]||{days:new Set(),tk:0,g:0,last:""}; o.days.add(r.date); o.tk+=tCount(r); o.g+=repCalc(r).total; if(r.date>o.last) o.last=r.date; });
+  const ks=Object.keys(m).sort((a,b)=>m[b].g-m[a].g);
+  $("#locTable").innerHTML=ks.length?`<table><thead><tr><th>${T("locCol")}</th><th class="r">${T("days")}</th><th class="r">Tickets</th><th class="r">${T("earned")}</th><th class="r">${T("date")}</th></tr></thead><tbody>${ks.map(k=>`<tr><td>${k?"📍 "+esc(k):`<span class="note">${T("noLoc")}</span>`}</td><td class="r num">${m[k].days.size}</td><td class="r num">${m[k].tk}</td><td class="r num money">${money(m[k].g)}</td><td class="r num">${dFull(m[k].last)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noWeeks")}</div>`;
+}
+function renderResumo(){
+  renderLocTable();
+  const ws=allWeeks().filter(w=>weekNum(w)>=1);
+  if(!ws.length){ $("#weeksTable").innerHTML=`<div class="empty">${T("noWeeks")}</div>`; return; }
+  const S={tk:0,g:0,c:0,r:0,p:0,d:0};
+  const rows=ws.map(w=>{ const W=weekData(w); S.tk+=W.tk;S.g+=W.ganho;S.c+=W.carro;S.r+=W.receber; if(W.paid!=null){S.p+=W.paid;S.d+=W.diff;}
+    return `<tr data-week="${w}" style="cursor:pointer"><td><b>${T("week")} ${weekNum(w)}</b><br><span class="note">${dLabel(w)} – ${dLabel(addDays(w,6))}</span></td><td class="r num">${W.nd}</td><td>${esc([...new Set(W.reps.map(r=>r.loc).filter(Boolean))].join(", "))||"—"}</td><td class="r num">${W.tk}</td><td class="r num">${money(W.ganho)}</td><td class="r num">${W.carro?money(-W.carro):"—"}</td><td class="r num money">${money(W.receber)}</td><td class="r num">${W.paid==null?"—":money(W.paid)}</td><td class="r num ${W.diff==null?"":W.diff<-0.005?"neg":"pos"}">${W.diff==null?"—":(W.diff>0?"+":"")+money(W.diff)}</td></tr>`; }).join("");
+  $("#weeksTable").innerHTML=`<table><thead><tr><th>${T("week")}</th><th class="r">${T("days")}</th><th>${T("locCol")}</th><th class="r">Tickets</th><th class="r">${T("earned")}</th><th class="r">${T("car")}</th><th class="r">${T("toReceive")}</th><th class="r">${T("paid")}</th><th class="r">${T("difference")}</th></tr></thead><tbody>${rows}
+  <tr class="total"><td>${T("total")}</td><td></td><td></td><td class="r num">${S.tk}</td><td class="r num">${money(S.g)}</td><td class="r num">${money(-S.c)}</td><td class="r num money">${money(S.r)}</td><td class="r num">${money(S.p)}</td><td class="r num ${S.d<0?"neg":"pos"}">${(S.d>0?"+":"")+money(S.d)}</td></tr></tbody></table>`;
+}
+function renderCaixa(){
+  const m=caixaMoves(), bal=m.length?m[m.length-1].bal:0;
+  $("#cxBal").innerHTML=`<span class="${bal<0?"neg":""}">${money(bal)}</span>`;
+  $("#cxList").innerHTML=m.length?`<table><thead><tr><th>${T("date")}</th><th>${T("description")}</th><th class="r">${T("value")}</th><th class="r">${T("balance")}</th><th></th></tr></thead><tbody>${
+    [...m].reverse().map(x=>`<tr><td class="num">${dLabel(x.date)}</td><td>${esc(x.desc)}</td><td class="r num ${x.amount<0?"neg":"pos"}">${x.amount>0?"+":""}${money(x.amount)}</td><td class="r num">${money(x.bal)}</td><td class="r">${x.auto?`<span class="note">${T("weekTag")}</span>`:`<button type="button" class="link danger" data-cxdel="${x.id}">${pendingDel===x.id?T("confirm"):T("del")}</button>`}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noMoves")}</div>`;
+}
+function renderRegras(){
+  for(const [id,k] of [["rTicket","ticket"],["rSize","size"],["rCar","car"],["rStart","start"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=rules[k]??""; }
+  const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from));
+  $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th><th class="r">${T("blockValue")}</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td><td class="r num">${money(r.block)}</td><td class="r">${rs.length>1?`<button type="button" class="link danger" data-ratedel="${r.from}">${T("remove")}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
+  if(perfil){ for(const [id,k] of [["mNome","nome"],["mSobre","sobrenome"],["mTel","telefone"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=perfil[k]||""; } }
+}
+function renderAdmin(){
+  if(!perfil?.admin) return;
+  const f=$("#admFilter").value, list=perfis.filter(p=>!f||p.status===f), today=todayISO();
+  $("#admList").innerHTML=list.length?`<table><thead><tr><th>${T("name")}</th><th>${T("contact")}</th><th>${T("status")}</th><th>${T("accessUntil")}</th><th>${T("signedUp")}</th><th></th></tr></thead><tbody>${list.map(p=>{
+    const venc=p.acesso_ate && p.acesso_ate<today;
+    const chip=p.status==="ativo"?(venc?`<span class="chip bad">${T("sExpired")}</span>`:`<span class="chip ok">${T("sActive")}</span>`):p.status==="pendente"?`<span class="chip">${T("sPending")}</span>`:`<span class="chip bad">${T("sBlocked")}</span>`;
+    return `<tr><td><b>${esc(p.nome)} ${esc(p.sobrenome)}</b>${p.admin?' <span class="note">(admin)</span>':''}<br><span class="note">${esc((p.idioma||"").toUpperCase())}</span></td><td>${esc(p.email)}<br><span class="note">${esc(p.telefone)}</span></td><td>${chip}</td><td class="num">${p.status!=="ativo"?"—":p.acesso_ate?dFull(p.acesso_ate):T("noExpiry")}</td><td class="num">${dFull(p.criado_em.slice(0,10))}</td>
+      <td class="r">${p.admin?"":`<button type="button" data-lib="${p.id}">${T("lib30")}</button> <button type="button" class="link" data-libfree="${p.id}">${T("libFree")}</button> ${p.status!=="bloqueado"?`<button type="button" class="link danger" data-block="${p.id}">${T("block")}</button>`:""}`}</td></tr>`; }).join("")}</tbody></table>`:`<div class="empty">${T("noSignups")}</div>`;
+}
+function renderAll(){ applyStatic(); renderRuleLine(); renderWeek(); renderDrafts(); renderResumo(); renderCaixa(); renderRegras(); renderAdmin(); }
+function setTab(t){ document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t))); ["semana","resumo","caixa","regras","admin"].forEach(x=>$("#tab-"+x).hidden=x!==t); if(t==="admin") loadAdmin(); }
+
+/* ---------- banco de dados ---------- */
+const err = (e, msg) => { console.error(e); toast(msg || T("tErr")); };
+async function loadAll(){
+  const uid=me.id;
+  const [rg,rp,sm,cx]=await Promise.all([
+    sb.from("regras").select("*").eq("user_id",uid).maybeSingle(),
+    sb.from("reports").select("*").eq("user_id",uid).order("dia"),
+    sb.from("semanas").select("*").eq("user_id",uid),
+    sb.from("caixa").select("*").eq("user_id",uid).order("dia"),
+  ]);
+  for(const x of [rg,rp,sm,cx]) if(x.error) throw x.error;
+  if(rg.data){ const d=rg.data; rules={ticket:+d.ticket, size:+d.cota_ft, car:+d.carro, start:d.inicio, rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!rules.rates.length) rules.rates=[{from:"2000-01-01",block:5}]; }
+  reports=(rp.data||[]).map(r=>({id:r.id, date:r.dia, tech:r.tecnico, declared:r.declarados, loc:r.local||"", tickets:r.tickets||[]}));
+  renderLocList();
+  weeks={}; (sm.data||[]).forEach(w=>weeks[w.inicio]={paid:w.pago==null?null:+w.pago, paidDate:w.pago_em});
+  caixa=(cx.data||[]).map(c=>({id:c.id, date:c.dia, desc:c.descricao, amount:+c.valor}));
+  renderAll();
+}
+async function saveRules(){
+  const {error}=await sb.from("regras").upsert({user_id:me.id, ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, inicio:rules.start||null, valores:rules.rates.map(r=>({desde:r.from, valor:r.block})), atualizado:new Date().toISOString()});
+  error?err(error,T("tErr")):toast(T("tRules"));
+}
+async function loadAdmin(){
+  if(!perfil?.admin) return;
+  const {data,error}=await sb.from("perfis").select("*").order("criado_em",{ascending:false});
+  if(error) return err(error, T("tLoadErr"));
+  perfis=data||[]; renderAdmin();
+}
+async function setAccess(id, patch, okMsg){
+  const {error}=await sb.from("perfis").update(patch).eq("id",id);
+  if(error) return err(error); toast(okMsg); loadAdmin();
+}
+async function setLang(l){
+  if(!I18N[l]) return; lang=l; try{ localStorage.setItem("locator.lang",l); }catch(e){}
+  renderAll(); if(!$("#scrWait").hidden) renderWait();
+  if(sb&&me){ await sb.from("perfis").update({idioma:l}).eq("id",me.id); }
+}
+
+/* ---------- entrada / sessão ---------- */
+function renderWait(){
+  if(!perfil) return;
+  $("#waitTitle").textContent = perfil.status==="bloqueado" ? T("wTitleBlocked") : (perfil.status==="ativo" ? T("wTitleExpired") : T("wTitlePending"));
+  $("#waitText").textContent = T("hello")(perfil.nome||"") + (perfil.status==="pendente" ? T("wPending") : perfil.status==="ativo" ? T("wExpired")(dFull(perfil.acesso_ate)) : T("wBlocked"));
+  $("#payInfo").textContent = PAGAMENTO_INFO[lang] || PAGAMENTO_INFO.pt;
+}
+async function boot(){
+  applyStatic();
+  if(!sb){ show("scrAuth"); authMsg(T("aNotConfigured"),"bad"); return; }
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ show("scrAuth"); return; }
+  me=session.user;
+  const {data,error}=await sb.from("perfis").select("*").eq("id",me.id).maybeSingle();
+  if(error||!data){ show("scrAuth"); authMsg(T("aNoProfile"),"bad"); return; }
+  perfil=data;
+  let saved=null; try{ saved=localStorage.getItem("locator.lang"); }catch(e){}
+  if(!saved && perfil.idioma && I18N[perfil.idioma]){ lang=perfil.idioma; applyStatic(); }
+  const ativo = perfil.admin || (perfil.status==="ativo" && (!perfil.acesso_ate || perfil.acesso_ate>=todayISO()));
+  if(!ativo){ show("scrWait"); renderWait(); return; }
+  show("scrApp");
+  $("#who").textContent = `${perfil.nome} ${perfil.sobrenome}`.trim();
+  $("#tabAdmin").hidden = !perfil.admin;
+  try{ await loadAll(); }catch(e){ err(e,T("tLoadErr")); }
+}
+function authMsg(t,kind){ const m=$("#authMsg"); m.hidden=!t; m.className="msg"+(kind?" "+kind:""); m.textContent=t||""; }
+
+$("#swLogin").onclick=()=>{ $("#fLogin").hidden=false; $("#fSign").hidden=true; $("#swLogin").setAttribute("aria-selected","true"); $("#swSign").setAttribute("aria-selected","false"); authMsg(""); };
+$("#swSign").onclick=()=>{ $("#fLogin").hidden=true; $("#fSign").hidden=false; $("#swLogin").setAttribute("aria-selected","false"); $("#swSign").setAttribute("aria-selected","true"); authMsg(""); };
+$("#fLogin").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!sb) return;
+  const {error}=await sb.auth.signInWithPassword({email:$("#lEmail").value.trim(), password:$("#lPass").value});
+  if(error) return authMsg(/confirm/i.test(error.message)?T("aConfirm"):T("aWrong"),"bad");
+  authMsg(""); boot();
+});
+$("#fSign").addEventListener("submit", async e=>{
+  e.preventDefault(); if(!sb) return;
+  const nome=$("#sNome").value.trim(), sobrenome=$("#sSobre").value.trim(), telefone=$("#sTel").value.trim();
+  const {data,error}=await sb.auth.signUp({email:$("#sEmail").value.trim(), password:$("#sPass").value, options:{data:{nome,sobrenome,telefone,idioma:lang}, emailRedirectTo:location.origin+location.pathname}});
+  if(error) return authMsg(/registered|exists/i.test(error.message)?T("aExists"):T("aFail")+error.message,"bad");
+  if(data.session){ boot(); } else { $("#swLogin").click(); authMsg(T("aCreated"),"ok"); }
+});
+$("#forgot").onclick=async()=>{
+  const email=$("#lEmail").value.trim(); if(!email) return authMsg(T("aTypeEmail"),"bad");
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  authMsg(error?T("aResetFail"):T("aResetSent"), error?"bad":"ok");
+};
+$("#recheck").onclick=()=>boot();
+document.addEventListener("change", e=>{ if(e.target.classList.contains("langSel")) setLang(e.target.value); });
+document.addEventListener("click", async e=>{
+  if(e.target.closest("[data-logout]")){ await sb?.auth.signOut(); me=null; perfil=null; reports=[]; show("scrAuth"); return; }
+});
+sb?.auth.onAuthStateChange(async (ev)=>{
+  if(ev==="PASSWORD_RECOVERY"){ const p=prompt(T("newPass")); if(p&&p.length>=6){ const {error}=await sb.auth.updateUser({password:p}); toast(error?T("passFail"):T("passChanged")); } }
+});
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && me && !$("#scrApp").hidden) loadAll().catch(()=>{}); });
+
+/* ---------- ações no app ---------- */
+document.addEventListener("click", async e=>{
+  if($("#scrApp").hidden) return;
+  const tb=e.target.closest("[data-tab]"); if(tb){ setTab(tb.dataset.tab); return; }
+  const wk=e.target.closest("[data-week]"); if(wk){ curWeek=wk.dataset.week; setTab("semana"); renderWeek(); return; }
+  if(e.target.id==="prevW"){ curWeek=addDays(curWeek,-7); renderWeek(); return; }
+  if(e.target.id==="nextW"){ curWeek=addDays(curWeek,7); renderWeek(); return; }
+  const day=e.target.closest("[data-day]"); if(day){ const d=day.dataset.day; open.has(d)?open.delete(d):open.add(d); renderWeek(); return; }
+  const del=e.target.closest("[data-del]");
+  if(del){ const id=del.dataset.del;
+    if(pendingDel!==id){ pendingDel=id; renderWeek(); setTimeout(()=>{ if(pendingDel===id){pendingDel=null;renderWeek();} },4000); return; }
+    pendingDel=null; const {error}=await sb.from("reports").delete().eq("id",id); if(error) return err(error); reports=reports.filter(r=>r.id!==id); renderAll(); toast(T("tDeleted")); return; }
+  const cd=e.target.closest("[data-cxdel]");
+  if(cd){ const id=cd.dataset.cxdel;
+    if(pendingDel!==id){ pendingDel=id; renderCaixa(); setTimeout(()=>{ if(pendingDel===id){pendingDel=null;renderCaixa();} },4000); return; }
+    pendingDel=null; const {error}=await sb.from("caixa").delete().eq("id",id); if(error) return err(error); caixa=caixa.filter(c=>c.id!==id); renderCaixa(); toast(T("tDeleted")); return; }
+  const rd=e.target.closest("[data-ratedel]"); if(rd){ rules={...rules, rates:rules.rates.filter(r=>r.from!==rd.dataset.ratedel)}; renderAll(); saveRules(); return; }
+  if(e.target.id==="addRate"){ const f=$("#newRateFrom").value, v=parseFloat($("#newRateVal").value);
+    if(!f||!(v>=0)) return toast(T("tFillRate"));
+    rules={...rules, rates:[...rules.rates.filter(r=>r.from!==f),{from:f,block:v}]}; $("#newRateVal").value=""; renderAll(); saveRules(); return; }
+  if(e.target.id==="clearDraft"){ $("#paste").value=""; drafts=[]; renderDrafts(); return; }
+  if(e.target.id==="saveDraft"){
+    const date=$("#pDate").value; if(!date) return; const btn=e.target; btn.disabled=true;
+    const local=$("#pLoc").value.trim(); try{ localStorage.setItem("locator.loc",local); }catch(e){}
+    const rows=drafts.map(d=>({user_id:me.id, dia:date, tecnico:d.tech, declarados:d.declared, local, tickets:d.rows}));
+    const {error}=await sb.from("reports").insert(rows);
+    if(error){ btn.disabled=false; return err(error); }
+    const n=drafts.length; curWeek=weekStart(date); open.add(date);
+    $("#paste").value=""; drafts=[]; delete $("#pDate").dataset.touched; $("#pDateHint").textContent="";
+    await loadAll(); toast(n>1?T("tSavedN")(n):T("tSaved")); return;
+  }
+  if(e.target.id==="saveMe"){
+    const patch={nome:$("#mNome").value.trim(), sobrenome:$("#mSobre").value.trim(), telefone:$("#mTel").value.trim()};
+    const {error}=await sb.from("perfis").update(patch).eq("id",me.id); if(error) return err(error);
+    perfil={...perfil,...patch}; $("#who").textContent=`${perfil.nome} ${perfil.sobrenome}`.trim(); toast(T("tMe")); return;
+  }
+  const lib=e.target.closest("[data-lib]");
+  if(lib){ const p=perfis.find(x=>x.id===lib.dataset.lib); const base=(p.acesso_ate&&p.acesso_ate>=todayISO())?p.acesso_ate:todayISO();
+    return setAccess(p.id,{status:"ativo", acesso_ate:addDays(base,30)}, T("tLib")(p.nome, dFull(addDays(base,30)))); }
+  const lf=e.target.closest("[data-libfree]"); if(lf) return setAccess(lf.dataset.libfree,{status:"ativo", acesso_ate:null},T("tLibFree"));
+  const bl=e.target.closest("[data-block]"); if(bl) return setAccess(bl.dataset.block,{status:"bloqueado"},T("tBlocked"));
+  if(e.target.id==="exportBtn"){
+    const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+    const L=[T("csvHead").map(q).join(",")];
+    [...reports].sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>{ const c=repCalc(r), ws=weekStart(r.date), dw=DOW(parseISO(r.date).getDay());
+      r.tickets.forEach(t=>{ const k=cotas(t.ft); L.push([weekNum(ws),r.date,dw,r.loc,t.ticket,t.ft,t.flag,k,c.rate,rules.ticket,k*c.rate,rules.ticket+k*c.rate].map(q).join(",")); });
+      const ex=c.n-r.tickets.length; if(ex>0) L.push([weekNum(ws),r.date,dw,r.loc,`+${ex} ${T("noFt")}`,0,"",0,c.rate,ex*rules.ticket,0,ex*rules.ticket].map(q).join(","));
+    });
+    L.push(""); L.push(T("csvWeeks").map(q).join(","));
+    allWeeks().filter(w=>weekNum(w)>=1).forEach(w=>{ const W=weekData(w); L.push([weekNum(w),w,W.tk,W.ganho,-W.carro,W.receber,W.paid,W.diff].map(q).join(",")); });
+    L.push(""); L.push(T("csvCash").map(q).join(","));
+    caixaMoves().forEach(x=>L.push([x.date,x.desc,x.amount,x.bal].map(q).join(",")));
+    const blob=new Blob(["﻿"+L.join("\n")],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`locator-${todayISO()}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  }
+});
+document.addEventListener("change", async e=>{
+  if($("#scrApp").hidden) return;
+  const id=e.target.dataset.edit;
+  if(id&&e.target.value){ const {error}=await sb.from("reports").update({dia:e.target.value}).eq("id",id); if(error) return err(error); const r=reports.find(x=>x.id===id); if(r) r.date=e.target.value; renderAll(); toast(T("tDay")); return; }
+  const lid=e.target.dataset.editloc;
+  if(lid){ const v=e.target.value.trim(); const {error}=await sb.from("reports").update({local:v}).eq("id",lid); if(error) return err(error); const r=reports.find(x=>x.id===lid); if(r) r.loc=v; renderLocList(); renderResumo(); toast("📍 "+(v||"—")); return; }
+  if(e.target.id==="paidInput"){
+    const v=e.target.value.trim(), ws=curWeek, pago=v===""?null:parseFloat(v.replace(",","."));
+    const {error}=await sb.from("semanas").upsert({user_id:me.id, inicio:ws, pago}); if(error) return err(error);
+    weeks[ws]={...(weeks[ws]||{}), paid:pago}; renderAll(); toast(T("tPaid")); return;
+  }
+  if(e.target.id==="admFilter"){ renderAdmin(); return; }
+  const map={rTicket:"ticket",rSize:"size",rCar:"car",rStart:"start"};
+  if(map[e.target.id]){ const k=map[e.target.id]; let v=e.target.value;
+    if(k!=="start"){ v=parseFloat(v); if(!(v>=0)||(k==="size"&&!(v>=1))) return; } else if(!v) v=null;
+    rules={...rules,[k]:v}; renderAll(); saveRules(); }
+});
+$("#paste").addEventListener("input", e=>{
+  drafts=parseReports(e.target.value);
+  const wd=drafts.find(d=>d.waDate)?.waDate;
+  if(wd&&!$("#pDate").dataset.touched){ $("#pDate").value=wd; $("#pDateHint").textContent=T("waDate"); }
+  renderDrafts();
+});
+$("#pDate").addEventListener("input", e=>{ e.target.dataset.touched="1"; $("#pDateHint").textContent=""; renderDrafts(); });
+$("#cxForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const dia=$("#cxDate").value, descricao=$("#cxDesc").value.trim(), v=parseFloat($("#cxVal").value);
+  if(!dia||!descricao||!(v>0)) return toast(T("tFill"));
+  const valor=$("#cxType").value==="out"?-v:v;
+  const {data,error}=await sb.from("caixa").insert({user_id:me.id, dia, descricao, valor}).select().single(); if(error) return err(error);
+  caixa.push({id:data.id, date:dia, desc:descricao, amount:valor}); renderCaixa(); toast(T("tAdded"));
+  $("#cxDesc").value=""; $("#cxVal").value="";
+});
+
+$("#pDate").value=todayISO(); $("#cxDate").value=todayISO();
+boot();
+</script>
+</body>
+</html>
