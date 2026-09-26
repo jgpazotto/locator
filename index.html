@@ -6,7 +6,7 @@
 <title>Locator</title>
 <meta name="theme-color" content="#e0600f">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Locator">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,6 +101,9 @@ tr.total td{font-weight:700;border-bottom:none}
 /* telas de entrada */
 .auth{max-width:420px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;gap:18px}
 .brand{display:flex;align-items:center;gap:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:8px 16px;font-weight:600;color:var(--ink);cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--accent);color:#fff}
 .brand img{width:48px;height:48px;border-radius:12px}
 .fields{display:flex;flex-direction:column;gap:10px}
 .fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:600}
@@ -119,7 +122,7 @@ tr.total td{font-weight:700;border-bottom:none}
 <!-- ===================== ENTRAR / CADASTRO ===================== -->
 <div id="scrAuth" class="auth" hidden>
   <div class="row" style="justify-content:space-between">
-    <div class="brand"><img src="icon-192.png" alt=""><div><h1>Loca<span>tor</span></h1><div class="note" data-i18n="tagline"></div></div></div>
+    <div class="brand"><img src="icon-192.png?v=2" alt=""><div><h1>Loca<span>tor</span></h1><div class="note" data-i18n="tagline"></div></div></div>
     <select class="langSel" aria-label="Idioma / Language"></select>
   </div>
   <div class="switch" role="tablist">
@@ -149,7 +152,7 @@ tr.total td{font-weight:700;border-bottom:none}
 <!-- ===================== AGUARDANDO LIBERAÇÃO ===================== -->
 <div id="scrWait" class="auth" hidden>
   <div class="row" style="justify-content:space-between">
-    <div class="brand"><img src="icon-192.png" alt=""><h1>Loca<span>tor</span></h1></div>
+    <div class="brand"><img src="icon-192.png?v=2" alt=""><h1>Loca<span>tor</span></h1></div>
     <select class="langSel" aria-label="Idioma / Language"></select>
   </div>
   <div class="panel">
@@ -163,7 +166,7 @@ tr.total td{font-weight:700;border-bottom:none}
 <!-- ===================== APP ===================== -->
 <div id="scrApp" class="wrap" hidden>
   <header class="top">
-    <div><h1>Loca<span>tor</span></h1><p class="note" id="ruleLine"></p></div>
+    <div class="brand"><img src="icon-192.png?v=2" alt=""><h1>Loca<span>tor</span></h1><p class="note" id="ruleLine" hidden></p></div>
     <div class="row"><span class="note" id="who"></span><select class="langSel" aria-label="Idioma / Language"></select><button type="button" class="link" data-logout data-i18n="logout"></button></div>
   </header>
 
@@ -203,7 +206,7 @@ tr.total td{font-weight:700;border-bottom:none}
   <section id="tab-resumo" class="sec" hidden>
     <div class="panel">
       <div class="row" style="justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0" data-i18n="allWeeks"></h2>
+        <div class="seg" role="tablist" id="perSel"><button type="button" data-per="dia" aria-selected="true" data-i18n="pDay"></button><button type="button" data-per="semana" aria-selected="false" data-i18n="pWeek"></button><button type="button" data-per="mes" aria-selected="false" data-i18n="pMonth"></button></div>
         <button type="button" id="exportBtn" data-i18n="export"></button>
       </div>
       <div class="tbl-wrap" id="weeksTable"></div>
@@ -294,7 +297,7 @@ const I18N = {
  pt:{ tagline:"Tickets, ft e pagamentos do técnico de locate", login:"Entrar", signup:"Criar conta", email:"E-mail", password:"Senha", passwordNew:"Senha (mínimo 6)", forgot:"Esqueci a senha",
   firstName:"Nome", lastName:"Sobrenome", phone:"Telefone", signupNote:"Depois do cadastro, a gente libera seu acesso assim que o pagamento for confirmado.",
   recheck:"Já paguei, verificar de novo", logout:"Sair", tabWeek:"Semana", tabSummary:"Resumo", tabCash:"Caixa", tabRules:"Regras", tabAdmin:"Cadastros",
-  pasteTitle:"Colar report", serviceDay:"Dia do serviço", allWeeks:"Todas as semanas", export:"Baixar planilha (.csv)",
+  pasteTitle:"Colar report", serviceDay:"Dia do serviço", allWeeks:"Todas as semanas", pDay:"Por dia", pWeek:"Por semana", pMonth:"Por mês", month:"Mês", dayCol:"Dia", monthNote:"No mês, carro e pago contam pelas semanas que começam naquele mês.", export:"Baixar planilha (.csv)",
   summaryNote:"A receber = ganho − desconto do carro. Diferença = pago − a receber. Toque numa semana para abrir.",
   cashBalance:"Saldo do caixa", cashNote:"Entra o que a empresa pagou em cada semana. Sai o que você gasta (gasolina, material, comida…).",
   cashAdd:"Lançar no caixa", expense:"Gasto", income:"Entrada", add:"Lançar", moves:"Movimentos", descPh:"Descrição (ex.: gasolina)",
@@ -329,7 +332,7 @@ const I18N = {
  en:{ tagline:"Tickets, footage and pay for locate technicians", login:"Log in", signup:"Create account", email:"Email", password:"Password", passwordNew:"Password (min. 6)", forgot:"Forgot password",
   firstName:"First name", lastName:"Last name", phone:"Phone", signupNote:"After you sign up, we unlock your access as soon as your payment is confirmed.",
   recheck:"I paid, check again", logout:"Log out", tabWeek:"Week", tabSummary:"Summary", tabCash:"Cash", tabRules:"Rules", tabAdmin:"Sign-ups",
-  pasteTitle:"Paste report", serviceDay:"Service day", allWeeks:"All weeks", export:"Download spreadsheet (.csv)",
+  pasteTitle:"Paste report", serviceDay:"Service day", allWeeks:"All weeks", pDay:"By day", pWeek:"By week", pMonth:"By month", month:"Month", dayCol:"Day", monthNote:"By month, car and paid count by the weeks starting in that month.", export:"Download spreadsheet (.csv)",
   summaryNote:"To receive = earned − car deduction. Difference = paid − to receive. Tap a week to open it.",
   cashBalance:"Cash balance", cashNote:"In: what the company paid each week. Out: what you spend (gas, supplies, food…).",
   cashAdd:"Add to cash", expense:"Expense", income:"Income", add:"Add", moves:"Entries", descPh:"Description (e.g. gas)",
@@ -364,7 +367,7 @@ const I18N = {
  es:{ tagline:"Tickets, pies y pagos del técnico de locate", login:"Entrar", signup:"Crear cuenta", email:"Correo", password:"Contraseña", passwordNew:"Contraseña (mínimo 6)", forgot:"Olvidé mi contraseña",
   firstName:"Nombre", lastName:"Apellido", phone:"Teléfono", signupNote:"Después del registro, activamos tu acceso en cuanto se confirme el pago.",
   recheck:"Ya pagué, verificar de nuevo", logout:"Salir", tabWeek:"Semana", tabSummary:"Resumen", tabCash:"Caja", tabRules:"Reglas", tabAdmin:"Registros",
-  pasteTitle:"Pegar report", serviceDay:"Día del servicio", allWeeks:"Todas las semanas", export:"Descargar planilla (.csv)",
+  pasteTitle:"Pegar report", serviceDay:"Día del servicio", allWeeks:"Todas las semanas", pDay:"Por día", pWeek:"Por semana", pMonth:"Por mes", month:"Mes", dayCol:"Día", monthNote:"Por mes, carro y pagado cuentan por las semanas que empiezan en ese mes.", export:"Descargar planilla (.csv)",
   summaryNote:"Por cobrar = ganado − descuento del carro. Diferencia = pagado − por cobrar. Toca una semana para abrirla.",
   cashBalance:"Saldo de caja", cashNote:"Entra lo que la empresa pagó cada semana. Sale lo que gastas (gasolina, material, comida…).",
   cashAdd:"Registrar en caja", expense:"Gasto", income:"Ingreso", add:"Registrar", moves:"Movimientos", descPh:"Descripción (ej.: gasolina)",
@@ -537,15 +540,19 @@ function renderDrafts(){
 function renderLocList(){
   const locs=[...new Set(reports.map(r=>r.loc).filter(Boolean))].sort();
   $("#locList").innerHTML=locs.map(l=>`<option value="${esc(l)}"></option>`).join("");
-  const el=$("#pLoc"); if(el && !el.value){ let last=null; try{ last=localStorage.getItem("locator.loc"); }catch(e){} el.value = last || ([...reports].sort((a,b)=>b.date.localeCompare(a.date)).find(r=>r.loc)?.loc || ""); }
+  const el=$("#pLoc"); if(el && !el.value){ let last=null; try{ last=localStorage.getItem("locator.loc"); }catch(e){} el.value = perfil?.local_padrao || last || ([...reports].sort((a,b)=>b.date.localeCompare(a.date)).find(r=>r.loc)?.loc || ""); }
 }
 function renderLocTable(){
   const m={}; reports.forEach(r=>{ const k=r.loc||""; const o=m[k]=m[k]||{days:new Set(),tk:0,g:0,last:""}; o.days.add(r.date); o.tk+=tCount(r); o.g+=repCalc(r).total; if(r.date>o.last) o.last=r.date; });
   const ks=Object.keys(m).sort((a,b)=>m[b].g-m[a].g);
   $("#locTable").innerHTML=ks.length?`<table><thead><tr><th>${T("locCol")}</th><th class="r">${T("days")}</th><th class="r">Tickets</th><th class="r">${T("earned")}</th><th class="r">${T("date")}</th></tr></thead><tbody>${ks.map(k=>`<tr><td>${k?"📍 "+esc(k):`<span class="note">${T("noLoc")}</span>`}</td><td class="r num">${m[k].days.size}</td><td class="r num">${m[k].tk}</td><td class="r num money">${money(m[k].g)}</td><td class="r num">${dFull(m[k].last)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noWeeks")}</div>`;
 }
+let per="dia";
 function renderResumo(){
   renderLocTable();
+  document.querySelectorAll("[data-per]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.per===per)));
+  if(per==="dia") return renderDias();
+  if(per==="mes") return renderMeses();
   const ws=allWeeks().filter(w=>weekNum(w)>=1);
   if(!ws.length){ $("#weeksTable").innerHTML=`<div class="empty">${T("noWeeks")}</div>`; return; }
   const S={tk:0,g:0,c:0,r:0,p:0,d:0};
@@ -553,6 +560,30 @@ function renderResumo(){
     return `<tr data-week="${w}" style="cursor:pointer"><td><b>${T("week")} ${weekNum(w)}</b><br><span class="note">${dLabel(w)} – ${dLabel(addDays(w,6))}</span></td><td class="r num">${W.nd}</td><td>${esc([...new Set(W.reps.map(r=>r.loc).filter(Boolean))].join(", "))||"—"}</td><td class="r num">${W.tk}</td><td class="r num">${money(W.ganho)}</td><td class="r num">${W.carro?money(-W.carro):"—"}</td><td class="r num money">${money(W.receber)}</td><td class="r num">${W.paid==null?"—":money(W.paid)}</td><td class="r num ${W.diff==null?"":W.diff<-0.005?"neg":"pos"}">${W.diff==null?"—":(W.diff>0?"+":"")+money(W.diff)}</td></tr>`; }).join("");
   $("#weeksTable").innerHTML=`<table><thead><tr><th>${T("week")}</th><th class="r">${T("days")}</th><th>${T("locCol")}</th><th class="r">Tickets</th><th class="r">${T("earned")}</th><th class="r">${T("car")}</th><th class="r">${T("toReceive")}</th><th class="r">${T("paid")}</th><th class="r">${T("difference")}</th></tr></thead><tbody>${rows}
   <tr class="total"><td>${T("total")}</td><td></td><td></td><td class="r num">${S.tk}</td><td class="r num">${money(S.g)}</td><td class="r num">${money(-S.c)}</td><td class="r num money">${money(S.r)}</td><td class="r num">${money(S.p)}</td><td class="r num ${S.d<0?"neg":"pos"}">${(S.d>0?"+":"")+money(S.d)}</td></tr></tbody></table>`;
+}
+function renderDias(){
+  const by={}; reports.forEach(r=>{ const o=by[r.date]=by[r.date]||{tk:0,ft:0,c:0,g:0,locs:new Set()}; const c=repCalc(r); o.tk+=c.n; o.c+=c.cotas; o.g+=c.total; o.ft+=r.tickets.reduce((a,t)=>a+(+t.ft||0),0); if(r.loc) o.locs.add(r.loc); });
+  const ds=Object.keys(by).sort().reverse();
+  if(!ds.length){ $("#weeksTable").innerHTML=`<div class="empty">${T("noWeeks")}</div>`; return; }
+  const S={tk:0,ft:0,c:0,g:0};
+  const rows=ds.map(d=>{ const o=by[d]; S.tk+=o.tk;S.ft+=o.ft;S.c+=o.c;S.g+=o.g;
+    return `<tr data-week="${weekStart(d)}" style="cursor:pointer"><td><b>${DOW(parseISO(d).getDay())}</b> <span class="note">${dFull(d)}</span></td><td>${esc([...o.locs].join(", "))||"—"}</td><td class="r num">${o.tk}</td><td class="r num">${fmt(o.ft)}</td><td class="r num">${o.c}</td><td class="r num money">${money(o.g)}</td></tr>`; }).join("");
+  $("#weeksTable").innerHTML=`<table><thead><tr><th>${T("dayCol")}</th><th>${T("locCol")}</th><th class="r">Tickets</th><th class="r">ft</th><th class="r">${T("blocks")}</th><th class="r">${T("earned")}</th></tr></thead><tbody>${rows}
+  <tr class="total"><td>${T("total")} · ${ds.length} ${T("days").toLowerCase()}</td><td></td><td class="r num">${S.tk}</td><td class="r num">${fmt(S.ft)}</td><td class="r num">${S.c}</td><td class="r num money">${money(S.g)}</td></tr></tbody></table>`;
+}
+function renderMeses(){
+  const by={}; const get=m=>by[m]=by[m]||{days:new Set(),tk:0,g:0,car:0,paid:0,hasPaid:false};
+  reports.forEach(r=>{ const o=get(r.date.slice(0,7)); o.days.add(r.date); o.tk+=tCount(r); o.g+=repCalc(r).total; });
+  allWeeks().filter(w=>weekNum(w)>=1).forEach(w=>{ const W=weekData(w), o=get(w.slice(0,7)); o.car+=W.carro; if(W.paid!=null){o.paid+=W.paid;o.hasPaid=true;} });
+  const ms=Object.keys(by).sort().reverse();
+  if(!ms.length){ $("#weeksTable").innerHTML=`<div class="empty">${T("noWeeks")}</div>`; return; }
+  const loc={pt:"pt-BR",en:"en-US",es:"es-ES"}[lang]||"pt-BR";
+  const S={d:0,tk:0,g:0,car:0,p:0};
+  const rows=ms.map(m=>{ const o=by[m]; S.d+=o.days.size;S.tk+=o.tk;S.g+=o.g;S.car+=o.car;S.p+=o.paid;
+    const nm=new Date(+m.slice(0,4),+m.slice(5,7)-1,1).toLocaleDateString(loc,{month:"long",year:"numeric"});
+    return `<tr><td><b>${esc(nm.charAt(0).toUpperCase()+nm.slice(1))}</b></td><td class="r num">${o.days.size}</td><td class="r num">${o.tk}</td><td class="r num">${money(o.g)}</td><td class="r num">${o.car?money(-o.car):"—"}</td><td class="r num money">${money(o.g-o.car)}</td><td class="r num">${o.hasPaid?money(o.paid):"—"}</td></tr>`; }).join("");
+  $("#weeksTable").innerHTML=`<table><thead><tr><th>${T("month")}</th><th class="r">${T("days")}</th><th class="r">Tickets</th><th class="r">${T("earned")}</th><th class="r">${T("car")}</th><th class="r">${T("toReceive")}</th><th class="r">${T("paid")}</th></tr></thead><tbody>${rows}
+  <tr class="total"><td>${T("total")}</td><td class="r num">${S.d}</td><td class="r num">${S.tk}</td><td class="r num">${money(S.g)}</td><td class="r num">${money(-S.car)}</td><td class="r num money">${money(S.g-S.car)}</td><td class="r num">${money(S.p)}</td></tr></tbody></table><p class="note">${T("monthNote")}</p>`;
 }
 function renderCaixa(){
   const m=caixaMoves(), bal=m.length?m[m.length-1].bal:0;
@@ -572,7 +603,7 @@ function renderAdmin(){
   $("#admList").innerHTML=list.length?`<table><thead><tr><th>${T("name")}</th><th>${T("contact")}</th><th>${T("status")}</th><th>${T("accessUntil")}</th><th>${T("signedUp")}</th><th></th></tr></thead><tbody>${list.map(p=>{
     const venc=p.acesso_ate && p.acesso_ate<today;
     const chip=p.status==="ativo"?(venc?`<span class="chip bad">${T("sExpired")}</span>`:`<span class="chip ok">${T("sActive")}</span>`):p.status==="pendente"?`<span class="chip">${T("sPending")}</span>`:`<span class="chip bad">${T("sBlocked")}</span>`;
-    return `<tr><td><b>${esc(p.nome)} ${esc(p.sobrenome)}</b>${p.admin?' <span class="note">(admin)</span>':''}<br><span class="note">${esc((p.idioma||"").toUpperCase())}</span></td><td>${esc(p.email)}<br><span class="note">${esc(p.telefone)}</span></td><td>${chip}</td><td class="num">${p.status!=="ativo"?"—":p.acesso_ate?dFull(p.acesso_ate):T("noExpiry")}</td><td class="num">${dFull(p.criado_em.slice(0,10))}</td>
+    return `<tr><td><b>${esc(p.nome)} ${esc(p.sobrenome)}</b>${p.admin?' <span class="note">(admin)</span>':''}</td><td>${esc(p.email)}<br><span class="note">${esc(p.telefone)}</span></td><td>${chip}</td><td class="num">${p.status!=="ativo"?"—":p.acesso_ate?dFull(p.acesso_ate):T("noExpiry")}</td><td class="num">${dFull(p.criado_em.slice(0,10))}</td>
       <td class="r">${p.admin?"":`<button type="button" data-lib="${p.id}">${T("lib30")}</button> <button type="button" class="link" data-libfree="${p.id}">${T("libFree")}</button> ${p.status!=="bloqueado"?`<button type="button" class="link danger" data-block="${p.id}">${T("block")}</button>`:""}`}</td></tr>`; }).join("")}</tbody></table>`:`<div class="empty">${T("noSignups")}</div>`;
 }
 function renderAll(){ applyStatic(); renderRuleLine(); renderWeek(); renderDrafts(); renderResumo(); renderCaixa(); renderRegras(); renderAdmin(); }
@@ -677,6 +708,7 @@ document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && me &&
 document.addEventListener("click", async e=>{
   if($("#scrApp").hidden) return;
   const tb=e.target.closest("[data-tab]"); if(tb){ setTab(tb.dataset.tab); return; }
+  const pb=e.target.closest("[data-per]"); if(pb){ per=pb.dataset.per; renderResumo(); return; }
   const wk=e.target.closest("[data-week]"); if(wk){ curWeek=wk.dataset.week; setTab("semana"); renderWeek(); return; }
   if(e.target.id==="prevW"){ curWeek=addDays(curWeek,-7); renderWeek(); return; }
   if(e.target.id==="nextW"){ curWeek=addDays(curWeek,7); renderWeek(); return; }
@@ -696,7 +728,7 @@ document.addEventListener("click", async e=>{
   if(e.target.id==="clearDraft"){ $("#paste").value=""; drafts=[]; renderDrafts(); return; }
   if(e.target.id==="saveDraft"){
     const date=$("#pDate").value; if(!date) return; const btn=e.target; btn.disabled=true;
-    const local=$("#pLoc").value.trim(); try{ localStorage.setItem("locator.loc",local); }catch(e){}
+    const local=$("#pLoc").value.trim(); saveLoc(local);
     const rows=drafts.map(d=>({user_id:me.id, dia:date, tecnico:d.tech, declarados:d.declared, local, tickets:d.rows}));
     const {error}=await sb.from("reports").insert(rows);
     if(error){ btn.disabled=false; return err(error); }
@@ -752,6 +784,8 @@ $("#paste").addEventListener("input", e=>{
   if(wd&&!$("#pDate").dataset.touched){ $("#pDate").value=wd; $("#pDateHint").textContent=T("waDate"); }
   renderDrafts();
 });
+async function saveLoc(v){ v=(v||"").trim(); try{ localStorage.setItem("locator.loc",v); }catch(e){} if(sb&&me&&perfil&&perfil.local_padrao!==v){ perfil.local_padrao=v; await sb.from("perfis").update({local_padrao:v}).eq("id",me.id); } }
+$("#pLoc").addEventListener("change", e=>saveLoc(e.target.value));
 $("#pDate").addEventListener("input", e=>{ e.target.dataset.touched="1"; $("#pDateHint").textContent=""; renderDrafts(); });
 $("#cxForm").addEventListener("submit", async e=>{
   e.preventDefault();
