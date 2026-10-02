@@ -318,6 +318,7 @@ tr.total td{font-weight:700;border-bottom:none}
       <div class="mid"><b id="tTitle"></b><span class="note" id="tRange"></span></div>
       <button type="button" id="tNext" aria-label="›">›</button>
     </div>
+    <div class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:12px"><select id="tWho" aria-label="técnico"></select><select id="tLocSel" aria-label="local"></select></div>
     <div class="tiles" id="tTiles"></div>
     <div id="tAlert"></div>
     <div class="panel">
@@ -368,7 +369,7 @@ const PAGAMENTO_INFO = {
    IDIOMAS
    ============================================================ */
 const I18N = {
- pt:{ tabTeam:"Equipe", teamTitle:"Equipe", teamIntro:"Faz parte de uma equipe? Coloque o código que o seu gerente mandou. Cada técnico de equipe paga só US$ 14.90 por mês.", teamJoin:"Entrar na equipe", teamImManager:"Sou gerente — criar uma equipe", teamCreateTxt:"Você recebe um código para mandar aos técnicos. Eles entram com o código, cada um paga o seu (US$ 14.90), e você vê o relatório de todos.", teamNamePh:"Nome da equipe (ex.: ITG Austin)", teamCreate:"Criar equipe",
+ pt:{ allTechs:"Todos os técnicos", allLocs:"Todos os locais", addByEmail:"Adicionar técnico pelo e-mail", addBtn:"Adicionar", addByEmailNote:"O técnico cria a conta dele no Locator e você adiciona pelo e-mail do cadastro. Também dá para mandar o código acima.", sameRules:"Mesmos valores de pagamento para toda a equipe", diffRulesNote:"Cada técnico usa os valores da conta dele (bom quando cada região paga diferente).", tSameOn:"A equipe agora usa os seus valores", tSameOff:"Cada técnico usa os próprios valores", tNotFound:"Nenhuma conta com esse e-mail. Peça para ele se cadastrar primeiro.", tOtherTeam:"Essa pessoa já está em outra equipe", tAdded:n=>`${n} entrou na equipe`, flagWord:"bandeira", alertWord:"alerta", tabTeam:"Equipe", teamTitle:"Equipe", teamIntro:"Faz parte de uma equipe? Coloque o código que o seu gerente mandou. Equipes com 10 técnicos ou mais: cada um paga só US$ 14.90 por mês.", teamJoin:"Entrar na equipe", teamImManager:"Sou gerente — criar uma equipe", teamCreateTxt:"Você recebe um código para mandar aos técnicos. Eles entram com o código, cada um paga o seu (US$ 14.90 a partir de 10 técnicos), e você vê o relatório de todos.", teamNamePh:"Nome da equipe (ex.: ITG Austin)", teamCreate:"Criar equipe",
   teamYouManager:"Você é o gerente. Mande o código ou o convite para os técnicos:", copyInvite:"Copiar convite", sendInvite:"Enviar convite", teamManagerNote:"As regras de pagamento que você salvar abaixo valem para a equipe inteira. O caixa pessoal de cada técnico continua privado.",
   teamYouMember:"Seu gerente vê os seus reports e pagamentos. O seu caixa pessoal continua só seu.", teamRulesFromManager:"As regras de pagamento são definidas pelo gerente.", teamLeave:"Sair da equipe",
   inviteMsg:(n,c,l)=>`Entre na equipe ${n} no Locator! Código: ${c}\n${l}`, teamRank:"Ranking da semana", teamXlsx:"Planilha da equipe", teamPdf:"PDF da equipe", teamNote:"Toque em PDF ou Planilha para baixar o fechamento de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sem report nesta semana:", missToday:"ainda não mandou hoje", lastReport:"Último report", manager:"gerente", sheet:"Planilha", teamEmpty:"Ninguém na equipe ainda. Mande o código para os técnicos.", teamReport:"Fechamento da equipe", teamCodeOpt:"Código da equipe (opcional)", teamDiscount:"desconto de equipe",
@@ -415,7 +416,7 @@ const I18N = {
   aTypeEmail:"Digite seu e-mail acima e toque de novo em Esqueci a senha.", aResetSent:"Enviamos um link para criar uma senha nova.", aResetFail:"Não consegui enviar o e-mail.",
   newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
   csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
- en:{ tabTeam:"Team", teamTitle:"Team", teamIntro:"Part of a team? Enter the code your manager sent you. Team technicians pay only US$ 14.90 per month.", teamJoin:"Join team", teamImManager:"I'm a manager — create a team", teamCreateTxt:"You get a code to send to your technicians. They join with it, each one pays their own (US$ 14.90), and you see everyone's report.", teamNamePh:"Team name (e.g. ITG Austin)", teamCreate:"Create team",
+ en:{ allTechs:"All technicians", allLocs:"All locations", addByEmail:"Add technician by email", addBtn:"Add", addByEmailNote:"The technician creates their own Locator account and you add them by the sign-up email. You can also send the code above.", sameRules:"Same pay rates for the whole team", diffRulesNote:"Each technician uses the rates in their own account (good when each region pays differently).", tSameOn:"The team now uses your rates", tSameOff:"Each technician uses their own rates", tNotFound:"No account with that email. Ask them to sign up first.", tOtherTeam:"This person is already on another team", tAdded:n=>`${n} joined the team`, flagWord:"flag", alertWord:"alert", tabTeam:"Team", teamTitle:"Team", teamIntro:"Part of a team? Enter the code your manager sent you. Teams with 10+ technicians: each one pays only US$ 14.90 per month.", teamJoin:"Join team", teamImManager:"I'm a manager — create a team", teamCreateTxt:"You get a code to send to your technicians. They join with it, each one pays their own (US$ 14.90 from 10 technicians), and you see everyone's report.", teamNamePh:"Team name (e.g. ITG Austin)", teamCreate:"Create team",
   teamYouManager:"You are the manager. Send the code or the invite to your technicians:", copyInvite:"Copy invite", sendInvite:"Send invite", teamManagerNote:"The pay rules you save below apply to the whole team. Each technician's personal cash box stays private.",
   teamYouMember:"Your manager sees your reports and payments. Your personal cash box stays private.", teamRulesFromManager:"Pay rules are set by the manager.", teamLeave:"Leave team",
   inviteMsg:(n,c,l)=>`Join team ${n} on Locator! Code: ${c}\n${l}`, teamRank:"This week's ranking", teamXlsx:"Team spreadsheet", teamPdf:"Team PDF", teamNote:"Tap PDF or Spreadsheet to download each technician's report.", teamTechs:"Technicians", teamMissing:"No report this week:", missToday:"hasn't sent today yet", lastReport:"Last report", manager:"manager", sheet:"Spreadsheet", teamEmpty:"No one on the team yet. Send the code to your technicians.", teamReport:"Team report", teamCodeOpt:"Team code (optional)", teamDiscount:"team discount",
@@ -462,7 +463,7 @@ const I18N = {
   aTypeEmail:"Type your email above and tap Forgot password again.", aResetSent:"We sent a link to set a new password.", aResetFail:"Couldn't send the email.",
   newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
   csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
- es:{ tabTeam:"Equipo", teamTitle:"Equipo", teamIntro:"¿Eres parte de un equipo? Escribe el código que te mandó tu gerente. Cada técnico de equipo paga solo US$ 14.90 al mes.", teamJoin:"Entrar al equipo", teamImManager:"Soy gerente — crear un equipo", teamCreateTxt:"Recibes un código para mandar a tus técnicos. Entran con el código, cada uno paga lo suyo (US$ 14.90) y tú ves el reporte de todos.", teamNamePh:"Nombre del equipo (ej.: ITG Austin)", teamCreate:"Crear equipo",
+ es:{ allTechs:"Todos los técnicos", allLocs:"Todos los lugares", addByEmail:"Agregar técnico por correo", addBtn:"Agregar", addByEmailNote:"El técnico crea su propia cuenta en Locator y tú lo agregas por el correo del registro. También puedes mandar el código de arriba.", sameRules:"Mismos valores de pago para todo el equipo", diffRulesNote:"Cada técnico usa los valores de su cuenta (bueno cuando cada región paga diferente).", tSameOn:"El equipo ahora usa tus valores", tSameOff:"Cada técnico usa sus propios valores", tNotFound:"No hay cuenta con ese correo. Pídele que se registre primero.", tOtherTeam:"Esta persona ya está en otro equipo", tAdded:n=>`${n} entró al equipo`, flagWord:"bandera", alertWord:"alerta", tabTeam:"Equipo", teamTitle:"Equipo", teamIntro:"¿Eres parte de un equipo? Escribe el código que te mandó tu gerente. Equipos con 10 técnicos o más: cada uno paga solo US$ 14.90 al mes.", teamJoin:"Entrar al equipo", teamImManager:"Soy gerente — crear un equipo", teamCreateTxt:"Recibes un código para mandar a tus técnicos. Entran con el código, cada uno paga lo suyo (US$ 14.90 desde 10 técnicos) y tú ves el reporte de todos.", teamNamePh:"Nombre del equipo (ej.: ITG Austin)", teamCreate:"Crear equipo",
   teamYouManager:"Eres el gerente. Manda el código o la invitación a tus técnicos:", copyInvite:"Copiar invitación", sendInvite:"Enviar invitación", teamManagerNote:"Las reglas de pago que guardes abajo valen para todo el equipo. La caja personal de cada técnico sigue privada.",
   teamYouMember:"Tu gerente ve tus reports y pagos. Tu caja personal sigue siendo solo tuya.", teamRulesFromManager:"Las reglas de pago las define el gerente.", teamLeave:"Salir del equipo",
   inviteMsg:(n,c,l)=>`¡Entra al equipo ${n} en Locator! Código: ${c}\n${l}`, teamRank:"Ranking de la semana", teamXlsx:"Planilla del equipo", teamPdf:"PDF del equipo", teamNote:"Toca PDF o Planilla para descargar el cierre de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sin report esta semana:", missToday:"todavía no mandó hoy", lastReport:"Último report", manager:"gerente", sheet:"Planilla", teamEmpty:"Nadie en el equipo todavía. Manda el código a tus técnicos.", teamReport:"Cierre del equipo", teamCodeOpt:"Código del equipo (opcional)", teamDiscount:"descuento de equipo",
@@ -760,6 +761,14 @@ async function exportXLSX(fmt, perA, whichA){
   }
   toast(T("tExported"));
 }
+const pdfSafe = v => String(v??"").replace(/\u2212/g,"-").replace(/🚩/g,T("flagWord")).replace(/🚨/g,T("alertWord")).replace(/[^\u0000-\u00FF\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g,"").replace(/\s{2,}/g," ").trim();
+const pdfHooks = { didParseCell: d=>{ d.cell.text = (Array.isArray(d.cell.text)?d.cell.text:[d.cell.text]).map(pdfSafe); } };
+function daySeps(rows, dateIdx, ncols, totIdx, fmtRow){
+  const out=[]; let cur=null; const sums={};
+  rows.forEach(r=>{ const d=r[dateIdx]; const o=sums[d]=sums[d]||{n:0,t:0}; o.n++; o.t+=(+r[totIdx]||0); });
+  rows.forEach(r=>{ const d=r[dateIdx]; if(d!==cur){ cur=d; out.push([{content:`${DOW(parseISO(d).getDay())} ${dFull(d)}  -  ${sums[d].n} tickets  -  ${money(sums[d].t)}`, colSpan:ncols, styles:{fillColor:[224,96,15], textColor:255, fontStyle:"bold", halign:"left"}}]); } out.push(fmtRow(r)); });
+  return out;
+}
 function loadPDF(){ if(window.jspdf?.jsPDF?.API?.autoTable) return Promise.resolve(); const add=src=>new Promise((ok,ko)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); });
   return (window.jspdf?Promise.resolve():add("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js")).then(()=>add("https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js")); }
 async function exportPDF(resumo, diasA, tick, fname, name, label){
@@ -772,12 +781,12 @@ async function exportPDF(resumo, diasA, tick, fname, name, label){
     doc.setFillColor(224,96,15); doc.rect(0,0,W,6,"F");
     doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Locator",40,46);
     doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(90);
-    doc.text(`${X.title}`,40,64); doc.text(`${X.tech}: ${name}`,40,80); doc.text(`${X.period}: ${label}`,40,95); doc.text(`${X.made}: ${dFull(todayISO())}`,40,110);
+    doc.text(pdfSafe(X.title),40,64); doc.text(pdfSafe(`${X.tech}: ${name}`),40,80); doc.text(pdfSafe(`${X.period}: ${label}`),40,95); doc.text(`${X.made}: ${dFull(todayISO())}`,40,110);
     doc.setTextColor(0);
-    const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}};
+    const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}, ...pdfHooks};
     doc.autoTable({...base, startY:126, head:[[X.sSummary,""]], body:sumRows, columnStyles:{1:{halign:"right"}}, tableWidth:300});
     doc.autoTable({...base, startY:doc.lastAutoTable.finalY+18, head:[diasA[0]], body:diasA.slice(1).map(r=>r.map((v,i)=>i===6?money(+v||0):fm(v))), columnStyles:{3:{halign:"right"},4:{halign:"right"},5:{halign:"right"},6:{halign:"right"}}});
-    doc.autoTable({...base, styles:{fontSize:7.5,cellPadding:3}, startY:doc.lastAutoTable.finalY+18, head:[tick[0]], body:tick.slice(1).map(r=>r.map(fm))});
+    doc.autoTable({...base, styles:{fontSize:7.5,cellPadding:3}, startY:doc.lastAutoTable.finalY+18, head:[tick[0]], body:daySeps(tick.slice(1), 1, tick[0].length, 11, r=>r.map((v,i)=>i>=9&&typeof v==="number"?money(v):fm(v)))});
     doc.save(fname+".pdf"); toast(T("tExported"));
   }catch(e){
     const tbl=(h,rows)=>`<table><thead><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${esc(fm(v))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -804,7 +813,11 @@ function renderTeamPanel(){
       <div class="row" style="flex-wrap:wrap;gap:10px;align-items:center"><span class="codebox">${esc(empresa.codigo)}</span>
       <button type="button" id="copyInvite">${T("copyInvite")}</button>
       <a class="wa" style="padding:9px 14px" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener">💬 ${T("sendInvite")}</a></div>
-      <p class="note">${T("teamManagerNote")}</p>`;
+      <h3 style="margin:16px 0 6px;font-size:16px">${T("addByEmail")}</h3>
+      <div class="row" style="flex-wrap:wrap;gap:8px"><input type="email" id="addEmail" placeholder="email@exemplo.com" style="min-width:220px"><button type="button" class="primary" id="addMember">${T("addBtn")}</button></div>
+      <p class="note" style="margin-top:4px">${T("addByEmailNote")}</p>
+      <label class="row" style="gap:8px;margin-top:12px;align-items:center;cursor:pointer"><input type="checkbox" id="sameRules" ${empresa.regras?"checked":""} style="width:20px;height:20px"> <span>${T("sameRules")}</span></label>
+      <p class="note">${empresa.regras?T("teamManagerNote"):T("diffRulesNote")}</p>`;
   } else {
     el.innerHTML=`<h2>${T("teamTitle")}: ${esc(empresa.nome)}</h2><p style="margin:0 0 8px">${T("teamYouMember")}</p>
       <p class="note">${empresa.regras?T("teamRulesFromManager"):""}</p><button type="button" class="link danger" id="leaveTeam">${T("teamLeave")}</button>`;
@@ -824,21 +837,25 @@ async function loadTeam(){
   if(!teamWeek) teamWeek=weekStart(todayISO());
   renderTeam();
 }
-function withCtx(id, fn){ const sv={reports, rules, weeks, perfil}; const m=team.members.find(x=>x.id===id);
-  reports=team.reps[id]; rules=team.rules[id]; weeks=team.weeks[id]; perfil={...perfil, nome:m.nome, sobrenome:m.sobrenome};
+let tWho="", tLocF="";
+function withCtx(id, fn, loc){ const sv={reports, rules, weeks, perfil}; const m=team.members.find(x=>x.id===id);
+  reports=loc?team.reps[id].filter(r=>r.loc===loc):team.reps[id]; rules=team.rules[id]; weeks=team.weeks[id]; perfil={...perfil, nome:m.nome, sobrenome:m.sobrenome};
   try{ return fn(); } finally { reports=sv.reports; rules=sv.rules; weeks=sv.weeks; perfil=sv.perfil; } }
 function teamRows(){
   const ws=teamWeek, today=todayISO();
-  return team.members.map(m=>withCtx(m.id,()=>{ const W=weekData(weekStart(ws)); const ft=W.reps.reduce((a,r)=>a+r.tickets.reduce((x,t)=>x+(+t.ft||0),0),0), ct=W.reps.reduce((a,r)=>a+repCalc(r).cotas,0);
+  return team.members.filter(m=>!tWho||m.id===tWho).map(m=>withCtx(m.id,()=>{ const W=weekData(weekStart(ws)); const ft=W.reps.reduce((a,r)=>a+r.tickets.reduce((x,t)=>x+(+t.ft||0),0),0), ct=W.reps.reduce((a,r)=>a+repCalc(r).cotas,0);
     const days=[0,1,2,3,4,5,6].map(i=>addDays(ws,i)).filter(d=>d<=today); const have=new Set(W.reps.map(r=>r.date)); const missing=days.filter(d=>!have.has(d));
     const last=[...team.reps[m.id]].map(r=>r.date).sort().pop()||null;
-    return {m, W, ft, ct, missing, last, locs:W.reps}; }));
+    return {m, W, ft, ct, missing, last, locs:W.reps}; }, tLocF));
 }
 function renderTeam(){
   if($("#tab-equipe").hidden && !$("#tTable").innerHTML) {}
   const ws=teamWeek, wd=(empresa?.regras?.semana_inicio)||rules.wd||0;
   $("#tTitle").textContent=`${T("teamTitle")}: ${empresa?.nome||""}`;
   $("#tRange").textContent=`${DOW(wd)} ${dLabel(ws)} – ${DOW((wd+6)%7)} ${dLabel(addDays(ws,6))}`;
+  { const sw=$("#tWho"); sw.innerHTML=`<option value="">${T("allTechs")}</option>`+team.members.filter(m=>m.papel!=="gerente"||team.reps[m.id].length).map(m=>`<option value="${m.id}">${esc(m.nome)} ${esc(m.sobrenome)}</option>`).join(""); sw.value=tWho;
+    const locs=[...new Set(Object.values(team.reps).flat().filter(r=>weekStart(r.date)===teamWeek).map(r=>r.loc).filter(Boolean))].sort(); if(tLocF&&!locs.includes(tLocF)) locs.push(tLocF);
+    const sl=$("#tLocSel"); sl.innerHTML=`<option value="">${T("allLocs")}</option>`+locs.map(l=>`<option value="${esc(l)}">📍 ${esc(l)}</option>`).join(""); sl.value=tLocF; }
   const rows=teamRows().filter(r=>r.m.papel!=="gerente"||team.reps[r.m.id].length).sort((a,b)=>b.W.ganho-a.W.ganho||b.W.tk-a.W.tk);
   const S=rows.reduce((a,r)=>({tk:a.tk+r.W.tk, ft:a.ft+r.ft, g:a.g+r.W.ganho, rc:a.rc+r.W.receber}),{tk:0,ft:0,g:0,rc:0});
   $("#tTiles").innerHTML=`<div class="tile"><small>${T("teamTechs")}</small><b>${rows.length}</b></div><div class="tile"><small>Tickets</small><b>${S.tk}</b></div><div class="tile"><small>ft</small><b>${fmt(S.ft)}</b></div><div class="tile hl"><small>${T("earned")}</small><b>${money(S.g)}</b></div><div class="tile wide"><small>${T("toReceive")}</small><b>${money(S.rc)}</b></div>`;
@@ -855,7 +872,7 @@ function renderTeam(){
   $("#tLoc").innerHTML=ks.length?`<table><thead><tr><th>${T("locCol")}</th><th class="r">${T("teamTechs")}</th><th class="r">Tickets</th><th class="r">ft</th><th class="r">${T("earned")}</th></tr></thead><tbody>${ks.map(k=>`<tr><td>${k?"📍 "+esc(k):`<span class="note">${T("noLoc")}</span>`}</td><td class="r num">${L[k].who.size}</td><td class="r num">${L[k].tk}</td><td class="r num">${fmt(L[k].ft)}</td><td class="r num money">${money(L[k].g)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noWeeks")}</div>`;
 }
 async function exportTeam(fmtx){
-  const rows=teamRows(); const X=T("xl"); const label=`${dFull(teamWeek)} – ${dFull(addDays(teamWeek,6))}`;
+  const rows=teamRows().filter(r=>r.m.papel!=="gerente"||team.reps[r.m.id].length); const X=T("xl"); const label=`${dFull(teamWeek)} – ${dFull(addDays(teamWeek,6))}${tLocF?" · "+tLocF:""}`;
   const head=[T("name"),"E-mail",T("days"),"Tickets","ft",T("blocks"),T("earned"),T("car"),T("toReceive"),T("paid"),T("difference")];
   const body=rows.map(r=>[`${r.m.nome} ${r.m.sobrenome}`.trim(), r.m.email, r.W.nd, r.W.tk, r.ft, r.ct, r.W.ganho, -r.W.carro, r.W.receber, r.W.paid??"", r.W.diff??""]);
   const tot=rows.reduce((a,r)=>{ a[3]+=r.W.tk; a[4]+=r.ft; a[5]+=r.ct; a[6]+=r.W.ganho; a[7]-=r.W.carro; a[8]+=r.W.receber; return a; },[T("total"),"","",0,0,0,0,0,0,"",""]);
@@ -865,11 +882,11 @@ async function exportTeam(fmtx){
   if(fmtx==="pdf"){
     try{ await loadPDF(); const doc=new window.jspdf.jsPDF({unit:"pt",format:"letter",orientation:"landscape"}); const Wd=doc.internal.pageSize.getWidth();
       doc.setFillColor(224,96,15); doc.rect(0,0,Wd,6,"F"); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Locator",40,46);
-      doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(90); doc.text(`${T("teamReport")} — ${empresa?.nome||""}`,40,64); doc.text(`${X.period}: ${label}`,40,80); doc.text(`${X.made}: ${dFull(todayISO())}`,40,95); doc.setTextColor(0);
-      const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}};
+      doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(90); doc.text(pdfSafe(`${T("teamReport")} — ${empresa?.nome||""}`),40,64); doc.text(pdfSafe(`${X.period}: ${label}`),40,80); doc.text(`${X.made}: ${dFull(todayISO())}`,40,95); doc.setTextColor(0);
+      const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}, ...pdfHooks};
       const mf=(row)=>row.map((v,i)=>i>=6&&v!==""?money(+v):(typeof v==="number"?fmt(v):v));
       doc.autoTable({...base,startY:110,head:[head],body:[...body.map(mf),mf(tot)]});
-      doc.autoTable({...base,styles:{fontSize:7,cellPadding:2.5},startY:doc.lastAutoTable.finalY+18,head:[tick[0]],body:tick.slice(1).map(r=>r.map(v=>typeof v==="number"?fmt(v):v))});
+      doc.autoTable({...base,styles:{fontSize:7,cellPadding:2.5},startY:doc.lastAutoTable.finalY+18,head:[tick[0]],body:daySeps(tick.slice(1).sort((a,b)=>String(a[2]).localeCompare(String(b[2]))||String(a[0]).localeCompare(String(b[0]))), 2, tick[0].length, 12, r=>r.map((v,i)=>i>=10&&typeof v==="number"?money(v):(typeof v==="number"?fmt(v):v)))});
       doc.save(fname+".pdf"); toast(T("tExported")); }
     catch(e){ toast(T("tErr")); }
     return;
@@ -921,6 +938,7 @@ async function loadAll(){
   if(rg.data){ rules=rowToRules(rg.data); }
   empresa=null;
   if(perfil.empresa_id){ const {data:em}=await sb.from("empresas").select("*").eq("id",perfil.empresa_id).maybeSingle(); empresa=em||null;
+    try{ const {data:n}=await sb.rpc("tamanho_equipe"); teamSize=+n||0; }catch(_){ teamSize=0; }
     if(empresa?.regras){ const tr=rowToRules({...empresa.regras, inicio:rules.start}); rules={...tr, start:rules.start}; } }
   $("#tabTeam").hidden = !(perfil.papel==="gerente" && perfil.empresa_id);
   reports=(rp.data||[]).map(r=>({id:r.id, date:r.dia, tech:r.tecnico, declared:r.declarados, loc:r.local||"", tickets:r.tickets||[]}));
@@ -929,12 +947,12 @@ async function loadAll(){
   caixa=(cx.data||[]).map(c=>({id:c.id, date:c.dia, desc:c.descricao, amount:+c.valor}));
   renderAll();
 }
-let empresa=null;
+let empresa=null, teamSize=0;
 function rowToRules(d){ const r={ticket:+(d.ticket??10), size:+(d.cota_ft??501), car:+(d.carro??150), start:d.inicio||null, wd:+(d.semana_inicio||0), rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!r.rates.length) r.rates=[{from:"2000-01-01",block:5}]; return r; }
 const teamRulesLocked = () => !!(empresa?.regras && perfil?.papel!=="gerente");
 async function saveRules(){
   if(teamRulesLocked()) return;
-  if(perfil?.papel==="gerente" && empresa){ const p={ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block}))}; const {error:e2}=await sb.rpc("salvar_regras_equipe",{p}); if(!e2) empresa.regras=p; }
+  if(perfil?.papel==="gerente" && empresa && empresa.regras){ const p={ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block}))}; const {error:e2}=await sb.rpc("salvar_regras_equipe",{p}); if(!e2) empresa.regras=p; }
   const {error}=await sb.from("regras").upsert({user_id:me.id, ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, inicio:rules.start||null, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block})), atualizado:new Date().toISOString()});
   error?err(error,T("tErr")):toast(T("tRules"));
 }
@@ -959,7 +977,7 @@ async function setLang(l){
 /* ---------- entrada / sessão ---------- */
 function waLink(){ const msg={pt:`Olá! Paguei o Locator. Meu e-mail: ${perfil?.email||""}`,en:`Hi! I paid for Locator. My email: ${perfil?.email||""}`,es:`¡Hola! Pagué Locator. Mi correo: ${perfil?.email||""}`}[lang]; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
 function payHTML(){
-  const eq=perfil?.empresa_id && perfil?.papel!=="gerente"; const U=eq?PRECO_EQ_USD:PRECO_USD, B=eq?PRECO_EQ_BRL:PRECO_BRL;
+  const eq=perfil?.empresa_id && perfil?.papel!=="gerente" && teamSize>=10; const U=eq?PRECO_EQ_USD:PRECO_USD, B=eq?PRECO_EQ_BRL:PRECO_BRL;
   return `<div class="paybox"><div><b>${T("planLine")(U,B)}</b>${eq?` <span class="chip ok">${T("teamDiscount")}</span>`:""}</div>
   <div class="opt"><b>🇺🇸 Zelle — US$ ${U}</b>${T("payZelle")(esc(ZELLE))}</div>
   <div class="opt"><b>🇧🇷 PIX — R$ ${B}</b>${T("payPix")}</div>
@@ -1049,12 +1067,15 @@ document.addEventListener("click", async e=>{
   if(e.target.id==="joinBtn"){ const c=$("#joinCode").value.trim().toUpperCase(); if(!c) return; const {data,error}=await sb.rpc("entrar_equipe",{p_codigo:c}); if(error) return toast(/codigo/.test(error.message)?T("tBadCode"):T("tErr")); toast(T("tJoined")(data)); return boot(); }
   if(e.target.id==="createTeam"){ const n=$("#teamName").value.trim(); if(!n) return toast(T("teamNamePh")); const {error}=await sb.rpc("criar_equipe",{p_nome:n}); if(error) return toast(T("tErr")); toast(T("tTeamCreated")); await boot(); setTab("regras"); return; }
   if(e.target.id==="leaveTeam"){ if(pendingDel!=="leave"){ pendingDel="leave"; e.target.textContent=T("confirm"); setTimeout(()=>{pendingDel=null; renderTeamPanel();},4000); return; } pendingDel=null; const {error}=await sb.rpc("sair_equipe"); if(error) return toast(T("tErr")); toast(T("tLeft")); return boot(); }
+  if(e.target.id==="addMember"){ const em=$("#addEmail").value.trim(); if(!em) return; const {data,error}=await sb.rpc("adicionar_membro",{p_email:em});
+    if(error) return toast(/nao_encontrado/.test(error.message)?T("tNotFound"):/outra_equipe/.test(error.message)?T("tOtherTeam"):T("tErr"));
+    $("#addEmail").value=""; toast(T("tAdded")(data)); loadTeam(); return; }
   if(e.target.id==="copyInvite"){ const txt=T("inviteMsg")(empresa.nome, empresa.codigo, inviteLink()); try{ await navigator.clipboard.writeText(txt); toast(T("tCopied")); }catch(_){ prompt("", txt); } return; }
   if(e.target.id==="tPrev"){ teamWeek=addDays(teamWeek,-7); renderTeam(); return; }
   if(e.target.id==="tNext"){ teamWeek=addDays(teamWeek,7); renderTeam(); return; }
   if(e.target.id==="tXlsx"){ exportTeam("xlsx"); return; }
   if(e.target.id==="tPdf"){ exportTeam("pdf"); return; }
-  const tx=e.target.closest("[data-tx]"); if(tx){ const id=tx.dataset.tx; if(!team.reps[id].some(r=>weekStart(r.date)===teamWeek && true)){ const has=withCtx(id,()=>reports.some(r=>weekStart(r.date)===weekStart(teamWeek))); if(!has) return toast(T("noWeeks")); } withCtx(id,()=>exportXLSX(tx.dataset.fmt, "semana", weekStart(teamWeek))); return; }
+  const tx=e.target.closest("[data-tx]"); if(tx){ const id=tx.dataset.tx; if(!team.reps[id].some(r=>weekStart(r.date)===teamWeek && true)){ const has=withCtx(id,()=>reports.some(r=>weekStart(r.date)===weekStart(teamWeek))); if(!has) return toast(T("noWeeks")); } withCtx(id,()=>exportXLSX(tx.dataset.fmt, "semana", weekStart(teamWeek)), tLocF); return; }
   const rmb=e.target.closest("[data-rm]"); if(rmb){ const id=rmb.dataset.rm; if(pendingDel!==id){ pendingDel=id; renderTeam(); setTimeout(()=>{ if(pendingDel===id){pendingDel=null;renderTeam();} },4000); return; } pendingDel=null; const {error}=await sb.rpc("remover_membro",{alvo:id}); if(error) return toast(T("tErr")); toast(T("tDeleted")); return loadTeam(); }
   const pb=e.target.closest("[data-per]"); if(pb){ per=pb.dataset.per; $("#expPer").value=per; fillExp(); renderResumo(); return; }
   const wk=e.target.closest("[data-week]"); if(wk){ curWeek=wk.dataset.week; setTab("semana"); renderWeek(); return; }
@@ -1136,6 +1157,9 @@ document.addEventListener("change", async e=>{
   }
   if(e.target.id==="admFilter"){ renderAdmin(); return; }
   if(e.target.id==="expPer"){ fillExp(); return; }
+  if(e.target.id==="tWho"){ tWho=e.target.value; renderTeam(); return; }
+  if(e.target.id==="tLocSel"){ tLocF=e.target.value; renderTeam(); return; }
+  if(e.target.id==="sameRules"){ const on=e.target.checked; const p=on?{ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block}))}:null; const {error}=await sb.rpc("salvar_regras_equipe",{p}); if(error) return err(error); empresa.regras=p; toast(on?T("tSameOn"):T("tSameOff")); if(!$("#tab-equipe").hidden||team.members.length) loadTeam(); return; }
   if(e.target.id==="rClose"){ rules={...rules, wd:(+e.target.value+1)%7}; curWeek=weekStart(curWeek); renderAll(); saveRules(); return; }
   const map={rTicket:"ticket",rSize:"size",rCar:"car",rStart:"start"};
   if(map[e.target.id]){ const k=map[e.target.id]; let v=e.target.value;
