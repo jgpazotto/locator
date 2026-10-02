@@ -121,6 +121,9 @@ tr.total td{font-weight:700;border-bottom:none}
 .editor input{padding:6px 8px}
 .trial{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);margin-bottom:14px;font-size:15px}
 .trial details{width:100%}
+.trial.warn{background:var(--warn-soft);color:var(--warn)}
+.wafab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;text-decoration:none}
+.wafab svg{width:30px;height:30px}
 .trial summary{cursor:pointer;font-weight:700;color:var(--accent)}
 .paybox{display:flex;flex-direction:column;gap:10px;margin-top:10px}
 .paybox .opt{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
@@ -243,7 +246,7 @@ tr.total td{font-weight:700;border-bottom:none}
     <div class="panel">
       <div class="row" style="justify-content:space-between;margin-bottom:10px">
         <div class="seg" role="tablist" id="perSel"><button type="button" data-per="dia" aria-selected="true" data-i18n="pDay"></button><button type="button" data-per="semana" aria-selected="false" data-i18n="pWeek"></button><button type="button" data-per="mes" aria-selected="false" data-i18n="pMonth"></button></div>
-        <span class="exp"><select id="expPer" aria-label="período"><option value="dia" data-i18n="pDay"></option><option value="semana" data-i18n="pWeek"></option><option value="mes" data-i18n="pMonth"></option><option value="tudo" data-i18n="pAll"></option></select><select id="expWhich" aria-label="qual"></select><button type="button" id="expGo" class="primary" data-i18n="exportX"></button></span>
+        <span class="exp"><select id="expPer" aria-label="período"><option value="dia" data-i18n="pDay"></option><option value="semana" data-i18n="pWeek"></option><option value="mes" data-i18n="pMonth"></option><option value="tudo" data-i18n="pAll"></option></select><select id="expWhich" aria-label="qual"></select><button type="button" id="expGo" class="primary" data-i18n="exportX"></button><button type="button" id="expPdf" data-i18n="exportPdf"></button></span>
       </div>
       <div class="tbl-wrap" id="weeksTable"></div>
       <p class="note" data-i18n="summaryNote"></p>
@@ -335,10 +338,10 @@ const PAGAMENTO_INFO = {
    ============================================================ */
 const I18N = {
  pt:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Salvar", declaredLbl:"Tickets no cabeçalho", tEdited:"Report atualizado", tTicket10:"Cada ticket precisa ter 10 números", change:"trocar",
-  pAll:"Tudo", exportX:"Baixar planilha", tExported:"Planilha baixada",
+  pAll:"Tudo", exportX:"Baixar planilha", exportPdf:"Baixar PDF", tExported:"Planilha baixada",
   xl:{title:"Resumo para a empresa", tech:"Técnico", period:"Período", made:"Gerado em", tickets:"Tickets", sSummary:"Resumo", sDays:"Por dia", sTickets:"Tickets"},
   planLine:(u,b)=>`Plano mensal: US$ ${u} (ou R$ ${b} por PIX)`, payZelle:z=>`Envie pelo Zelle para <b>${z}</b>.`, payPix:"Peça a chave PIX no WhatsApp abaixo.", payReceipt:"Depois de pagar, mande o comprovante no WhatsApp. Liberamos 30 dias assim que confirmarmos.",
-  trialLeft:(n,d)=>`🎁 Teste grátis: ${n<=1?"último dia":`faltam ${n} dias`} (até ${d}).`, accessLeft:(n,d)=>`Seu acesso vence em ${n} dia(s) (${d}).`, howPay:"Como pagar",
+  trialLeft:(n,d)=>`🎁 Teste grátis: ${n<=1?"último dia":`faltam ${n} dias`} (até ${d}).`, accessLeft:(n,d)=>n<=0?`Seu plano vence hoje (${d}).`:`📅 Seu plano vence em ${n} dia${n>1?"s":""} — ${d}.`, howPay:"Como pagar",
   wTitleTrial:"Seu teste grátis acabou", wTrial:d=>`Seus 14 dias grátis terminaram em ${d}. Seus dados continuam salvos — é só pagar para continuar usando.`,
   wcTitle:"Bem-vindo ao Locator! 👋", wcTrialTxt:d=>`Você tem 14 dias grátis, até ${d}.`, wc1:"Na aba Semana, cole o report do dia (copiado do WhatsApp) e escolha o dia.", wc2:"Confira os tickets e toque em Salvar. O app calcula o ganho do dia e da semana.", wc3:"Quando a empresa pagar, digite o valor em “Empresa pagou” para ver a diferença.", wc4:"Na aba Resumo, veja por dia, semana ou mês e baixe a planilha para mandar para a empresa.", wcOk:"Entendi, vamos começar",
   tagline:"Tickets, ft e pagamentos do técnico de locate", login:"Entrar", signup:"Criar conta", email:"E-mail", password:"Senha", passwordNew:"Senha (mínimo 6)", forgot:"Esqueci a senha",
@@ -377,10 +380,10 @@ const I18N = {
   newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
   csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
  en:{ editTickets:"Edit tickets", cancel:"Cancel", saveEdit:"Save", declaredLbl:"Tickets in header", tEdited:"Report updated", tTicket10:"Each ticket needs 10 digits", change:"change",
-  pAll:"All", exportX:"Download spreadsheet", tExported:"Spreadsheet downloaded",
+  pAll:"All", exportX:"Download spreadsheet", exportPdf:"Download PDF", tExported:"Spreadsheet downloaded",
   xl:{title:"Summary for the company", tech:"Technician", period:"Period", made:"Created on", tickets:"Tickets", sSummary:"Summary", sDays:"By day", sTickets:"Tickets"},
   planLine:(u,b)=>`Monthly plan: US$ ${u} (or R$ ${b} by PIX)`, payZelle:z=>`Send by Zelle to <b>${z}</b>.`, payPix:"Ask for the PIX key on WhatsApp below.", payReceipt:"After paying, send the receipt on WhatsApp. We unlock 30 days as soon as we confirm it.",
-  trialLeft:(n,d)=>`🎁 Free trial: ${n<=1?"last day":`${n} days left`} (until ${d}).`, accessLeft:(n,d)=>`Your access ends in ${n} day(s) (${d}).`, howPay:"How to pay",
+  trialLeft:(n,d)=>`🎁 Free trial: ${n<=1?"last day":`${n} days left`} (until ${d}).`, accessLeft:(n,d)=>n<=0?`Your plan ends today (${d}).`:`📅 Your plan renews in ${n} day${n>1?"s":""} — ${d}.`, howPay:"How to pay",
   wTitleTrial:"Your free trial ended", wTrial:d=>`Your 14 free days ended on ${d}. Your data is still saved — just pay to keep using it.`,
   wcTitle:"Welcome to Locator! 👋", wcTrialTxt:d=>`You have 14 free days, until ${d}.`, wc1:"In the Week tab, paste the day's report (copied from WhatsApp) and choose the day.", wc2:"Check the tickets and tap Save. The app calculates the day and the week.", wc3:"When the company pays, type the amount in “Company paid” to see the difference.", wc4:"In the Summary tab, see by day, week or month and download the spreadsheet to send to the company.", wcOk:"Got it, let's start",
   tagline:"Tickets, footage and pay for locate technicians", login:"Log in", signup:"Create account", email:"Email", password:"Password", passwordNew:"Password (min. 6)", forgot:"Forgot password",
@@ -419,10 +422,10 @@ const I18N = {
   newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
   csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
  es:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Guardar", declaredLbl:"Tickets en el encabezado", tEdited:"Report actualizado", tTicket10:"Cada ticket necesita 10 números", change:"cambiar",
-  pAll:"Todo", exportX:"Descargar planilla", tExported:"Planilla descargada",
+  pAll:"Todo", exportX:"Descargar planilla", exportPdf:"Descargar PDF", tExported:"Planilla descargada",
   xl:{title:"Resumen para la empresa", tech:"Técnico", period:"Período", made:"Generado el", tickets:"Tickets", sSummary:"Resumen", sDays:"Por día", sTickets:"Tickets"},
   planLine:(u,b)=>`Plan mensual: US$ ${u} (o R$ ${b} por PIX)`, payZelle:z=>`Envía por Zelle a <b>${z}</b>.`, payPix:"Pide la llave PIX por WhatsApp abajo.", payReceipt:"Después de pagar, manda el comprobante por WhatsApp. Activamos 30 días en cuanto lo confirmemos.",
-  trialLeft:(n,d)=>`🎁 Prueba gratis: ${n<=1?"último día":`quedan ${n} días`} (hasta ${d}).`, accessLeft:(n,d)=>`Tu acceso vence en ${n} día(s) (${d}).`, howPay:"Cómo pagar",
+  trialLeft:(n,d)=>`🎁 Prueba gratis: ${n<=1?"último día":`quedan ${n} días`} (hasta ${d}).`, accessLeft:(n,d)=>n<=0?`Tu plan vence hoy (${d}).`:`📅 Tu plan vence en ${n} día${n>1?"s":""} — ${d}.`, howPay:"Cómo pagar",
   wTitleTrial:"Tu prueba gratis terminó", wTrial:d=>`Tus 14 días gratis terminaron el ${d}. Tus datos siguen guardados — solo paga para seguir usándola.`,
   wcTitle:"¡Bienvenido a Locator! 👋", wcTrialTxt:d=>`Tienes 14 días gratis, hasta ${d}.`, wc1:"En la pestaña Semana, pega el report del día (copiado de WhatsApp) y elige el día.", wc2:"Revisa los tickets y toca Guardar. La app calcula el día y la semana.", wc3:"Cuando la empresa pague, escribe el monto en “Empresa pagó” para ver la diferencia.", wc4:"En la pestaña Resumen, mira por día, semana o mes y descarga la planilla para mandar a la empresa.", wcOk:"Entendido, empecemos",
   tagline:"Tickets, pies y pagos del técnico de locate", login:"Entrar", signup:"Crear cuenta", email:"Correo", password:"Contraseña", passwordNew:"Contraseña (mínimo 6)", forgot:"Olvidé mi contraseña",
@@ -673,7 +676,7 @@ function fillExp(){
 }
 function monthName(m){ const loc={pt:"pt-BR",en:"en-US",es:"es-ES"}[lang]||"pt-BR"; const nm=new Date(+m.slice(0,4),+m.slice(5,7)-1,1).toLocaleDateString(loc,{month:"long",year:"numeric"}); return nm.charAt(0).toUpperCase()+nm.slice(1); }
 function loadXLSX(){ return window.XLSX?Promise.resolve():new Promise((ok,ko)=>{ const sc=document.createElement("script"); sc.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); }); }
-async function exportXLSX(){
+async function exportXLSX(fmt){
   const per=$("#expPer").value, which=$("#expWhich").value;
   let inP, label;
   if(per==="dia"){ inP=d=>d===which; label=dFull(which); }
@@ -695,7 +698,8 @@ async function exportXLSX(){
   const tick=[T("csvHead")]; reps.forEach(r=>{ const c=repCalc(r), ws=weekStart(r.date), dw=DOW(parseISO(r.date).getDay());
     r.tickets.forEach(t=>{ const k=cotas(t.ft); tick.push([weekNum(ws),r.date,dw,r.loc,t.ticket,+t.ft||0,t.flag,k,c.rate,rules.ticket,k*c.rate,rules.ticket+k*c.rate]); });
     const ex=c.n-r.tickets.length; if(ex>0) tick.push([weekNum(ws),r.date,dw,r.loc,`+${ex} ${T("noFt")}`,0,"",0,c.rate,ex*rules.ticket,0,ex*rules.ticket]); });
-  const fname=`locator-${(name||"tecnico").replace(/\s+/g,"-").toLowerCase()}-${per}-${per==="tudo"?todayISO():which}`;
+  const fname0=`locator-${(name||"tecnico").replace(/\s+/g,"-").toLowerCase()}-${per}-${per==="tudo"?todayISO():which}`; const fname=fname0;
+  if(fmt==="pdf") return exportPDF(resumo, diasA, tick, fname, name, label);
   try{
     await loadXLSX();
     const wb=XLSX.utils.book_new();
@@ -709,6 +713,32 @@ async function exportXLSX(){
     const blob=new Blob(["\ufeff"+L.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname+".csv"; document.body.appendChild(a); a.click(); a.remove();
   }
   toast(T("tExported"));
+}
+function loadPDF(){ if(window.jspdf?.jsPDF?.API?.autoTable) return Promise.resolve(); const add=src=>new Promise((ok,ko)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); });
+  return (window.jspdf?Promise.resolve():add("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js")).then(()=>add("https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js")); }
+async function exportPDF(resumo, diasA, tick, fname, name, label){
+  const X=T("xl"); const fm=v=>typeof v==="number"?(Number.isInteger(v)?v.toLocaleString(LOCALE()):v.toLocaleString(LOCALE(),{minimumFractionDigits:2,maximumFractionDigits:2})):String(v??"");
+  const moneyRows=new Set([T("earned"),T("car"),T("toReceive"),T("paid"),T("difference")]);
+  const sumRows=resumo.slice(5).map(r=>[r[0], moneyRows.has(r[0])?money(r[1]):fm(r[1])]);
+  try{
+    await loadPDF();
+    const doc=new window.jspdf.jsPDF({unit:"pt",format:"letter"}); const W=doc.internal.pageSize.getWidth();
+    doc.setFillColor(224,96,15); doc.rect(0,0,W,6,"F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Locator",40,46);
+    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(90);
+    doc.text(`${X.title}`,40,64); doc.text(`${X.tech}: ${name}`,40,80); doc.text(`${X.period}: ${label}`,40,95); doc.text(`${X.made}: ${dFull(todayISO())}`,40,110);
+    doc.setTextColor(0);
+    const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}};
+    doc.autoTable({...base, startY:126, head:[[X.sSummary,""]], body:sumRows, columnStyles:{1:{halign:"right"}}, tableWidth:300});
+    doc.autoTable({...base, startY:doc.lastAutoTable.finalY+18, head:[diasA[0]], body:diasA.slice(1).map(r=>r.map((v,i)=>i===6?money(+v||0):fm(v))), columnStyles:{3:{halign:"right"},4:{halign:"right"},5:{halign:"right"},6:{halign:"right"}}});
+    doc.autoTable({...base, styles:{fontSize:7.5,cellPadding:3}, startY:doc.lastAutoTable.finalY+18, head:[tick[0]], body:tick.slice(1).map(r=>r.map(fm))});
+    doc.save(fname+".pdf"); toast(T("tExported"));
+  }catch(e){
+    const tbl=(h,rows)=>`<table><thead><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${esc(fm(v))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    const w=window.open("","_blank"); if(!w) return toast(T("tErr"));
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(fname)}</title><style>body{font:12px Arial;margin:24px}h1{color:#e0600f;margin:0}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left}th{background:#e0600f;color:#fff}</style><h1>Locator</h1><p>${esc(X.title)}<br>${esc(X.tech)}: ${esc(name)}<br>${esc(X.period)}: ${esc(label)}<br>${esc(X.made)}: ${dFull(todayISO())}</p>${tbl([X.sSummary,""],sumRows)}${tbl(diasA[0],diasA.slice(1))}${tbl(tick[0],tick.slice(1))}<script>setTimeout(()=>print(),300)<\/script>`);
+    w.document.close();
+  }
 }
 function renderCaixa(){
   const m=caixaMoves(), bal=m.length?m[m.length-1].bal:0;
@@ -781,13 +811,13 @@ function payHTML(){
   <p class="note" style="margin:0">${T("payReceipt")}</p>
   <a class="wa" href="${waLink()}" target="_blank" rel="noopener">💬 WhatsApp (954) 601-6730</a></div>`;
 }
-function renderTrial(){
+function updateFab(){ const a=$("#waFab"); if(!a) return; const m={pt:"Olá! Tenho uma dúvida sobre o Locator.",en:"Hi! I have a question about Locator.",es:"¡Hola! Tengo una pregunta sobre Locator."}[lang]+(perfil?.email?` (${perfil.email})`:""); a.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(m)}`; }
+function renderTrial(){ updateFab();
   const el=$("#trialBar"); if(!el) return;
   if(!perfil || perfil.admin || !perfil.acesso_ate){ el.hidden=true; return; }
   const left=Math.round((parseISO(perfil.acesso_ate)-parseISO(todayISO()))/864e5)+1;
   const isTest=perfil.plano==="teste";
-  if(!isTest && left>7){ el.hidden=true; return; }
-  el.hidden=false;
+  el.hidden=false; el.classList.toggle("warn", left<=5);
   el.innerHTML=`<span>${isTest?T("trialLeft")(left, dFull(perfil.acesso_ate)):T("accessLeft")(left, dFull(perfil.acesso_ate))}</span><details><summary>${T("howPay")}</summary>${payHTML()}</details>`;
 }
 function renderWait(){
@@ -911,7 +941,8 @@ document.addEventListener("click", async e=>{
     return setAccess(p.id,{status:"ativo", plano:"mensal", acesso_ate:addDays(base,30)}, T("tLib")(p.nome, dFull(addDays(base,30)))); }
   const lf=e.target.closest("[data-libfree]"); if(lf) return setAccess(lf.dataset.libfree,{status:"ativo", acesso_ate:null},T("tLibFree"));
   const bl=e.target.closest("[data-block]"); if(bl) return setAccess(bl.dataset.block,{status:"bloqueado"},T("tBlocked"));
-  if(e.target.id==="expGo"){ exportXLSX(); return; }
+  if(e.target.id==="expGo"){ exportXLSX("xlsx"); return; }
+  if(e.target.id==="expPdf"){ exportXLSX("pdf"); return; }
   if(e.target.id==="exportBtn"){
     const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
     const L=[T("csvHead").map(q).join(",")];
@@ -969,5 +1000,6 @@ $("#cxForm").addEventListener("submit", async e=>{
 $("#pDate").value=todayISO(); $("#cxDate").value=todayISO();
 boot().then(()=>{ if(/signup/.test(location.search+location.hash) && !$("#scrAuth").hidden) $("#swSign").click(); });
 </script>
+<a class="wafab" id="waFab" href="https://wa.me/19546016730" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/></svg></a>
 </body>
 </html>
