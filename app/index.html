@@ -284,6 +284,7 @@ tr.total td{font-weight:700;border-bottom:none}
         <label for="rSize"><span data-i18n="blockSize"></span><span class="in"><input id="rSize" type="number" min="1" step="1"> ft</span></label>
         <label for="rCar"><span data-i18n="carWeek"></span><span class="in">$<input id="rCar" type="number" min="0" step="1"></span></label>
         <label for="rStart"><span data-i18n="startWeek1"></span><span class="in"><input id="rStart" type="date"></span></label>
+        <label for="rClose"><span data-i18n="weekClose"></span><span class="in"><select id="rClose"></select></span></label>
       </div>
       <h2 style="margin-top:20px" data-i18n="ratePeriods"></h2>
       <div class="tbl-wrap" id="ratesTable"></div>
@@ -338,7 +339,7 @@ const PAGAMENTO_INFO = {
    ============================================================ */
 const I18N = {
  pt:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Salvar", declaredLbl:"Tickets no cabeçalho", tEdited:"Report atualizado", tTicket10:"Cada ticket precisa ter 10 números", change:"trocar",
-  pAll:"Tudo", exportX:"Baixar planilha", exportPdf:"Baixar PDF", tExported:"Planilha baixada",
+  pAll:"Tudo", exportX:"Baixar planilha", exportPdf:"Baixar PDF", tExported:"Planilha baixada", waTalk:"Falar no WhatsApp",
   xl:{title:"Resumo para a empresa", tech:"Técnico", period:"Período", made:"Gerado em", tickets:"Tickets", sSummary:"Resumo", sDays:"Por dia", sTickets:"Tickets"},
   planLine:(u,b)=>`Plano mensal: US$ ${u} (ou R$ ${b} por PIX)`, payZelle:z=>`Envie pelo Zelle para <b>${z}</b>.`, payPix:"Peça a chave PIX no WhatsApp abaixo.", payReceipt:"Depois de pagar, mande o comprovante no WhatsApp. Liberamos 30 dias assim que confirmarmos.",
   trialLeft:(n,d)=>`🎁 Teste grátis: ${n<=1?"último dia":`faltam ${n} dias`} (até ${d}).`, accessLeft:(n,d)=>n<=0?`Seu plano vence hoje (${d}).`:`📅 Seu plano vence em ${n} dia${n>1?"s":""} — ${d}.`, howPay:"Como pagar",
@@ -351,7 +352,7 @@ const I18N = {
   summaryNote:"A receber = ganho − desconto do carro. Diferença = pago − a receber. Toque numa semana para abrir.",
   cashBalance:"Saldo do caixa", cashNote:"Entra o que a empresa pagou em cada semana. Sai o que você gasta (gasolina, material, comida…).",
   cashAdd:"Lançar no caixa", expense:"Gasto", income:"Entrada", add:"Lançar", moves:"Movimentos", descPh:"Descrição (ex.: gasolina)",
-  payRules:"Regras de pagamento", perTicket:"Cada ticket", blockSize:"Tamanho da cota", carWeek:"Desconto do carro / semana", startWeek1:"Início (semana 1)",
+  payRules:"Regras de pagamento", perTicket:"Cada ticket", blockSize:"Tamanho da cota", carWeek:"Desconto do carro / semana", startWeek1:"Início (semana 1)", weekClose:"A empresa fecha a semana no(a)", dowFull:["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"],
   ratePeriods:"Valor da cota por período", addPeriod:"Adicionar período",
   rulesNote:"A metragem é calculada ticket por ticket, nunca somada: ft ÷ tamanho da cota, o resto é descartado. Cada cota vale o valor do período da data do report.",
   myData:"Meus dados", saveMe:"Salvar meus dados", fAll:"Todos", fPending:"Aguardando", fActive:"Ativos", fBlocked:"Bloqueados",
@@ -380,7 +381,7 @@ const I18N = {
   newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
   csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
  en:{ editTickets:"Edit tickets", cancel:"Cancel", saveEdit:"Save", declaredLbl:"Tickets in header", tEdited:"Report updated", tTicket10:"Each ticket needs 10 digits", change:"change",
-  pAll:"All", exportX:"Download spreadsheet", exportPdf:"Download PDF", tExported:"Spreadsheet downloaded",
+  pAll:"All", exportX:"Download spreadsheet", exportPdf:"Download PDF", tExported:"Spreadsheet downloaded", waTalk:"Chat on WhatsApp",
   xl:{title:"Summary for the company", tech:"Technician", period:"Period", made:"Created on", tickets:"Tickets", sSummary:"Summary", sDays:"By day", sTickets:"Tickets"},
   planLine:(u,b)=>`Monthly plan: US$ ${u} (or R$ ${b} by PIX)`, payZelle:z=>`Send by Zelle to <b>${z}</b>.`, payPix:"Ask for the PIX key on WhatsApp below.", payReceipt:"After paying, send the receipt on WhatsApp. We unlock 30 days as soon as we confirm it.",
   trialLeft:(n,d)=>`🎁 Free trial: ${n<=1?"last day":`${n} days left`} (until ${d}).`, accessLeft:(n,d)=>n<=0?`Your plan ends today (${d}).`:`📅 Your plan renews in ${n} day${n>1?"s":""} — ${d}.`, howPay:"How to pay",
@@ -393,7 +394,7 @@ const I18N = {
   summaryNote:"To receive = earned − car deduction. Difference = paid − to receive. Tap a week to open it.",
   cashBalance:"Cash balance", cashNote:"In: what the company paid each week. Out: what you spend (gas, supplies, food…).",
   cashAdd:"Add to cash", expense:"Expense", income:"Income", add:"Add", moves:"Entries", descPh:"Description (e.g. gas)",
-  payRules:"Pay rules", perTicket:"Per ticket", blockSize:"Footage block size", carWeek:"Car deduction / week", startWeek1:"Start (week 1)",
+  payRules:"Pay rules", perTicket:"Per ticket", blockSize:"Footage block size", carWeek:"Car deduction / week", startWeek1:"Start (week 1)", weekClose:"Company closes the week on", dowFull:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
   ratePeriods:"Block value by period", addPeriod:"Add period",
   rulesNote:"Footage is calculated per ticket, never added up: ft ÷ block size, remainder dropped. Each block is worth the rate in effect on the report date.",
   myData:"My info", saveMe:"Save my info", fAll:"All", fPending:"Waiting", fActive:"Active", fBlocked:"Blocked",
@@ -422,7 +423,7 @@ const I18N = {
   newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
   csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
  es:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Guardar", declaredLbl:"Tickets en el encabezado", tEdited:"Report actualizado", tTicket10:"Cada ticket necesita 10 números", change:"cambiar",
-  pAll:"Todo", exportX:"Descargar planilla", exportPdf:"Descargar PDF", tExported:"Planilla descargada",
+  pAll:"Todo", exportX:"Descargar planilla", exportPdf:"Descargar PDF", tExported:"Planilla descargada", waTalk:"Hablar por WhatsApp",
   xl:{title:"Resumen para la empresa", tech:"Técnico", period:"Período", made:"Generado el", tickets:"Tickets", sSummary:"Resumen", sDays:"Por día", sTickets:"Tickets"},
   planLine:(u,b)=>`Plan mensual: US$ ${u} (o R$ ${b} por PIX)`, payZelle:z=>`Envía por Zelle a <b>${z}</b>.`, payPix:"Pide la llave PIX por WhatsApp abajo.", payReceipt:"Después de pagar, manda el comprobante por WhatsApp. Activamos 30 días en cuanto lo confirmemos.",
   trialLeft:(n,d)=>`🎁 Prueba gratis: ${n<=1?"último día":`quedan ${n} días`} (hasta ${d}).`, accessLeft:(n,d)=>n<=0?`Tu plan vence hoy (${d}).`:`📅 Tu plan vence en ${n} día${n>1?"s":""} — ${d}.`, howPay:"Cómo pagar",
@@ -435,7 +436,7 @@ const I18N = {
   summaryNote:"Por cobrar = ganado − descuento del carro. Diferencia = pagado − por cobrar. Toca una semana para abrirla.",
   cashBalance:"Saldo de caja", cashNote:"Entra lo que la empresa pagó cada semana. Sale lo que gastas (gasolina, material, comida…).",
   cashAdd:"Registrar en caja", expense:"Gasto", income:"Ingreso", add:"Registrar", moves:"Movimientos", descPh:"Descripción (ej.: gasolina)",
-  payRules:"Reglas de pago", perTicket:"Cada ticket", blockSize:"Tamaño del bloque", carWeek:"Descuento del carro / semana", startWeek1:"Inicio (semana 1)",
+  payRules:"Reglas de pago", perTicket:"Cada ticket", blockSize:"Tamaño del bloque", carWeek:"Descuento del carro / semana", startWeek1:"Inicio (semana 1)", weekClose:"La empresa cierra la semana el", dowFull:["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],
   ratePeriods:"Valor del bloque por período", addPeriod:"Agregar período",
   rulesNote:"Los pies se calculan ticket por ticket, nunca sumados: pies ÷ tamaño del bloque, el resto se descarta. Cada bloque vale lo del período de la fecha del report.",
   myData:"Mis datos", saveMe:"Guardar mis datos", fAll:"Todos", fPending:"Esperando", fActive:"Activos", fBlocked:"Bloqueados",
@@ -480,7 +481,7 @@ function applyStatic(){
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt = n => (Math.round(n*100)/100).toLocaleString(LOCALE());
-const money2 = n => "$" + (+n).toLocaleString(LOCALE(),{minimumFractionDigits:2,maximumFractionDigits:2});
+const money2 = n => "$" + (+n).toLocaleString(LOCALE(),{minimumFractionDigits:0,maximumFractionDigits:2});
 const money = n => (n<0?"−$":"$") + Math.abs(Math.round(n*100)/100).toLocaleString(LOCALE(),{minimumFractionDigits:0,maximumFractionDigits:2});
 const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const parseISO = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
@@ -489,14 +490,14 @@ const todayISO = () => iso(new Date());
 const DOW = i => T("dow")[i];
 const dLabel = s => { const d=parseISO(s), m=T("mon")[d.getMonth()]; return lang==="en" ? `${m} ${d.getDate()}` : `${d.getDate()} ${m}`; };
 const dFull = s => s ? `${dLabel(s)} ${s.slice(0,4)}` : "—";
-const weekStart = s => { const d=parseISO(s); d.setDate(d.getDate()-d.getDay()); return iso(d); };
+const weekStart = s => { const wd=(typeof rules!=="undefined"&&rules.wd)||0; const d=parseISO(s); d.setDate(d.getDate()-((d.getDay()-wd+7)%7)); return iso(d); };
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2800); }
 function show(id){ ["scrLang","scrAuth","scrWait","scrApp"].forEach(x=>$("#"+x).hidden = x!==id); }
 
 const sb = (window.supabase && !SUPABASE_URL.startsWith("COLE")) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 let me=null, perfil=null;
-let rules = {ticket:10, size:501, car:150, start:null, rates:[{from:"2000-01-01",block:5}]};
+let rules = {ticket:10, size:501, car:150, start:null, wd:0, rates:[{from:"2000-01-01",block:5}]};
 let reports=[], weeks={}, caixa=[], perfis=[], drafts=[], open=new Set(), curWeek=weekStart(todayISO()), pendingDel=null;
 
 /* ---------- regras de cálculo ---------- */
@@ -571,20 +572,20 @@ function ticketTable(r, dupSet){
 function renderWeek(){
   const W=weekData(curWeek), n=weekNum(curWeek);
   $("#wTitle").textContent = n>=1?`${T("week")} ${n}`:T("beforeStart");
-  $("#wRange").textContent = `${DOW(0)} ${dLabel(curWeek)} – ${DOW(6)} ${dLabel(addDays(curWeek,6))}`;
+  $("#wRange").textContent = `${DOW(rules.wd)} ${dLabel(curWeek)} – ${DOW((rules.wd+6)%7)} ${dLabel(addDays(curWeek,6))}`;
   const dc=W.diff==null?"":(W.diff<-0.005?"neg":"pos");
   $("#wTiles").innerHTML=`
     <div class="tile"><small>${T("earned")} · ${W.tk} ${T("tickets")}</small><b>${money(W.ganho)}</b></div>
     <div class="tile"><small>${T("car")}</small><b>${W.carro?money(-W.carro):"$0"}</b></div>
     <div class="tile hl"><small>${T("toReceive")}</small><b>${money(W.receber)}</b></div>
-    <div class="tile"><small>${T("companyPaid")}</small><input type="text" id="paidInput" inputmode="decimal" placeholder="$0.00" value="${W.paid==null?"":money2(W.paid)}" aria-label="${T("companyPaid")}"></div>
+    <div class="tile"><small>${T("companyPaid")}</small><input type="text" id="paidInput" inputmode="decimal" placeholder="$0" value="${W.paid==null?"":money2(W.paid)}" aria-label="${T("companyPaid")}"></div>
     <div class="tile wide"><small>${T("difference")}</small><b class="${dc}">${W.diff==null?"—":(W.diff>0?"+":"")+money(W.diff)}</b></div>`;
   const byDay={}; W.reps.forEach(r=>(byDay[r.date]=byDay[r.date]||[]).push(r));
   $("#days").innerHTML=[0,1,2,3,4,5,6].map(i=>addDays(curWeek,i)).map((d,i)=>{
     const reps=byDay[d]||[];
-    if(!reps.length) return `<div class="day off"><div class="day-sum"><span class="d"><b>${DOW(i)}</b> <small>${dLabel(d)}</small></span><span class="note">${T("noReport")}</span><span></span></div></div>`;
+    if(!reps.length) return `<div class="day off"><div class="day-sum"><span class="d"><b>${DOW((rules.wd+i)%7)}</b> <small>${dLabel(d)}</small></span><span class="note">${T("noReport")}</span><span></span></div></div>`;
     const tot=reps.reduce((a,r)=>a+repCalc(r).total,0), tk=reps.reduce((a,r)=>a+tCount(r),0), isOpen=open.has(d);
-    return `<div class="day"><button type="button" class="day-sum" data-day="${d}" aria-expanded="${isOpen}"><span class="d"><b>${DOW(i)}</b> <small>${dLabel(d)}</small></span><span class="note">${tk} ${T("tickets")}${reps.length>1?` · ${reps.length} ${T("reports")}`:""}${[...new Set(reps.map(r=>r.loc).filter(Boolean))].map(l=>` · 📍 ${esc(l)}`).join("")}</span><span class="amt">${money(tot)}</span></button>
+    return `<div class="day"><button type="button" class="day-sum" data-day="${d}" aria-expanded="${isOpen}"><span class="d"><b>${DOW((rules.wd+i)%7)}</b> <small>${dLabel(d)}</small></span><span class="note">${tk} ${T("tickets")}${reps.length>1?` · ${reps.length} ${T("reports")}`:""}${[...new Set(reps.map(r=>r.loc).filter(Boolean))].map(l=>` · 📍 ${esc(l)}`).join("")}</span><span class="amt">${money(tot)}</span></button>
       ${isOpen?`<div class="day-body">${reps.map(r=>`<div><div class="rep-head"><span>${esc(r.tech)}</span><span><label>📍 <input type="text" list="locList" data-editloc="${r.id}" value="${esc(r.loc)}" placeholder="${T("locPh")}" style="width:170px"></label> <label>${T("changeDay")} <input type="date" data-edit="${r.id}" value="${r.date}"></label>
         <button type="button" class="link" data-editrep="${r.id}">✏️ ${T("editTickets")}</button> <button type="button" class="link danger" data-del="${r.id}">${pendingDel===r.id?T("confirmDel"):T("del")}</button></span></div>${editRep===r.id?editorHTML(r):ticketTable(r)}</div>`).join("")}</div>`:""}</div>`;
   }).join("");
@@ -747,6 +748,7 @@ function renderCaixa(){
     [...m].reverse().map(x=>`<tr><td class="num">${dLabel(x.date)}</td><td>${esc(x.desc)}</td><td class="r num ${x.amount<0?"neg":"pos"}">${x.amount>0?"+":""}${money(x.amount)}</td><td class="r num">${money(x.bal)}</td><td class="r">${x.auto?`<span class="note">${T("weekTag")}</span>`:`<button type="button" class="link danger" data-cxdel="${x.id}">${pendingDel===x.id?T("confirm"):T("del")}</button>`}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noMoves")}</div>`;
 }
 function renderRegras(){
+  { const sc=$("#rClose"); sc.innerHTML=[0,1,2,3,4,5,6].map(i=>`<option value="${i}">${T("dowFull")[i]}</option>`).join(""); sc.value=String(((rules.wd||0)+6)%7); }
   for(const [id,k] of [["rTicket","ticket"],["rSize","size"],["rCar","car"],["rStart","start"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=rules[k]??""; }
   const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from));
   $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th><th class="r">${T("blockValue")}</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td><td class="r num">${money(r.block)}</td><td class="r">${rs.length>1?`<button type="button" class="link danger" data-ratedel="${r.from}">${T("remove")}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
@@ -775,7 +777,7 @@ async function loadAll(){
     sb.from("caixa").select("*").eq("user_id",uid).order("dia"),
   ]);
   for(const x of [rg,rp,sm,cx]) if(x.error) throw x.error;
-  if(rg.data){ const d=rg.data; rules={ticket:+d.ticket, size:+d.cota_ft, car:+d.carro, start:d.inicio, rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!rules.rates.length) rules.rates=[{from:"2000-01-01",block:5}]; }
+  if(rg.data){ const d=rg.data; rules={ticket:+d.ticket, size:+d.cota_ft, car:+d.carro, start:d.inicio, wd:+(d.semana_inicio||0), rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!rules.rates.length) rules.rates=[{from:"2000-01-01",block:5}]; }
   reports=(rp.data||[]).map(r=>({id:r.id, date:r.dia, tech:r.tecnico, declared:r.declarados, loc:r.local||"", tickets:r.tickets||[]}));
   renderLocList();
   weeks={}; (sm.data||[]).forEach(w=>weeks[w.inicio]={paid:w.pago==null?null:+w.pago, paidDate:w.pago_em});
@@ -783,7 +785,7 @@ async function loadAll(){
   renderAll();
 }
 async function saveRules(){
-  const {error}=await sb.from("regras").upsert({user_id:me.id, ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, inicio:rules.start||null, valores:rules.rates.map(r=>({desde:r.from, valor:r.block})), atualizado:new Date().toISOString()});
+  const {error}=await sb.from("regras").upsert({user_id:me.id, ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, inicio:rules.start||null, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block})), atualizado:new Date().toISOString()});
   error?err(error,T("tErr")):toast(T("tRules"));
 }
 async function loadAdmin(){
@@ -809,7 +811,7 @@ function payHTML(){
   <div class="opt"><b>🇺🇸 Zelle — US$ ${PRECO_USD}</b>${T("payZelle")(esc(ZELLE))}</div>
   <div class="opt"><b>🇧🇷 PIX — R$ ${PRECO_BRL}</b>${T("payPix")}</div>
   <p class="note" style="margin:0">${T("payReceipt")}</p>
-  <a class="wa" href="${waLink()}" target="_blank" rel="noopener">💬 WhatsApp (954) 601-6730</a></div>`;
+  <a class="wa" href="${waLink()}" target="_blank" rel="noopener">💬 ${T("waTalk")}</a></div>`;
 }
 function updateFab(){ const a=$("#waFab"); if(!a) return; const m={pt:"Olá! Tenho uma dúvida sobre o Locator.",en:"Hi! I have a question about Locator.",es:"¡Hola! Tengo una pregunta sobre Locator."}[lang]+(perfil?.email?` (${perfil.email})`:""); a.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(m)}`; }
 function renderTrial(){ updateFab();
@@ -971,6 +973,7 @@ document.addEventListener("change", async e=>{
   }
   if(e.target.id==="admFilter"){ renderAdmin(); return; }
   if(e.target.id==="expPer"){ fillExp(); return; }
+  if(e.target.id==="rClose"){ rules={...rules, wd:(+e.target.value+1)%7}; curWeek=weekStart(curWeek); renderAll(); saveRules(); return; }
   const map={rTicket:"ticket",rSize:"size",rCar:"car",rStart:"start"};
   if(map[e.target.id]){ const k=map[e.target.id]; let v=e.target.value;
     if(k!=="start"){ v=parseFloat(v); if(!(v>=0)||(k==="size"&&!(v>=1))) return; } else if(!v) v=null;
