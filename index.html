@@ -87,6 +87,8 @@ h2{font-size:clamp(26px,3.4vw,36px);letter-spacing:-.02em;line-height:1.1;margin
 .card li{padding:6px 0 6px 28px;position:relative}
 .card li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:800}
 .how-pay{color:var(--muted)}
+.brl{margin:6px 0 0;color:var(--muted);font-size:15px}
+.wa{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#25d366;color:#fff;border-radius:10px;padding:12px 18px;font-weight:700;text-decoration:none}
 .how-pay ol{padding-left:20px;margin:10px 0 0}
 .how-pay li{margin:6px 0}
 
@@ -170,7 +172,7 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
     <section id="price">
       <div class="price">
         <div class="card">
-          <div class="amt">$19.90 <small data-t="perMonth"></small></div>
+          <span class="eyebrow" data-t="trialBadge"></span><div class="amt" style="margin-top:12px">$19.90 <small data-t="perMonth"></small></div><p class="brl" data-t="brl"></p>
           <ul>
             <li data-t="p1"></li><li data-t="p2"></li><li data-t="p3"></li><li data-t="p4"></li>
           </ul>
@@ -178,7 +180,8 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
         </div>
         <div class="how-pay">
           <h2 data-t="payTitle"></h2>
-          <ol><li data-t="pay1"></li><li data-t="pay2"></li><li data-t="pay3"></li></ol>
+          <ol><li data-t="pay1"></li><li data-t="pay2"></li><li data-t="pay3"></li><li data-t="pay4"></li></ol>
+          <a class="wa" href="https://wa.me/19546016730" target="_blank" rel="noopener">💬 WhatsApp (954) 601-6730</a>
         </div>
       </div>
     </section>
@@ -193,7 +196,7 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
   </main>
 
   <footer>
-    <span>© 2026 JG Pazotto LLC</span>
+    <span>© 2026 JG Pazotto LLC · <a href="https://wa.me/19546016730" target="_blank" rel="noopener">WhatsApp (954) 601-6730</a></span>
     <span><a href="app/" data-t="login"></a> · <a href="https://jgpazotto.com">jgpazotto.com</a></span>
   </footer>
 </div>
@@ -202,7 +205,7 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
 const T={
 en:{login:"Log in",eyebrow:"For locate technicians",h1:"Know exactly what you earned. Every ticket, every foot.",
 lead:"Paste your daily report from WhatsApp. Locator counts your tickets and footage, shows what you earned by day, week and month, and checks whether the company paid you right.",
-ctaSign:"Create account",ctaHow:"How it works",ctaNote:"$19.90 per month · English, Português, Español",
+ctaSign:"Start 14 days free",ctaHow:"How it works",ctaNote:"14 days free · then $19.90 per month · English, Português, Español",
 demoWeek:"Week",demoRange:"Sun – Sat",demoEarned:"Earned",demoCar:"Car",demoReceive:"To receive",demoPaid:"Company paid",demoNote:"Example screen with sample numbers.",
 howTitle:"How it works",howSub:"Three steps, a few seconds a day.",
 s1t:"Paste your report",s1p:"Copy the report you already send on WhatsApp and paste it in the app. Pick the day and the city.",
@@ -215,8 +218,8 @@ f3t:"Personal cash box",f3p:"Log gas, boots, food and other expenses and see you
 f4t:"By location",f4p:"Save the city for each report and see how much you made in each place.",
 f5t:"Your own rules",f5p:"Price per ticket, footage per block, block value and car deduction — you set them.",
 f6t:"On your phone",f6p:"Works in the browser. Add it to your home screen and use it like an app. Download a spreadsheet anytime.",
-perMonth:"/ month",p1:"Unlimited reports",p2:"Day, week and month results",p3:"Payment check and cash box",p4:"Your data is private — only you see it",
-payTitle:"How to start",pay1:"Create your account in the app.",pay2:"Pay the monthly plan by Zelle — the app shows you how.",pay3:"We confirm the payment and unlock your access.",
+perMonth:"/ month", trialBadge:"14 days free", brl:"or R$ 103,90 by PIX (Brazil)",p1:"Unlimited reports",p2:"Day, week and month results",p3:"Payment check and cash box",p4:"Your data is private — only you see it",
+payTitle:"How to start",pay1:"Create your account — you get 14 days free right away, no card needed.",pay2:"The app shows how many days are left in your trial.",pay3:"To keep using it, pay by Zelle (US$ 19.90) or PIX (R$ 103,90).",pay4:"Send the receipt on WhatsApp and we unlock 30 more days.",
 faqTitle:"Questions",
 q1:"Who can see my data?",a1:"Only you. Each technician sees only their own reports, payments and cash box.",
 q2:"My company pays different rates. Does it work?",a2:"Yes. In the Rules tab you set the price per ticket, the footage per block, the block value (with start dates) and the car deduction.",
@@ -224,7 +227,7 @@ q3:"Do I need to download anything?",a3:"No. Open the site on your phone, log in
 q4:"What languages?",a4:"English, Portuguese and Spanish. You choose when you open the app and can change it anytime."},
 pt:{login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Saiba exatamente quanto você ganhou. Cada ticket, cada pé.",
 lead:"Cole o report do dia, copiado do WhatsApp. O Locator conta seus tickets e a metragem, mostra quanto você ganhou por dia, semana e mês, e confere se a empresa pagou certo.",
-ctaSign:"Criar conta",ctaHow:"Como funciona",ctaNote:"$19.90 por mês · English, Português, Español",
+ctaSign:"Começar 14 dias grátis",ctaHow:"Como funciona",ctaNote:"14 dias grátis · depois $19.90 por mês · English, Português, Español",
 demoWeek:"Semana",demoRange:"Dom – Sáb",demoEarned:"Ganho",demoCar:"Carro",demoReceive:"A receber",demoPaid:"Empresa pagou",demoNote:"Tela de exemplo, com números ilustrativos.",
 howTitle:"Como funciona",howSub:"Três passos, poucos segundos por dia.",
 s1t:"Cole o report",s1p:"Copie o report que você já manda no WhatsApp e cole no app. Escolha o dia e a cidade.",
@@ -237,8 +240,8 @@ f3t:"Caixa pessoal",f3p:"Lance gasolina, botas, comida e outros gastos e veja se
 f4t:"Por local",f4p:"Salve a cidade de cada report e veja quanto ganhou em cada lugar.",
 f5t:"Suas regras",f5p:"Valor por ticket, metragem da cota, valor da cota e desconto do carro — você define.",
 f6t:"No celular",f6p:"Funciona no navegador. Adicione à tela de início e use como app. Baixe a planilha quando quiser.",
-perMonth:"/ mês",p1:"Reports ilimitados",p2:"Resultados por dia, semana e mês",p3:"Conferência do pagamento e caixa",p4:"Seus dados são privados — só você vê",
-payTitle:"Como começar",pay1:"Crie sua conta no app.",pay2:"Pague a mensalidade por Zelle — o app mostra como.",pay3:"Confirmamos o pagamento e liberamos seu acesso.",
+perMonth:"/ mês", trialBadge:"14 dias grátis", brl:"ou R$ 103,90 por PIX",p1:"Reports ilimitados",p2:"Resultados por dia, semana e mês",p3:"Conferência do pagamento e caixa",p4:"Seus dados são privados — só você vê",
+payTitle:"Como começar",pay1:"Crie sua conta — você ganha 14 dias grátis na hora, sem cartão.",pay2:"O app mostra quantos dias faltam do seu teste.",pay3:"Para continuar, pague por Zelle (US$ 19.90) ou PIX (R$ 103,90).",pay4:"Mande o comprovante no WhatsApp e liberamos mais 30 dias.",
 faqTitle:"Dúvidas",
 q1:"Quem vê meus dados?",a1:"Só você. Cada técnico vê apenas os próprios reports, pagamentos e caixa.",
 q2:"Minha empresa paga valores diferentes. Funciona?",a2:"Sim. Na aba Regras você define o valor por ticket, a metragem da cota, o valor da cota (com data de início) e o desconto do carro.",
@@ -246,7 +249,7 @@ q3:"Preciso baixar alguma coisa?",a3:"Não. Abra o site no celular, entre e use 
 q4:"Quais idiomas?",a4:"Inglês, português e espanhol. Você escolhe ao abrir o app e pode trocar quando quiser."},
 es:{login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Sabe exactamente cuánto ganaste. Cada ticket, cada pie.",
 lead:"Pega tu report del día, copiado de WhatsApp. Locator cuenta tus tickets y los pies, muestra cuánto ganaste por día, semana y mes, y revisa si la empresa te pagó bien.",
-ctaSign:"Crear cuenta",ctaHow:"Cómo funciona",ctaNote:"$19.90 al mes · English, Português, Español",
+ctaSign:"Empezar 14 días gratis",ctaHow:"Cómo funciona",ctaNote:"14 días gratis · después $19.90 al mes · English, Português, Español",
 demoWeek:"Semana",demoRange:"Dom – Sáb",demoEarned:"Ganado",demoCar:"Carro",demoReceive:"Por cobrar",demoPaid:"Empresa pagó",demoNote:"Pantalla de ejemplo, con números ilustrativos.",
 howTitle:"Cómo funciona",howSub:"Tres pasos, unos segundos al día.",
 s1t:"Pega tu report",s1p:"Copia el report que ya mandas por WhatsApp y pégalo en la app. Elige el día y la ciudad.",
@@ -259,8 +262,8 @@ f3t:"Caja personal",f3p:"Anota gasolina, botas, comida y otros gastos y ve tu sa
 f4t:"Por lugar",f4p:"Guarda la ciudad de cada report y ve cuánto ganaste en cada lugar.",
 f5t:"Tus reglas",f5p:"Precio por ticket, pies por bloque, valor del bloque y descuento del carro — tú decides.",
 f6t:"En tu celular",f6p:"Funciona en el navegador. Agrégala a la pantalla de inicio y úsala como app. Descarga la planilla cuando quieras.",
-perMonth:"/ mes",p1:"Reports ilimitados",p2:"Resultados por día, semana y mes",p3:"Revisión del pago y caja",p4:"Tus datos son privados — solo tú los ves",
-payTitle:"Cómo empezar",pay1:"Crea tu cuenta en la app.",pay2:"Paga el plan mensual por Zelle — la app te muestra cómo.",pay3:"Confirmamos el pago y activamos tu acceso.",
+perMonth:"/ mes", trialBadge:"14 días gratis", brl:"o R$ 103,90 por PIX (Brasil)",p1:"Reports ilimitados",p2:"Resultados por día, semana y mes",p3:"Revisión del pago y caja",p4:"Tus datos son privados — solo tú los ves",
+payTitle:"Cómo empezar",pay1:"Crea tu cuenta — recibes 14 días gratis al instante, sin tarjeta.",pay2:"La app muestra cuántos días quedan de tu prueba.",pay3:"Para seguir, paga por Zelle (US$ 19.90) o PIX (R$ 103,90).",pay4:"Manda el comprobante por WhatsApp y activamos 30 días más.",
 faqTitle:"Preguntas",
 q1:"¿Quién ve mis datos?",a1:"Solo tú. Cada técnico ve únicamente sus propios reports, pagos y caja.",
 q2:"Mi empresa paga otros valores. ¿Funciona?",a2:"Sí. En la pestaña Reglas defines el precio por ticket, los pies por bloque, el valor del bloque (con fecha de inicio) y el descuento del carro.",
