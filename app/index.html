@@ -132,6 +132,10 @@ tr.total td{font-weight:700;border-bottom:none}
 .welcome{background:var(--panel);border:2px solid var(--accent);border-radius:14px;padding:18px 20px;margin-bottom:16px}
 .welcome ol{margin:8px 0 12px;padding-left:22px}.welcome li{margin:6px 0}
 .exp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.codebox{font:700 22px var(--mono);letter-spacing:.12em;background:var(--accent-soft);border-radius:8px;padding:6px 12px;display:inline-block}
+.alertbox{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.alertbox ul{margin:6px 0 0;padding-left:20px}
+.rules input:disabled,.rules select:disabled{opacity:.6}
 .langBig{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;font-size:18px;font-weight:600;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);cursor:pointer;text-align:left}
 .langBig span{font-size:28px;line-height:1}
 .langBig:hover,.langBig:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
@@ -173,6 +177,7 @@ tr.total td{font-weight:700;border-bottom:none}
       <label><span data-i18n="lastName"></span><input type="text" id="sSobre" autocomplete="family-name" required></label>
     </div>
     <label><span data-i18n="phone"></span><input type="tel" id="sTel" autocomplete="tel" placeholder="(512) 555-0100" required></label>
+    <label><span data-i18n="teamCodeOpt"></span><input type="text" id="sTeam" autocomplete="off" maxlength="8" style="text-transform:uppercase" placeholder="ABC123"></label>
     <label><span data-i18n="email"></span><input type="email" id="sEmail" autocomplete="email" required></label>
     <label><span data-i18n="passwordNew"></span><input type="password" id="sPass" autocomplete="new-password" minlength="6" required></label>
     <button type="submit" class="primary" data-i18n="signup"></button>
@@ -214,6 +219,7 @@ tr.total td{font-weight:700;border-bottom:none}
     <button type="button" role="tab" data-tab="resumo" aria-selected="false" data-i18n="tabSummary"></button>
     <button type="button" role="tab" data-tab="caixa" aria-selected="false" data-i18n="tabCash"></button>
     <button type="button" role="tab" data-tab="regras" aria-selected="false" data-i18n="tabRules"></button>
+    <button type="button" role="tab" data-tab="equipe" aria-selected="false" id="tabTeam" hidden data-i18n="tabTeam"></button>
     <button type="button" role="tab" data-tab="admin" aria-selected="false" id="tabAdmin" hidden data-i18n="tabAdmin"></button>
   </nav>
 
@@ -277,6 +283,7 @@ tr.total td{font-weight:700;border-bottom:none}
   </section>
 
   <section id="tab-regras" class="sec" hidden>
+    <div class="panel" id="teamPanel"></div>
     <div class="panel">
       <h2 data-i18n="payRules"></h2>
       <div class="rules">
@@ -305,6 +312,28 @@ tr.total td{font-weight:700;border-bottom:none}
     </div>
   </section>
 
+  <section id="tab-equipe" class="sec" hidden>
+    <div class="weeknav">
+      <button type="button" id="tPrev" aria-label="‹">‹</button>
+      <div class="mid"><b id="tTitle"></b><span class="note" id="tRange"></span></div>
+      <button type="button" id="tNext" aria-label="›">›</button>
+    </div>
+    <div class="tiles" id="tTiles"></div>
+    <div id="tAlert"></div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <h2 style="margin:0" data-i18n="teamRank"></h2>
+        <span class="row" style="gap:8px"><button type="button" class="primary" id="tXlsx" data-i18n="teamXlsx"></button><button type="button" id="tPdf" data-i18n="teamPdf"></button></span>
+      </div>
+      <div class="tbl-wrap" id="tTable"></div>
+      <p class="note" data-i18n="teamNote"></p>
+    </div>
+    <div class="panel">
+      <h2 data-i18n="byLocation"></h2>
+      <div class="tbl-wrap" id="tLoc"></div>
+    </div>
+  </section>
+
   <section id="tab-admin" class="sec" hidden>
     <div class="panel">
       <div class="row" style="justify-content:space-between;margin-bottom:10px">
@@ -325,7 +354,8 @@ tr.total td{font-weight:700;border-bottom:none}
 const SUPABASE_URL = "https://plzpbjpmeqowmqrsxrxm.supabase.co";            // ex.: https://abcd.supabase.co
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsenBianBtZXFvd21xcnN4cnhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNjc1MDMsImV4cCI6MjEwNTk0MzUwM30.8bGtQJDLlxiNAGy9l75Imk8_LFmYGBXApa9-EFFVzdc";  // publishable / anon key (NUNCA a secret)
 const WHATSAPP = "19546016730";            // WhatsApp de atendimento (Ge) — trocar quando tiver o WhatsApp Business
-const PRECO_USD = "19.90", PRECO_BRL = "103,90"; // R$ convertido pela cotação UOL de 01/10/2026 (US$ 1 = R$ 5,22)
+const PRECO_USD = "19.90", PRECO_BRL = "103,90";
+const PRECO_EQ_USD = "14.90", PRECO_EQ_BRL = "77,90"; // técnico de equipe (desconto); R$ pela mesma cotação // R$ convertido pela cotação UOL de 01/10/2026 (US$ 1 = R$ 5,22)
 const ZELLE = "jgpazotto@gmail.com";
 const TESTE_DIAS = 14;
 const PAGAMENTO_INFO = {
@@ -338,7 +368,12 @@ const PAGAMENTO_INFO = {
    IDIOMAS
    ============================================================ */
 const I18N = {
- pt:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Salvar", declaredLbl:"Tickets no cabeçalho", tEdited:"Report atualizado", tTicket10:"Cada ticket precisa ter 10 números", change:"trocar",
+ pt:{ tabTeam:"Equipe", teamTitle:"Equipe", teamIntro:"Faz parte de uma equipe? Coloque o código que o seu gerente mandou. Cada técnico de equipe paga só US$ 14.90 por mês.", teamJoin:"Entrar na equipe", teamImManager:"Sou gerente — criar uma equipe", teamCreateTxt:"Você recebe um código para mandar aos técnicos. Eles entram com o código, cada um paga o seu (US$ 14.90), e você vê o relatório de todos.", teamNamePh:"Nome da equipe (ex.: ITG Austin)", teamCreate:"Criar equipe",
+  teamYouManager:"Você é o gerente. Mande o código ou o convite para os técnicos:", copyInvite:"Copiar convite", sendInvite:"Enviar convite", teamManagerNote:"As regras de pagamento que você salvar abaixo valem para a equipe inteira. O caixa pessoal de cada técnico continua privado.",
+  teamYouMember:"Seu gerente vê os seus reports e pagamentos. O seu caixa pessoal continua só seu.", teamRulesFromManager:"As regras de pagamento são definidas pelo gerente.", teamLeave:"Sair da equipe",
+  inviteMsg:(n,c,l)=>`Entre na equipe ${n} no Locator! Código: ${c}\n${l}`, teamRank:"Ranking da semana", teamXlsx:"Planilha da equipe", teamPdf:"PDF da equipe", teamNote:"Toque em PDF ou Planilha para baixar o fechamento de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sem report nesta semana:", missToday:"ainda não mandou hoje", lastReport:"Último report", manager:"gerente", sheet:"Planilha", teamEmpty:"Ninguém na equipe ainda. Mande o código para os técnicos.", teamReport:"Fechamento da equipe", teamCodeOpt:"Código da equipe (opcional)", teamDiscount:"desconto de equipe",
+  tBadCode:"Código não encontrado", tJoined:n=>`Você entrou na equipe ${n}`, tTeamCreated:"Equipe criada!", tLeft:"Você saiu da equipe", tCopied:"Convite copiado",
+  editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Salvar", declaredLbl:"Tickets no cabeçalho", tEdited:"Report atualizado", tTicket10:"Cada ticket precisa ter 10 números", change:"trocar",
   pAll:"Tudo", exportX:"Baixar planilha", exportPdf:"Baixar PDF", tExported:"Planilha baixada", waTalk:"Falar no WhatsApp",
   xl:{title:"Resumo para a empresa", tech:"Técnico", period:"Período", made:"Gerado em", tickets:"Tickets", sSummary:"Resumo", sDays:"Por dia", sTickets:"Tickets"},
   planLine:(u,b)=>`Plano mensal: US$ ${u} (ou R$ ${b} por PIX)`, payZelle:z=>`Envie pelo Zelle para <b>${z}</b>.`, payPix:"Peça a chave PIX no WhatsApp abaixo.", payReceipt:"Depois de pagar, mande o comprovante no WhatsApp. Liberamos 30 dias assim que confirmarmos.",
@@ -380,7 +415,12 @@ const I18N = {
   aTypeEmail:"Digite seu e-mail acima e toque de novo em Esqueci a senha.", aResetSent:"Enviamos um link para criar uma senha nova.", aResetFail:"Não consegui enviar o e-mail.",
   newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
   csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
- en:{ editTickets:"Edit tickets", cancel:"Cancel", saveEdit:"Save", declaredLbl:"Tickets in header", tEdited:"Report updated", tTicket10:"Each ticket needs 10 digits", change:"change",
+ en:{ tabTeam:"Team", teamTitle:"Team", teamIntro:"Part of a team? Enter the code your manager sent you. Team technicians pay only US$ 14.90 per month.", teamJoin:"Join team", teamImManager:"I'm a manager — create a team", teamCreateTxt:"You get a code to send to your technicians. They join with it, each one pays their own (US$ 14.90), and you see everyone's report.", teamNamePh:"Team name (e.g. ITG Austin)", teamCreate:"Create team",
+  teamYouManager:"You are the manager. Send the code or the invite to your technicians:", copyInvite:"Copy invite", sendInvite:"Send invite", teamManagerNote:"The pay rules you save below apply to the whole team. Each technician's personal cash box stays private.",
+  teamYouMember:"Your manager sees your reports and payments. Your personal cash box stays private.", teamRulesFromManager:"Pay rules are set by the manager.", teamLeave:"Leave team",
+  inviteMsg:(n,c,l)=>`Join team ${n} on Locator! Code: ${c}\n${l}`, teamRank:"This week's ranking", teamXlsx:"Team spreadsheet", teamPdf:"Team PDF", teamNote:"Tap PDF or Spreadsheet to download each technician's report.", teamTechs:"Technicians", teamMissing:"No report this week:", missToday:"hasn't sent today yet", lastReport:"Last report", manager:"manager", sheet:"Spreadsheet", teamEmpty:"No one on the team yet. Send the code to your technicians.", teamReport:"Team report", teamCodeOpt:"Team code (optional)", teamDiscount:"team discount",
+  tBadCode:"Code not found", tJoined:n=>`You joined team ${n}`, tTeamCreated:"Team created!", tLeft:"You left the team", tCopied:"Invite copied",
+  editTickets:"Edit tickets", cancel:"Cancel", saveEdit:"Save", declaredLbl:"Tickets in header", tEdited:"Report updated", tTicket10:"Each ticket needs 10 digits", change:"change",
   pAll:"All", exportX:"Download spreadsheet", exportPdf:"Download PDF", tExported:"Spreadsheet downloaded", waTalk:"Chat on WhatsApp",
   xl:{title:"Summary for the company", tech:"Technician", period:"Period", made:"Created on", tickets:"Tickets", sSummary:"Summary", sDays:"By day", sTickets:"Tickets"},
   planLine:(u,b)=>`Monthly plan: US$ ${u} (or R$ ${b} by PIX)`, payZelle:z=>`Send by Zelle to <b>${z}</b>.`, payPix:"Ask for the PIX key on WhatsApp below.", payReceipt:"After paying, send the receipt on WhatsApp. We unlock 30 days as soon as we confirm it.",
@@ -422,7 +462,12 @@ const I18N = {
   aTypeEmail:"Type your email above and tap Forgot password again.", aResetSent:"We sent a link to set a new password.", aResetFail:"Couldn't send the email.",
   newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
   csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
- es:{ editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Guardar", declaredLbl:"Tickets en el encabezado", tEdited:"Report actualizado", tTicket10:"Cada ticket necesita 10 números", change:"cambiar",
+ es:{ tabTeam:"Equipo", teamTitle:"Equipo", teamIntro:"¿Eres parte de un equipo? Escribe el código que te mandó tu gerente. Cada técnico de equipo paga solo US$ 14.90 al mes.", teamJoin:"Entrar al equipo", teamImManager:"Soy gerente — crear un equipo", teamCreateTxt:"Recibes un código para mandar a tus técnicos. Entran con el código, cada uno paga lo suyo (US$ 14.90) y tú ves el reporte de todos.", teamNamePh:"Nombre del equipo (ej.: ITG Austin)", teamCreate:"Crear equipo",
+  teamYouManager:"Eres el gerente. Manda el código o la invitación a tus técnicos:", copyInvite:"Copiar invitación", sendInvite:"Enviar invitación", teamManagerNote:"Las reglas de pago que guardes abajo valen para todo el equipo. La caja personal de cada técnico sigue privada.",
+  teamYouMember:"Tu gerente ve tus reports y pagos. Tu caja personal sigue siendo solo tuya.", teamRulesFromManager:"Las reglas de pago las define el gerente.", teamLeave:"Salir del equipo",
+  inviteMsg:(n,c,l)=>`¡Entra al equipo ${n} en Locator! Código: ${c}\n${l}`, teamRank:"Ranking de la semana", teamXlsx:"Planilla del equipo", teamPdf:"PDF del equipo", teamNote:"Toca PDF o Planilla para descargar el cierre de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sin report esta semana:", missToday:"todavía no mandó hoy", lastReport:"Último report", manager:"gerente", sheet:"Planilla", teamEmpty:"Nadie en el equipo todavía. Manda el código a tus técnicos.", teamReport:"Cierre del equipo", teamCodeOpt:"Código del equipo (opcional)", teamDiscount:"descuento de equipo",
+  tBadCode:"Código no encontrado", tJoined:n=>`Entraste al equipo ${n}`, tTeamCreated:"¡Equipo creado!", tLeft:"Saliste del equipo", tCopied:"Invitación copiada",
+  editTickets:"Editar tickets", cancel:"Cancelar", saveEdit:"Guardar", declaredLbl:"Tickets en el encabezado", tEdited:"Report actualizado", tTicket10:"Cada ticket necesita 10 números", change:"cambiar",
   pAll:"Todo", exportX:"Descargar planilla", exportPdf:"Descargar PDF", tExported:"Planilla descargada", waTalk:"Hablar por WhatsApp",
   xl:{title:"Resumen para la empresa", tech:"Técnico", period:"Período", made:"Generado el", tickets:"Tickets", sSummary:"Resumen", sDays:"Por día", sTickets:"Tickets"},
   planLine:(u,b)=>`Plan mensual: US$ ${u} (o R$ ${b} por PIX)`, payZelle:z=>`Envía por Zelle a <b>${z}</b>.`, payPix:"Pide la llave PIX por WhatsApp abajo.", payReceipt:"Después de pagar, manda el comprobante por WhatsApp. Activamos 30 días en cuanto lo confirmemos.",
@@ -677,8 +722,8 @@ function fillExp(){
 }
 function monthName(m){ const loc={pt:"pt-BR",en:"en-US",es:"es-ES"}[lang]||"pt-BR"; const nm=new Date(+m.slice(0,4),+m.slice(5,7)-1,1).toLocaleDateString(loc,{month:"long",year:"numeric"}); return nm.charAt(0).toUpperCase()+nm.slice(1); }
 function loadXLSX(){ return window.XLSX?Promise.resolve():new Promise((ok,ko)=>{ const sc=document.createElement("script"); sc.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); }); }
-async function exportXLSX(fmt){
-  const per=$("#expPer").value, which=$("#expWhich").value;
+async function exportXLSX(fmt, perA, whichA){
+  const per=perA||$("#expPer").value, which=whichA||$("#expWhich").value;
   let inP, label;
   if(per==="dia"){ inP=d=>d===which; label=dFull(which); }
   else if(per==="semana"){ inP=d=>weekStart(d)===which; label=`${T("week")} ${weekNum(which)} (${dFull(which)} – ${dFull(addDays(which,6))})`; }
@@ -741,6 +786,100 @@ async function exportPDF(resumo, diasA, tick, fname, name, label){
     w.document.close();
   }
 }
+/* ===================== EQUIPE ===================== */
+function inviteLink(){ return `https://locator.jgpazotto.com/app/?equipe=${empresa?.codigo||""}`; }
+function renderTeamPanel(){
+  const el=$("#teamPanel"); if(!el||!perfil) return;
+  if(!perfil.empresa_id||!empresa){
+    el.innerHTML=`<h2>${T("teamTitle")}</h2><p class="note" style="margin-top:0">${T("teamIntro")}</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:12px"><input type="text" id="joinCode" maxlength="8" placeholder="ABC123" style="text-transform:uppercase;width:130px" value="${esc(URL_EQUIPE||"")}"><button type="button" class="primary" id="joinBtn">${T("teamJoin")}</button></div>
+      <details><summary style="cursor:pointer;font-weight:700;color:var(--accent)">${T("teamImManager")}</summary>
+      <p class="note">${T("teamCreateTxt")}</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px"><input type="text" id="teamName" placeholder="${T("teamNamePh")}" style="min-width:200px"><button type="button" id="createTeam">${T("teamCreate")}</button></div></details>`;
+    return;
+  }
+  if(perfil.papel==="gerente"){
+    const msg=encodeURIComponent(T("inviteMsg")(empresa.nome, empresa.codigo, inviteLink()));
+    el.innerHTML=`<h2>${T("teamTitle")}: ${esc(empresa.nome)}</h2><p style="margin:0 0 8px">${T("teamYouManager")}</p>
+      <div class="row" style="flex-wrap:wrap;gap:10px;align-items:center"><span class="codebox">${esc(empresa.codigo)}</span>
+      <button type="button" id="copyInvite">${T("copyInvite")}</button>
+      <a class="wa" style="padding:9px 14px" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener">💬 ${T("sendInvite")}</a></div>
+      <p class="note">${T("teamManagerNote")}</p>`;
+  } else {
+    el.innerHTML=`<h2>${T("teamTitle")}: ${esc(empresa.nome)}</h2><p style="margin:0 0 8px">${T("teamYouMember")}</p>
+      <p class="note">${empresa.regras?T("teamRulesFromManager"):""}</p><button type="button" class="link danger" id="leaveTeam">${T("teamLeave")}</button>`;
+  }
+}
+let team={members:[], reps:{}, weeks:{}, rules:{}}, teamWeek=null;
+async function loadTeam(){
+  if(perfil?.papel!=="gerente"||!perfil.empresa_id) return;
+  const {data:mem,error}=await sb.from("perfis").select("id,nome,sobrenome,email,telefone,papel,local_padrao").eq("empresa_id",perfil.empresa_id); if(error) return err(error,T("tLoadErr"));
+  const ids=(mem||[]).map(m=>m.id);
+  const [rp,sm,rg]=await Promise.all([sb.from("reports").select("*").in("user_id",ids).order("dia"), sb.from("semanas").select("*").in("user_id",ids), sb.from("regras").select("*").in("user_id",ids)]);
+  team={members:mem||[], reps:{}, weeks:{}, rules:{}};
+  ids.forEach(id=>{ team.reps[id]=[]; team.weeks[id]={}; });
+  (rp.data||[]).forEach(r=>team.reps[r.user_id]?.push({id:r.id, date:r.dia, tech:r.tecnico, declared:r.declarados, loc:r.local||"", tickets:r.tickets||[]}));
+  (sm.data||[]).forEach(w=>{ if(team.weeks[w.user_id]) team.weeks[w.user_id][w.inicio]={paid:w.pago==null?null:+w.pago, paidDate:w.pago_em}; });
+  ids.forEach(id=>{ const own=(rg.data||[]).find(x=>x.user_id===id); const base=own?rowToRules(own):rowToRules({}); team.rules[id]=empresa?.regras?{...rowToRules(empresa.regras), start:base.start}:base; });
+  if(!teamWeek) teamWeek=weekStart(todayISO());
+  renderTeam();
+}
+function withCtx(id, fn){ const sv={reports, rules, weeks, perfil}; const m=team.members.find(x=>x.id===id);
+  reports=team.reps[id]; rules=team.rules[id]; weeks=team.weeks[id]; perfil={...perfil, nome:m.nome, sobrenome:m.sobrenome};
+  try{ return fn(); } finally { reports=sv.reports; rules=sv.rules; weeks=sv.weeks; perfil=sv.perfil; } }
+function teamRows(){
+  const ws=teamWeek, today=todayISO();
+  return team.members.map(m=>withCtx(m.id,()=>{ const W=weekData(weekStart(ws)); const ft=W.reps.reduce((a,r)=>a+r.tickets.reduce((x,t)=>x+(+t.ft||0),0),0), ct=W.reps.reduce((a,r)=>a+repCalc(r).cotas,0);
+    const days=[0,1,2,3,4,5,6].map(i=>addDays(ws,i)).filter(d=>d<=today); const have=new Set(W.reps.map(r=>r.date)); const missing=days.filter(d=>!have.has(d));
+    const last=[...team.reps[m.id]].map(r=>r.date).sort().pop()||null;
+    return {m, W, ft, ct, missing, last, locs:W.reps}; }));
+}
+function renderTeam(){
+  if($("#tab-equipe").hidden && !$("#tTable").innerHTML) {}
+  const ws=teamWeek, wd=(empresa?.regras?.semana_inicio)||rules.wd||0;
+  $("#tTitle").textContent=`${T("teamTitle")}: ${empresa?.nome||""}`;
+  $("#tRange").textContent=`${DOW(wd)} ${dLabel(ws)} – ${DOW((wd+6)%7)} ${dLabel(addDays(ws,6))}`;
+  const rows=teamRows().filter(r=>r.m.papel!=="gerente"||team.reps[r.m.id].length).sort((a,b)=>b.W.ganho-a.W.ganho||b.W.tk-a.W.tk);
+  const S=rows.reduce((a,r)=>({tk:a.tk+r.W.tk, ft:a.ft+r.ft, g:a.g+r.W.ganho, rc:a.rc+r.W.receber}),{tk:0,ft:0,g:0,rc:0});
+  $("#tTiles").innerHTML=`<div class="tile"><small>${T("teamTechs")}</small><b>${rows.length}</b></div><div class="tile"><small>Tickets</small><b>${S.tk}</b></div><div class="tile"><small>ft</small><b>${fmt(S.ft)}</b></div><div class="tile hl"><small>${T("earned")}</small><b>${money(S.g)}</b></div><div class="tile wide"><small>${T("toReceive")}</small><b>${money(S.rc)}</b></div>`;
+  const miss=rows.filter(r=>r.missing.length && r.m.papel!=="gerente");
+  $("#tAlert").innerHTML=miss.length?`<div class="alertbox"><b>⚠️ ${T("teamMissing")}</b><ul>${miss.map(r=>`<li><b>${esc(r.m.nome)} ${esc(r.m.sobrenome)}</b> — ${r.missing.includes(todayISO())&&r.missing.length===1?T("missToday"):r.missing.map(d=>DOW(parseISO(d).getDay())).join(", ")}</li>`).join("")}</ul></div>`:"";
+  const medal=i=>["🥇","🥈","🥉"][i]||`${i+1}`;
+  $("#tTable").innerHTML=rows.length?`<table><thead><tr><th>#</th><th>${T("name")}</th><th class="r">${T("days")}</th><th class="r">Tickets</th><th class="r">ft</th><th class="r">${T("blocks")}</th><th class="r">${T("earned")}</th><th class="r">${T("toReceive")}</th><th class="r">${T("paid")}</th><th>${T("lastReport")}</th><th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr>
+    <td>${r.W.tk?medal(i):""}</td><td><b>${esc(r.m.nome)} ${esc(r.m.sobrenome)}</b>${r.m.papel==="gerente"?` <span class="note">(${T("manager")})</span>`:""}<br><span class="note">${esc(r.m.email)}</span></td>
+    <td class="r num">${r.W.nd}</td><td class="r num">${r.W.tk}</td><td class="r num">${fmt(r.ft)}</td><td class="r num">${r.ct}</td><td class="r num money">${money(r.W.ganho)}</td><td class="r num">${money(r.W.receber)}</td><td class="r num">${r.W.paid==null?"—":money(r.W.paid)}</td><td class="num">${r.last?dLabel(r.last):"—"}</td>
+    <td class="r" style="white-space:nowrap"><button type="button" class="link" data-tx="${r.m.id}" data-fmt="pdf">PDF</button> <button type="button" class="link" data-tx="${r.m.id}" data-fmt="xlsx">${T("sheet")}</button>${r.m.id!==perfil.id?` <button type="button" class="link danger" data-rm="${r.m.id}">${pendingDel===r.m.id?T("confirm"):T("remove")}</button>`:""}</td></tr>`).join("")}
+    <tr class="total"><td></td><td>${T("total")}</td><td></td><td class="r num">${S.tk}</td><td class="r num">${fmt(S.ft)}</td><td></td><td class="r num money">${money(S.g)}</td><td class="r num">${money(S.rc)}</td><td></td><td></td><td></td></tr></tbody></table>`:`<div class="empty">${T("teamEmpty")}</div>`;
+  const L={}; rows.forEach(r=>r.W.reps.forEach(rep=>{ const k=rep.loc||""; const o=L[k]=L[k]||{who:new Set(),tk:0,ft:0,g:0}; o.who.add(r.m.id); withCtx(r.m.id,()=>{ const c=repCalc(rep); o.tk+=c.n; o.g+=c.total; }); o.ft+=rep.tickets.reduce((a,t)=>a+(+t.ft||0),0); }));
+  const ks=Object.keys(L).sort((a,b)=>L[b].g-L[a].g);
+  $("#tLoc").innerHTML=ks.length?`<table><thead><tr><th>${T("locCol")}</th><th class="r">${T("teamTechs")}</th><th class="r">Tickets</th><th class="r">ft</th><th class="r">${T("earned")}</th></tr></thead><tbody>${ks.map(k=>`<tr><td>${k?"📍 "+esc(k):`<span class="note">${T("noLoc")}</span>`}</td><td class="r num">${L[k].who.size}</td><td class="r num">${L[k].tk}</td><td class="r num">${fmt(L[k].ft)}</td><td class="r num money">${money(L[k].g)}</td></tr>`).join("")}</tbody></table>`:`<div class="empty">${T("noWeeks")}</div>`;
+}
+async function exportTeam(fmtx){
+  const rows=teamRows(); const X=T("xl"); const label=`${dFull(teamWeek)} – ${dFull(addDays(teamWeek,6))}`;
+  const head=[T("name"),"E-mail",T("days"),"Tickets","ft",T("blocks"),T("earned"),T("car"),T("toReceive"),T("paid"),T("difference")];
+  const body=rows.map(r=>[`${r.m.nome} ${r.m.sobrenome}`.trim(), r.m.email, r.W.nd, r.W.tk, r.ft, r.ct, r.W.ganho, -r.W.carro, r.W.receber, r.W.paid??"", r.W.diff??""]);
+  const tot=rows.reduce((a,r)=>{ a[3]+=r.W.tk; a[4]+=r.ft; a[5]+=r.ct; a[6]+=r.W.ganho; a[7]-=r.W.carro; a[8]+=r.W.receber; return a; },[T("total"),"","",0,0,0,0,0,0,"",""]);
+  const tick=[["Técnico / Tech",...T("csvHead")]]; rows.forEach(r=>withCtx(r.m.id,()=>{ r.W.reps.forEach(rep=>{ const c=repCalc(rep); rep.tickets.forEach(t=>{ const k=cotas(t.ft); tick.push([`${r.m.nome} ${r.m.sobrenome}`.trim(), weekNum(weekStart(rep.date)), rep.date, DOW(parseISO(rep.date).getDay()), rep.loc, t.ticket, +t.ft||0, t.flag, k, c.rate, rules.ticket, k*c.rate, rules.ticket+k*c.rate]); }); }); }));
+  const info=[["Locator — "+T("teamReport")],[T("teamTitle"), empresa?.nome||""],[X.period,label],[X.made,dFull(todayISO())],[]];
+  const fname=`locator-equipe-${(empresa?.codigo||"").toLowerCase()}-${teamWeek}`;
+  if(fmtx==="pdf"){
+    try{ await loadPDF(); const doc=new window.jspdf.jsPDF({unit:"pt",format:"letter",orientation:"landscape"}); const Wd=doc.internal.pageSize.getWidth();
+      doc.setFillColor(224,96,15); doc.rect(0,0,Wd,6,"F"); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Locator",40,46);
+      doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(90); doc.text(`${T("teamReport")} — ${empresa?.nome||""}`,40,64); doc.text(`${X.period}: ${label}`,40,80); doc.text(`${X.made}: ${dFull(todayISO())}`,40,95); doc.setTextColor(0);
+      const base={theme:"grid",styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:[224,96,15],textColor:255}};
+      const mf=(row)=>row.map((v,i)=>i>=6&&v!==""?money(+v):(typeof v==="number"?fmt(v):v));
+      doc.autoTable({...base,startY:110,head:[head],body:[...body.map(mf),mf(tot)]});
+      doc.autoTable({...base,styles:{fontSize:7,cellPadding:2.5},startY:doc.lastAutoTable.finalY+18,head:[tick[0]],body:tick.slice(1).map(r=>r.map(v=>typeof v==="number"?fmt(v):v))});
+      doc.save(fname+".pdf"); toast(T("tExported")); }
+    catch(e){ toast(T("tErr")); }
+    return;
+  }
+  try{ await loadXLSX(); const wb=XLSX.utils.book_new(); const sh=(a,w)=>{ const ws=XLSX.utils.aoa_to_sheet(a); ws["!cols"]=w.map(x=>({wch:x})); return ws; };
+    XLSX.utils.book_append_sheet(wb, sh([...info, head, ...body, tot],[24,26,6,8,10,7,10,9,10,9,10]), T("teamTitle").slice(0,30));
+    XLSX.utils.book_append_sheet(wb, sh(tick,[20,7,11,5,16,12,8,8,6,8,7,7,7]), X.sTickets);
+    XLSX.writeFile(wb, fname+".xlsx"); toast(T("tExported")); }
+  catch(e){ const q=v=>`"${String(v??"").replace(/"/g,'""')}"`; const L=[...info,head,...body,tot,[],...tick].map(r=>r.map(q).join(",")); const blob=new Blob(["\ufeff"+L.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname+".csv"; document.body.appendChild(a); a.click(); a.remove(); }
+}
 function renderCaixa(){
   const m=caixaMoves(), bal=m.length?m[m.length-1].bal:0;
   $("#cxBal").innerHTML=`<span class="${bal<0?"neg":""}">${money(bal)}</span>`;
@@ -749,9 +888,11 @@ function renderCaixa(){
 }
 function renderRegras(){
   { const sc=$("#rClose"); sc.innerHTML=[0,1,2,3,4,5,6].map(i=>`<option value="${i}">${T("dowFull")[i]}</option>`).join(""); sc.value=String(((rules.wd||0)+6)%7); }
+  { const lock=teamRulesLocked(); ["rTicket","rSize","rCar","rClose","newRateFrom","newRateVal","addRate"].forEach(id=>{ const el=$("#"+id); if(el) el.disabled=lock; }); document.querySelectorAll("[data-ratedel]").forEach(b=>b.hidden=lock); }
+  renderTeamPanel();
   for(const [id,k] of [["rTicket","ticket"],["rSize","size"],["rCar","car"],["rStart","start"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=rules[k]??""; }
   const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from));
-  $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th><th class="r">${T("blockValue")}</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td><td class="r num">${money(r.block)}</td><td class="r">${rs.length>1?`<button type="button" class="link danger" data-ratedel="${r.from}">${T("remove")}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
+  $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th><th class="r">${T("blockValue")}</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td><td class="r num">${money(r.block)}</td><td class="r">${rs.length>1&&!teamRulesLocked()?`<button type="button" class="link danger" data-ratedel="${r.from}">${T("remove")}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
   if(perfil){ for(const [id,k] of [["mNome","nome"],["mSobre","sobrenome"],["mTel","telefone"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=perfil[k]||""; } }
 }
 function renderAdmin(){
@@ -760,11 +901,11 @@ function renderAdmin(){
   $("#admList").innerHTML=list.length?`<table><thead><tr><th>${T("name")}</th><th>${T("contact")}</th><th>${T("status")}</th><th>${T("accessUntil")}</th><th>${T("signedUp")}</th><th></th></tr></thead><tbody>${list.map(p=>{
     const venc=p.acesso_ate && p.acesso_ate<today;
     const chip=p.status==="ativo"?(venc?`<span class="chip bad">${T("sExpired")}</span>`:`<span class="chip ok">${T("sActive")}</span>`):p.status==="pendente"?`<span class="chip">${T("sPending")}</span>`:`<span class="chip bad">${T("sBlocked")}</span>`;
-    return `<tr><td><b>${esc(p.nome)} ${esc(p.sobrenome)}</b>${p.admin?' <span class="note">(admin)</span>':''}</td><td>${esc(p.email)}<br><span class="note">${esc(p.telefone)}</span></td><td>${chip}</td><td class="num">${p.status!=="ativo"?"—":p.acesso_ate?dFull(p.acesso_ate):T("noExpiry")}</td><td class="num">${dFull(p.criado_em.slice(0,10))}</td>
+    return `<tr><td><b>${esc(p.nome)} ${esc(p.sobrenome)}</b>${p.admin?' <span class="note">(admin)</span>':''}${p.empresa_id?`<br><span class="note">👥 ${esc(empresasAll.find(x=>x.id===p.empresa_id)?.nome||"")}${p.papel==="gerente"?" · "+T("manager"):""}</span>`:""}</td><td>${esc(p.email)}<br><span class="note">${esc(p.telefone)}</span></td><td>${chip}</td><td class="num">${p.status!=="ativo"?"—":p.acesso_ate?dFull(p.acesso_ate):T("noExpiry")}</td><td class="num">${dFull(p.criado_em.slice(0,10))}</td>
       <td class="r">${p.admin?"":`<button type="button" data-lib="${p.id}">${T("lib30")}</button> <button type="button" class="link" data-libfree="${p.id}">${T("libFree")}</button> ${p.status!=="bloqueado"?`<button type="button" class="link danger" data-block="${p.id}">${T("block")}</button>`:""}`}</td></tr>`; }).join("")}</tbody></table>`:`<div class="empty">${T("noSignups")}</div>`;
 }
 function renderAll(){ applyStatic(); renderTrial(); renderRuleLine(); renderWeek(); renderDrafts(); renderResumo(); renderCaixa(); renderRegras(); renderAdmin(); }
-function setTab(t){ document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t))); ["semana","resumo","caixa","regras","admin"].forEach(x=>$("#tab-"+x).hidden=x!==t); if(t==="admin") loadAdmin(); }
+function setTab(t){ document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t))); ["semana","resumo","caixa","regras","equipe","admin"].forEach(x=>$("#tab-"+x).hidden=x!==t); if(t==="admin") loadAdmin(); if(t==="equipe") loadTeam(); }
 
 /* ---------- banco de dados ---------- */
 const err = (e, msg) => { console.error(e); toast(msg || T("tErr")); };
@@ -777,19 +918,30 @@ async function loadAll(){
     sb.from("caixa").select("*").eq("user_id",uid).order("dia"),
   ]);
   for(const x of [rg,rp,sm,cx]) if(x.error) throw x.error;
-  if(rg.data){ const d=rg.data; rules={ticket:+d.ticket, size:+d.cota_ft, car:+d.carro, start:d.inicio, wd:+(d.semana_inicio||0), rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!rules.rates.length) rules.rates=[{from:"2000-01-01",block:5}]; }
+  if(rg.data){ rules=rowToRules(rg.data); }
+  empresa=null;
+  if(perfil.empresa_id){ const {data:em}=await sb.from("empresas").select("*").eq("id",perfil.empresa_id).maybeSingle(); empresa=em||null;
+    if(empresa?.regras){ const tr=rowToRules({...empresa.regras, inicio:rules.start}); rules={...tr, start:rules.start}; } }
+  $("#tabTeam").hidden = !(perfil.papel==="gerente" && perfil.empresa_id);
   reports=(rp.data||[]).map(r=>({id:r.id, date:r.dia, tech:r.tecnico, declared:r.declarados, loc:r.local||"", tickets:r.tickets||[]}));
   renderLocList();
   weeks={}; (sm.data||[]).forEach(w=>weeks[w.inicio]={paid:w.pago==null?null:+w.pago, paidDate:w.pago_em});
   caixa=(cx.data||[]).map(c=>({id:c.id, date:c.dia, desc:c.descricao, amount:+c.valor}));
   renderAll();
 }
+let empresa=null;
+function rowToRules(d){ const r={ticket:+(d.ticket??10), size:+(d.cota_ft??501), car:+(d.carro??150), start:d.inicio||null, wd:+(d.semana_inicio||0), rates:(d.valores||[]).map(v=>({from:v.desde, block:+v.valor}))}; if(!r.rates.length) r.rates=[{from:"2000-01-01",block:5}]; return r; }
+const teamRulesLocked = () => !!(empresa?.regras && perfil?.papel!=="gerente");
 async function saveRules(){
+  if(teamRulesLocked()) return;
+  if(perfil?.papel==="gerente" && empresa){ const p={ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block}))}; const {error:e2}=await sb.rpc("salvar_regras_equipe",{p}); if(!e2) empresa.regras=p; }
   const {error}=await sb.from("regras").upsert({user_id:me.id, ticket:rules.ticket, cota_ft:rules.size, carro:rules.car, inicio:rules.start||null, semana_inicio:rules.wd||0, valores:rules.rates.map(r=>({desde:r.from, valor:r.block})), atualizado:new Date().toISOString()});
   error?err(error,T("tErr")):toast(T("tRules"));
 }
+let empresasAll=[];
 async function loadAdmin(){
   if(!perfil?.admin) return;
+  { const {data:es}=await sb.from("empresas").select("id,nome,codigo"); empresasAll=es||[]; }
   const {data,error}=await sb.from("perfis").select("*").order("criado_em",{ascending:false});
   if(error) return err(error, T("tLoadErr"));
   perfis=data||[]; renderAdmin();
@@ -807,9 +959,10 @@ async function setLang(l){
 /* ---------- entrada / sessão ---------- */
 function waLink(){ const msg={pt:`Olá! Paguei o Locator. Meu e-mail: ${perfil?.email||""}`,en:`Hi! I paid for Locator. My email: ${perfil?.email||""}`,es:`¡Hola! Pagué Locator. Mi correo: ${perfil?.email||""}`}[lang]; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
 function payHTML(){
-  return `<div class="paybox"><div><b>${T("planLine")(PRECO_USD,PRECO_BRL)}</b></div>
-  <div class="opt"><b>🇺🇸 Zelle — US$ ${PRECO_USD}</b>${T("payZelle")(esc(ZELLE))}</div>
-  <div class="opt"><b>🇧🇷 PIX — R$ ${PRECO_BRL}</b>${T("payPix")}</div>
+  const eq=perfil?.empresa_id && perfil?.papel!=="gerente"; const U=eq?PRECO_EQ_USD:PRECO_USD, B=eq?PRECO_EQ_BRL:PRECO_BRL;
+  return `<div class="paybox"><div><b>${T("planLine")(U,B)}</b>${eq?` <span class="chip ok">${T("teamDiscount")}</span>`:""}</div>
+  <div class="opt"><b>🇺🇸 Zelle — US$ ${U}</b>${T("payZelle")(esc(ZELLE))}</div>
+  <div class="opt"><b>🇧🇷 PIX — R$ ${B}</b>${T("payPix")}</div>
   <p class="note" style="margin:0">${T("payReceipt")}</p>
   <a class="wa" href="${waLink()}" target="_blank" rel="noopener">💬 ${T("waTalk")}</a></div>`;
 }
@@ -868,7 +1021,7 @@ $("#fLogin").addEventListener("submit", async e=>{
 $("#fSign").addEventListener("submit", async e=>{
   e.preventDefault(); if(!sb) return;
   const nome=$("#sNome").value.trim(), sobrenome=$("#sSobre").value.trim(), telefone=$("#sTel").value.trim();
-  const {data,error}=await sb.auth.signUp({email:$("#sEmail").value.trim(), password:$("#sPass").value, options:{data:{nome,sobrenome,telefone,idioma:lang}, emailRedirectTo:location.origin+location.pathname}});
+  const {data,error}=await sb.auth.signUp({email:$("#sEmail").value.trim(), password:$("#sPass").value, options:{data:{nome,sobrenome,telefone,idioma:lang,codigo_equipe:$("#sTeam").value.trim().toUpperCase()}, emailRedirectTo:location.origin+location.pathname}});
   if(error) return authMsg(/registered|exists/i.test(error.message)?T("aExists"):T("aFail")+error.message,"bad");
   if(data.session){ boot(); } else { $("#swLogin").click(); authMsg(T("aCreated"),"ok"); }
 });
@@ -893,6 +1046,16 @@ document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && me &&
 document.addEventListener("click", async e=>{
   if($("#scrApp").hidden) return;
   const tb=e.target.closest("[data-tab]"); if(tb){ setTab(tb.dataset.tab); return; }
+  if(e.target.id==="joinBtn"){ const c=$("#joinCode").value.trim().toUpperCase(); if(!c) return; const {data,error}=await sb.rpc("entrar_equipe",{p_codigo:c}); if(error) return toast(/codigo/.test(error.message)?T("tBadCode"):T("tErr")); toast(T("tJoined")(data)); return boot(); }
+  if(e.target.id==="createTeam"){ const n=$("#teamName").value.trim(); if(!n) return toast(T("teamNamePh")); const {error}=await sb.rpc("criar_equipe",{p_nome:n}); if(error) return toast(T("tErr")); toast(T("tTeamCreated")); await boot(); setTab("regras"); return; }
+  if(e.target.id==="leaveTeam"){ if(pendingDel!=="leave"){ pendingDel="leave"; e.target.textContent=T("confirm"); setTimeout(()=>{pendingDel=null; renderTeamPanel();},4000); return; } pendingDel=null; const {error}=await sb.rpc("sair_equipe"); if(error) return toast(T("tErr")); toast(T("tLeft")); return boot(); }
+  if(e.target.id==="copyInvite"){ const txt=T("inviteMsg")(empresa.nome, empresa.codigo, inviteLink()); try{ await navigator.clipboard.writeText(txt); toast(T("tCopied")); }catch(_){ prompt("", txt); } return; }
+  if(e.target.id==="tPrev"){ teamWeek=addDays(teamWeek,-7); renderTeam(); return; }
+  if(e.target.id==="tNext"){ teamWeek=addDays(teamWeek,7); renderTeam(); return; }
+  if(e.target.id==="tXlsx"){ exportTeam("xlsx"); return; }
+  if(e.target.id==="tPdf"){ exportTeam("pdf"); return; }
+  const tx=e.target.closest("[data-tx]"); if(tx){ const id=tx.dataset.tx; if(!team.reps[id].some(r=>weekStart(r.date)===teamWeek && true)){ const has=withCtx(id,()=>reports.some(r=>weekStart(r.date)===weekStart(teamWeek))); if(!has) return toast(T("noWeeks")); } withCtx(id,()=>exportXLSX(tx.dataset.fmt, "semana", weekStart(teamWeek))); return; }
+  const rmb=e.target.closest("[data-rm]"); if(rmb){ const id=rmb.dataset.rm; if(pendingDel!==id){ pendingDel=id; renderTeam(); setTimeout(()=>{ if(pendingDel===id){pendingDel=null;renderTeam();} },4000); return; } pendingDel=null; const {error}=await sb.rpc("remover_membro",{alvo:id}); if(error) return toast(T("tErr")); toast(T("tDeleted")); return loadTeam(); }
   const pb=e.target.closest("[data-per]"); if(pb){ per=pb.dataset.per; $("#expPer").value=per; fillExp(); renderResumo(); return; }
   const wk=e.target.closest("[data-week]"); if(wk){ curWeek=wk.dataset.week; setTab("semana"); renderWeek(); return; }
   if(e.target.id==="prevW"){ curWeek=addDays(curWeek,-7); renderWeek(); return; }
@@ -1001,6 +1164,8 @@ $("#cxForm").addEventListener("submit", async e=>{
 });
 
 $("#pDate").value=todayISO(); $("#cxDate").value=todayISO();
+const URL_EQUIPE=(new URLSearchParams(location.search).get("equipe")||"").toUpperCase();
+if(URL_EQUIPE){ $("#sTeam").value=URL_EQUIPE; }
 boot().then(()=>{ if(/signup/.test(location.search+location.hash) && !$("#scrAuth").hidden) $("#swSign").click(); });
 </script>
 <a class="wafab" id="waFab" href="https://wa.me/19546016730" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/></svg></a>
