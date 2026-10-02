@@ -181,7 +181,7 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
         <div class="how-pay">
           <h2 data-t="payTitle"></h2>
           <ol><li data-t="pay1"></li><li data-t="pay2"></li><li data-t="pay3"></li><li data-t="pay4"></li></ol>
-          <a class="wa" href="https://wa.me/19546016730" target="_blank" rel="noopener">💬 WhatsApp (954) 601-6730</a>
+          <a class="wa" href="https://wa.me/19546016730" target="_blank" rel="noopener">💬 <span data-t="waBtn"></span></a>
         </div>
       </div>
     </section>
@@ -196,14 +196,14 @@ footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);f
   </main>
 
   <footer>
-    <span>© 2026 JG Pazotto LLC · <a href="https://wa.me/19546016730" target="_blank" rel="noopener">WhatsApp (954) 601-6730</a></span>
+    <span>© 2026 JG Pazotto LLC · <a href="https://wa.me/19546016730" target="_blank" rel="noopener">WhatsApp</a></span>
     <span><a href="app/" data-t="login"></a> · <a href="https://jgpazotto.com">jgpazotto.com</a></span>
   </footer>
 </div>
 
 <script>
 const T={
-en:{login:"Log in",eyebrow:"For locate technicians",h1:"Know exactly what you earned. Every ticket, every foot.",
+en:{waBtn:"Chat on WhatsApp",login:"Log in",eyebrow:"For locate technicians",h1:"Know exactly what you earned. Every ticket, every foot.",
 lead:"Paste your daily report from WhatsApp. Locator counts your tickets and footage, shows what you earned by day, week and month, and checks whether the company paid you right.",
 ctaSign:"Start 14 days free",ctaHow:"How it works",ctaNote:"14 days free · then $19.90 per month · English, Português, Español",
 demoWeek:"Week",demoRange:"Sun – Sat",demoEarned:"Earned",demoCar:"Car",demoReceive:"To receive",demoPaid:"Company paid",demoNote:"Example screen with sample numbers.",
@@ -212,7 +212,7 @@ s1t:"Paste your report",s1p:"Copy the report you already send on WhatsApp and pa
 s2t:"The app does the math",s2p:"Every 10-digit number is a ticket. Footage is counted ticket by ticket, using your pay rules.",
 s3t:"Check your pay",s3p:"When the company pays, type the amount. Locator shows the difference for each week.",
 featTitle:"Everything in one place",featSub:"Made by people who do this work every day.",
-f1t:"Day, week and month",f1p:"See what you earned each day, each week (Sunday to Saturday) and each month.",
+f1t:"Day, week and month",f1p:"See what you earned each day, each week (closing on the day your company uses) and each month.",
 f2t:"Payment check",f2p:"Earned minus the car deduction, next to what the company actually paid.",
 f3t:"Personal cash box",f3p:"Log gas, boots, food and other expenses and see your real balance.",
 f4t:"By location",f4p:"Save the city for each report and see how much you made in each place.",
@@ -225,7 +225,7 @@ q1:"Who can see my data?",a1:"Only you. Each technician sees only their own repo
 q2:"My company pays different rates. Does it work?",a2:"Yes. In the Rules tab you set the price per ticket, the footage per block, the block value (with start dates) and the car deduction.",
 q3:"Do I need to download anything?",a3:"No. Open the site on your phone, log in and use “Add to Home Screen” to keep it like an app.",
 q4:"What languages?",a4:"English, Portuguese and Spanish. You choose when you open the app and can change it anytime."},
-pt:{login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Saiba exatamente quanto você ganhou. Cada ticket, cada pé.",
+pt:{waBtn:"Falar no WhatsApp",login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Saiba exatamente quanto você ganhou. Cada ticket, cada medida.",
 lead:"Cole o report do dia, copiado do WhatsApp. O Locator conta seus tickets e a metragem, mostra quanto você ganhou por dia, semana e mês, e confere se a empresa pagou certo.",
 ctaSign:"Começar 14 dias grátis",ctaHow:"Como funciona",ctaNote:"14 dias grátis · depois $19.90 por mês · English, Português, Español",
 demoWeek:"Semana",demoRange:"Dom – Sáb",demoEarned:"Ganho",demoCar:"Carro",demoReceive:"A receber",demoPaid:"Empresa pagou",demoNote:"Tela de exemplo, com números ilustrativos.",
@@ -234,7 +234,7 @@ s1t:"Cole o report",s1p:"Copie o report que você já manda no WhatsApp e cole n
 s2t:"O app faz a conta",s2p:"Cada número de 10 dígitos é um ticket. A metragem é contada ticket por ticket, com as suas regras de pagamento.",
 s3t:"Confira o pagamento",s3p:"Quando a empresa pagar, digite o valor. O Locator mostra a diferença de cada semana.",
 featTitle:"Tudo num lugar só",featSub:"Feito por quem faz esse trabalho todo dia.",
-f1t:"Dia, semana e mês",f1p:"Veja quanto ganhou em cada dia, em cada semana (domingo a sábado) e em cada mês.",
+f1t:"Dia, semana e mês",f1p:"Veja quanto ganhou em cada dia, em cada semana (fechando no dia que a sua empresa fecha) e em cada mês.",
 f2t:"Conferência do pagamento",f2p:"Ganho menos o desconto do carro, lado a lado com o que a empresa pagou de verdade.",
 f3t:"Caixa pessoal",f3p:"Lance gasolina, botas, comida e outros gastos e veja seu saldo real.",
 f4t:"Por local",f4p:"Salve a cidade de cada report e veja quanto ganhou em cada lugar.",
@@ -247,7 +247,7 @@ q1:"Quem vê meus dados?",a1:"Só você. Cada técnico vê apenas os próprios r
 q2:"Minha empresa paga valores diferentes. Funciona?",a2:"Sim. Na aba Regras você define o valor por ticket, a metragem da cota, o valor da cota (com data de início) e o desconto do carro.",
 q3:"Preciso baixar alguma coisa?",a3:"Não. Abra o site no celular, entre e use “Adicionar à Tela de Início” para ficar como app.",
 q4:"Quais idiomas?",a4:"Inglês, português e espanhol. Você escolhe ao abrir o app e pode trocar quando quiser."},
-es:{login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Sabe exactamente cuánto ganaste. Cada ticket, cada pie.",
+es:{waBtn:"Hablar por WhatsApp",login:"Entrar",eyebrow:"Para técnicos de locate",h1:"Sabe exactamente cuánto ganaste. Cada ticket, cada medida.",
 lead:"Pega tu report del día, copiado de WhatsApp. Locator cuenta tus tickets y los pies, muestra cuánto ganaste por día, semana y mes, y revisa si la empresa te pagó bien.",
 ctaSign:"Empezar 14 días gratis",ctaHow:"Cómo funciona",ctaNote:"14 días gratis · después $19.90 al mes · English, Português, Español",
 demoWeek:"Semana",demoRange:"Dom – Sáb",demoEarned:"Ganado",demoCar:"Carro",demoReceive:"Por cobrar",demoPaid:"Empresa pagó",demoNote:"Pantalla de ejemplo, con números ilustrativos.",
@@ -256,7 +256,7 @@ s1t:"Pega tu report",s1p:"Copia el report que ya mandas por WhatsApp y pégalo e
 s2t:"La app hace la cuenta",s2p:"Cada número de 10 dígitos es un ticket. Los pies se cuentan ticket por ticket, con tus reglas de pago.",
 s3t:"Revisa tu pago",s3p:"Cuando la empresa pague, escribe el monto. Locator muestra la diferencia de cada semana.",
 featTitle:"Todo en un solo lugar",featSub:"Hecho por gente que hace este trabajo todos los días.",
-f1t:"Día, semana y mes",f1p:"Mira cuánto ganaste cada día, cada semana (domingo a sábado) y cada mes.",
+f1t:"Día, semana y mes",f1p:"Mira cuánto ganaste cada día, cada semana (cerrando el día que cierra tu empresa) y cada mes.",
 f2t:"Revisión del pago",f2p:"Lo ganado menos el descuento del carro, junto a lo que la empresa pagó de verdad.",
 f3t:"Caja personal",f3p:"Anota gasolina, botas, comida y otros gastos y ve tu saldo real.",
 f4t:"Por lugar",f4p:"Guarda la ciudad de cada report y ve cuánto ganaste en cada lugar.",
