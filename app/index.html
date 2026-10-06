@@ -512,7 +512,7 @@ const I18N = {
   csvHead:["Semana","Fecha","Día","Lugar","Ticket","pies","Marca","Bloques","Valor bloque","$ ticket","$ pies","Total"], csvWeeks:["Semana","Inicio","Tickets","Ganado","Carro","Por cobrar","Pagado","Diferencia"], csvCash:["Caja: fecha","Descripción","Valor","Saldo"], noFt:"sin pies", dupSaved:"ya guardado", location:"Lugar del servicio", locPh:"Ciudad, estado (ej.: Austin, TX)", byLocation:"Por lugar", noLoc:"sin lugar", locCol:"Lugar" }
 };
 const LANGS=[["en","🇺🇸 English"],["pt","🇧🇷 Português"],["es","🇪🇸 Español"]];
-function pickLang(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} if(I18N[l]) return l; const n=(navigator.language||"en").slice(0,2); return I18N[n]?n:"en"; }
+function pickLang(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} if(I18N[l]) return l; return "en"; }
 let lang=pickLang();
 const T=k=>I18N[lang][k] ?? I18N.pt[k] ?? k;
 const LOCALE=()=>lang==="pt"?"pt-BR":"en-US";
