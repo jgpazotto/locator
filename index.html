@@ -284,7 +284,7 @@ q2:"Mi empresa paga otros valores. ¿Funciona?",a2:"Sí. En la pestaña Reglas d
 q3:"¿Tengo que descargar algo?",a3:"No. Abre el sitio en tu celular, entra y usa “Agregar a pantalla de inicio” para tenerla como app.",
 q4:"¿Qué idiomas?",a4:"Inglés, portugués y español. Eliges al abrir la app y puedes cambiarlo cuando quieras."}
 };
-function pick(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} if(T[l]) return l; const n=(navigator.language||"en").slice(0,2); return T[n]?n:"en"; }
+function pick(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} if(T[l]) return l; return "en"; }
 function apply(l){
   document.documentElement.lang = l==="pt"?"pt-BR":l;
   document.querySelectorAll("[data-t]").forEach(el=>{ const v=T[l][el.dataset.t]; if(v!=null) el.textContent=v; });
