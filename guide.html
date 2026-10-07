@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to use Locator</title>
+<meta name="description" content="Step-by-step guide to Locator: create your account, paste your daily report, check your pay and send the weekly report to your company.">
+<meta name="theme-color" content="#e0600f">
+<link rel="icon" href="app/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="app/icon-180.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#f7f4ee; --panel:#ffffff; --ink:#1d2126; --muted:#5f656b; --line:#e2ddd3;
+  --accent:#e0600f; --accent-ink:#b84c08; --accent-soft:#fbe7d8; --dark:#1d2126;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#15181b; --panel:#1e2226; --ink:#eceae4; --muted:#a3a9ae; --line:#33383d;
+    --accent:#f7843a; --accent-ink:#f7843a; --accent-soft:#3a2618; --dark:#0f1113; }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{width:40px;height:40px;border-radius:10px}
+.brand b{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.brand b span{color:var(--accent)}
+.nav{display:flex;align-items:center;gap:10px}
+.lang{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;border-radius:999px;padding:6px 10px;font:600 14px var(--sans);color:var(--ink);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(.95)}
+.btn.sm{padding:8px 14px;font-size:15px}
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:36px 0 56px}
+.eyebrow{display:inline-block;font:600 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
+h1{font-size:clamp(34px,5.4vw,56px);line-height:1.05;letter-spacing:-.03em;margin:16px 0 14px;font-weight:800;text-wrap:balance}
+.lead{font-size:19px;color:var(--muted);max-width:34em;margin:0 0 24px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cta .note{color:var(--muted);font-size:14px;width:100%}
+
+/* mini app preview */
+.phone{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 20px 50px -24px rgba(0,0,0,.25)}
+.phone .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.phone .ph b{font-size:15px}
+.phone .ph small{font:12px var(--mono);color:var(--muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tile small{display:block;font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tile b{font:600 20px var(--mono)}
+.tile.hl b{color:var(--accent)}
+.rep{font:13px/1.7 var(--mono);background:var(--bg);border-radius:10px;padding:10px 12px;color:var(--muted)}
+.rep .t{color:var(--ink)}
+.demo-note{font-size:12px;color:var(--muted);margin:8px 2px 0}
+
+section{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(26px,3.4vw,36px);letter-spacing:-.02em;line-height:1.1;margin:0 0 10px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 28px;max-width:40em}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.step::before{counter-increment:s;content:counter(s);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;margin-bottom:12px}
+.step h3{margin:0 0 6px;font-size:19px}
+.step p{margin:0;color:var(--muted);font-size:16px}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.feat{padding:18px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.feat .ic{font-size:22px}
+.feat h3{margin:8px 0 4px;font-size:17px}
+.feat p{margin:0;color:var(--muted);font-size:15px}
+
+.price{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.card{background:var(--panel);border:2px solid var(--accent);border-radius:20px;padding:28px}
+.card .amt{font:800 56px/1 var(--sans);letter-spacing:-.03em}
+.card .amt small{font-size:18px;font-weight:600;color:var(--muted);letter-spacing:0}
+.card ul{list-style:none;padding:0;margin:18px 0 22px}
+.card li{padding:6px 0 6px 28px;position:relative}
+.card li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:800}
+.how-pay{color:var(--muted)}
+.brl{margin:6px 0 0;color:var(--muted);font-size:15px}
+.wa{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#25d366;color:#fff;border-radius:10px;padding:12px 18px;font-weight:700;text-decoration:none}
+.how-pay ol{padding-left:20px;margin:10px 0 0}
+.how-pay li{margin:6px 0}
+
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+.faq summary{font-weight:700;cursor:pointer}
+.faq p{margin:8px 0 0;color:var(--muted)}
+
+footer{padding:30px 0 50px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media (max-width:820px){
+  .hero,.price{grid-template-columns:1fr}
+  .steps,.feats{grid-template-columns:1fr}
+  .nav .btn.ghost{display:none}
+  .hero{padding-top:16px}
+}
+@media (max-width:420px){ .lang button{padding:6px 8px} .brand b{font-size:21px} }
+
+.guide{padding:24px 0 40px;max-width:820px}
+.guide h1{font-size:clamp(32px,5vw,48px)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 8px}
+.toc a{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);text-decoration:none;font-weight:600;font-size:14px}
+.toc a:hover{border-color:var(--accent)}
+.guide section{padding:36px 0 8px}
+.gsteps{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:12px}
+.gsteps li{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.gsteps .num{flex:0 0 34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+.gsteps h3{margin:4px 0 4px;font-size:18px}
+.gsteps p{margin:0;color:var(--muted);font-size:16px;line-height:1.55}
+.gsteps b{color:var(--ink)}
+.k{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:14px;background:var(--bg)}
+.help{border-top:1px solid var(--line);margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./?stay"><img src="app/icon-192.png?v=2" alt=""><b>Loca<span>tor</span></b></a>
+    <div class="nav">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-l="en" title="English">🇺🇸</button>
+        <button type="button" data-l="pt" title="Português">🇧🇷</button>
+        <button type="button" data-l="es" title="Español">🇪🇸</button>
+      </div>
+      <a class="btn sm primary" href="app/" data-t="open"></a>
+    </div>
+  </header>
+
+  <main class="guide">
+    <span class="eyebrow" data-t="eyebrow"></span>
+    <h1 data-t="title"></h1>
+    <p class="lead" data-t="lead"></p>
+    <nav class="toc" id="toc"></nav>
+    <div id="sections"></div>
+    <section class="help">
+      <h2 data-t="helpT"></h2>
+      <p class="sub" data-t="helpP"></p>
+      <a class="wa" href="https://wa.me/19546016730" target="_blank" rel="noopener">💬 <span data-t="waBtn"></span></a>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 JG Pazotto LLC</span>
+    <span><a href="./?stay" data-t="home"></a> · <a href="app/" data-t="open"></a></span>
+  </footer>
+</div>
+
+<script>
+const G={
+en:{open:"Open the app",home:"Home",eyebrow:"Step by step",title:"How to use Locator",
+lead:"Everything you need to start, from creating your account to sending the weekly report to your company.",
+helpT:"Still have a question?",helpP:"Tap the green WhatsApp button in the app or here, and we'll help you.",waBtn:"Chat on WhatsApp",
+sec:[
+{id:"start",t:"1. Get started",steps:[
+["Create your account","Open locator.jgpazotto.com, tap <b>Create account</b>, choose your language and fill in name, phone, email and a password. If your manager gave you a team code, type it in <b>Team code</b> (optional). You get <b>14 days free</b>."],
+["Put it on your home screen","<b>iPhone (Safari):</b> tap Share <span class=\"k\">⬆</span> → <b>Add to Home Screen</b>.<br><b>Android (Chrome):</b> tap the menu <span class=\"k\">⋮</span> → <b>Add to Home screen</b> or <b>Install app</b>. Now Locator opens like any other app."],
+["Set your pay rules","Go to the <b>Rules</b> tab and fill in: price per ticket, footage per block (e.g. 501 ft), block value, car deduction per week, the start date (week 1) and the day your company closes the week. If the block value changes, add a new period with the date it starts. Team members: your manager may set these for you."]]},
+{id:"daily",t:"2. Every day: paste your report",steps:[
+["Copy the report from WhatsApp","Press and hold the report message you send to your company (the one that starts with <b>Report | Name | X Tickets</b>) and tap <b>Copy</b>."],
+["Paste it in the Week tab","Open the <b>Week</b> tab, scroll to <b>Paste report</b> and paste it in the box. Check the <b>service day</b>. Your location stays saved; tap <b>change</b> only if you worked somewhere else."],
+["Check and save","Locator shows every ticket with its footage, blocks and value. A green ✓ means it read all the tickets in the header; a red warning means some are missing. Tap <b>Save</b>."],
+["Fix a ticket","Tap the day to open it → <b>✏️ Edit tickets</b>. You can change a ticket number, its footage or flag, delete it 🗑 or add one, then tap <b>Save</b>. You can also change the day or delete the whole report there."]]},
+{id:"week",t:"3. Every week: check your pay",steps:[
+["Type what the company paid","When the payment arrives, open that week in the <b>Week</b> tab and type the amount in <b>Company paid</b>. Locator shows the <b>difference</b> between what you should receive (earned − car) and what was paid."],
+["See your results","In the <b>Summary</b> tab choose <b>By day</b>, <b>By week</b> or <b>By month</b>. There is also a table <b>By location</b>."],
+["Send the report to your company","In <b>Summary</b>, pick the period (day, week, month or all) and tap <b>Download spreadsheet</b> (Excel) or <b>Download PDF</b>. Send the file to your company by email or WhatsApp. Your personal cash box is never included."],
+["Personal cash box","In the <b>Cash</b> tab, log your expenses (gas, boots, food…). The company payments come in automatically, so you always see your real balance."]]},
+{id:"team",t:"4. Teams (managers)",steps:[
+["Create the team","In <b>Rules</b>, open <b>I'm a manager — create a team</b>, type the team name and tap <b>Create team</b>."],
+["Add your technicians","Each technician creates their own account. Then type their sign-up email in <b>Add technician by email</b>. You can also send the team code or the invite link on WhatsApp."],
+["Same or different rates","Check <b>Same pay rates for the whole team</b> to use your rates for everyone, or leave it unchecked so each technician uses their own (when each region pays differently)."],
+["Follow the team","The <b>Team</b> tab shows the week for everyone: totals, who is missing reports, ranking and results by location. Filter by technician or location, and download the team spreadsheet/PDF or each technician's report."]]},
+{id:"pay",t:"5. Plan and payment",steps:[
+["Free trial","The first 14 days are free. A bar at the top shows how many days are left."],
+["How to pay","Send <b>US$ 19.90</b> by <b>Zelle</b> to <b>jgpazotto@gmail.com</b> and send the receipt on WhatsApp. We unlock 30 days and the bar shows the next due date. Teams with 10+ technicians: US$ 14.90 per technician."],
+["Your data","Each technician only sees their own data. Managers see the reports and payments of their team, never the personal cash box. If your access expires, your data stays saved."]]}
+]},
+pt:{open:"Abrir o app",home:"Início",eyebrow:"Passo a passo",title:"Como usar o Locator",
+lead:"Tudo o que você precisa para começar, desde criar a conta até mandar o fechamento da semana para a empresa.",
+helpT:"Ficou alguma dúvida?",helpP:"Toque no botão verde do WhatsApp no app ou aqui, que a gente ajuda.",waBtn:"Falar no WhatsApp",
+sec:[
+{id:"start",t:"1. Primeiros passos",steps:[
+["Crie sua conta","Abra locator.jgpazotto.com, toque em <b>Criar conta</b>, escolha o idioma e preencha nome, telefone, e-mail e uma senha. Se o seu gerente passou um código de equipe, coloque em <b>Código da equipe</b> (opcional). Você ganha <b>14 dias grátis</b>."],
+["Coloque na tela de início","<b>iPhone (Safari):</b> toque em Compartilhar <span class=\"k\">⬆</span> → <b>Adicionar à Tela de Início</b>.<br><b>Android (Chrome):</b> toque no menu <span class=\"k\">⋮</span> → <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>. Pronto: o Locator abre como qualquer outro aplicativo."],
+["Configure suas regras","Na aba <b>Regras</b>, preencha: valor por ticket, tamanho da cota (ex.: 501 ft), valor da cota, desconto do carro por semana, a data de início (semana 1) e o dia em que a empresa fecha a semana. Se o valor da cota mudar, adicione um novo período com a data em que começa. Quem é de equipe: o gerente pode definir isso por você."]]},
+{id:"daily",t:"2. Todo dia: cole o report",steps:[
+["Copie o report do WhatsApp","Segure o dedo na mensagem do report que você manda para a empresa (a que começa com <b>Report | Nome | X Tickets</b>) e toque em <b>Copiar</b>."],
+["Cole na aba Semana","Abra a aba <b>Semana</b>, desça até <b>Colar report</b> e cole na caixa. Confira o <b>dia do serviço</b>. O local fica salvo; toque em <b>trocar</b> só se trabalhou em outro lugar."],
+["Confira e salve","O Locator mostra cada ticket com a metragem, as cotas e o valor. Um ✓ verde quer dizer que leu todos os tickets do cabeçalho; um aviso vermelho quer dizer que faltou algum. Toque em <b>Salvar</b>."],
+["Corrigir um ticket","Toque no dia para abrir → <b>✏️ Editar tickets</b>. Dá para mudar o número, a metragem ou a marcação, apagar 🗑 ou adicionar um ticket, e tocar em <b>Salvar</b>. Ali também dá para mudar o dia ou apagar o report inteiro."]]},
+{id:"week",t:"3. Toda semana: confira o pagamento",steps:[
+["Digite o que a empresa pagou","Quando o pagamento cair, abra a semana na aba <b>Semana</b> e digite o valor em <b>Empresa pagou</b>. O Locator mostra a <b>diferença</b> entre o que você tinha a receber (ganho − carro) e o que foi pago."],
+["Veja seus resultados","Na aba <b>Resumo</b>, escolha <b>Por dia</b>, <b>Por semana</b> ou <b>Por mês</b>. Também tem a tabela <b>Por local</b>."],
+["Mande o relatório para a empresa","No <b>Resumo</b>, escolha o período (dia, semana, mês ou tudo) e toque em <b>Baixar planilha</b> (Excel) ou <b>Baixar PDF</b>. Mande o arquivo para a empresa por e-mail ou WhatsApp. O seu caixa pessoal nunca vai junto."],
+["Caixa pessoal","Na aba <b>Caixa</b>, lance seus gastos (gasolina, botas, comida…). Os pagamentos da empresa entram sozinhos, então você sempre vê o seu saldo real."]]},
+{id:"team",t:"4. Equipes (gerentes)",steps:[
+["Crie a equipe","Em <b>Regras</b>, abra <b>Sou gerente — criar uma equipe</b>, digite o nome da equipe e toque em <b>Criar equipe</b>."],
+["Adicione os técnicos","Cada técnico cria a própria conta. Depois, digite o e-mail do cadastro dele em <b>Adicionar técnico pelo e-mail</b>. Também dá para mandar o código da equipe ou o convite pelo WhatsApp."],
+["Mesmo valor ou valores diferentes","Marque <b>Mesmos valores de pagamento para toda a equipe</b> para todos usarem os seus valores, ou deixe desmarcado para cada técnico usar os dele (quando cada região paga diferente)."],
+["Acompanhe a equipe","A aba <b>Equipe</b> mostra a semana de todos: totais, quem está sem report, ranking e resultado por local. Filtre por técnico ou por local e baixe a planilha/PDF da equipe ou o fechamento de cada técnico."]]},
+{id:"pay",t:"5. Plano e pagamento",steps:[
+["Teste grátis","Os primeiros 14 dias são grátis. Uma faixa no topo mostra quantos dias faltam."],
+["Como pagar","Envie <b>US$ 19.90</b> pelo <b>Zelle</b> para <b>jgpazotto@gmail.com</b> e mande o comprovante no WhatsApp. Liberamos 30 dias e a faixa mostra o próximo vencimento. Equipes com 10 técnicos ou mais: US$ 14.90 por técnico."],
+["Seus dados","Cada técnico vê só os próprios dados. O gerente vê os reports e pagamentos da equipe, nunca o caixa pessoal. Se o acesso vencer, os dados continuam salvos."]]}
+]},
+es:{open:"Abrir la app",home:"Inicio",eyebrow:"Paso a paso",title:"Cómo usar Locator",
+lead:"Todo lo que necesitas para empezar, desde crear tu cuenta hasta mandar el cierre de la semana a tu empresa.",
+helpT:"¿Te quedó alguna duda?",helpP:"Toca el botón verde de WhatsApp en la app o aquí, y te ayudamos.",waBtn:"Hablar por WhatsApp",
+sec:[
+{id:"start",t:"1. Primeros pasos",steps:[
+["Crea tu cuenta","Abre locator.jgpazotto.com, toca <b>Crear cuenta</b>, elige el idioma y llena nombre, teléfono, correo y una contraseña. Si tu gerente te dio un código de equipo, escríbelo en <b>Código del equipo</b> (opcional). Tienes <b>14 días gratis</b>."],
+["Ponla en la pantalla de inicio","<b>iPhone (Safari):</b> toca Compartir <span class=\"k\">⬆</span> → <b>Agregar a pantalla de inicio</b>.<br><b>Android (Chrome):</b> toca el menú <span class=\"k\">⋮</span> → <b>Agregar a la pantalla principal</b> o <b>Instalar app</b>. Listo: Locator abre como cualquier otra app."],
+["Configura tus reglas","En la pestaña <b>Reglas</b>, llena: precio por ticket, tamaño del bloque (ej.: 501 pies), valor del bloque, descuento del carro por semana, la fecha de inicio (semana 1) y el día en que la empresa cierra la semana. Si el valor del bloque cambia, agrega un nuevo período con la fecha de inicio. Si estás en un equipo, tu gerente puede definirlo por ti."]]},
+{id:"daily",t:"2. Cada día: pega tu report",steps:[
+["Copia el report de WhatsApp","Mantén presionado el mensaje del report que mandas a la empresa (el que empieza con <b>Report | Nombre | X Tickets</b>) y toca <b>Copiar</b>."],
+["Pégalo en la pestaña Semana","Abre la pestaña <b>Semana</b>, baja hasta <b>Pegar report</b> y pégalo en la caja. Revisa el <b>día del servicio</b>. Tu lugar queda guardado; toca <b>cambiar</b> solo si trabajaste en otro lugar."],
+["Revisa y guarda","Locator muestra cada ticket con sus pies, bloques y valor. Un ✓ verde quiere decir que leyó todos los tickets del encabezado; un aviso rojo, que falta alguno. Toca <b>Guardar</b>."],
+["Corregir un ticket","Toca el día para abrirlo → <b>✏️ Editar tickets</b>. Puedes cambiar el número, los pies o la marca, borrar 🗑 o agregar un ticket, y tocar <b>Guardar</b>. Ahí también puedes cambiar el día o borrar todo el report."]]},
+{id:"week",t:"3. Cada semana: revisa tu pago",steps:[
+["Escribe lo que pagó la empresa","Cuando llegue el pago, abre esa semana en la pestaña <b>Semana</b> y escribe el monto en <b>Empresa pagó</b>. Locator muestra la <b>diferencia</b> entre lo que tenías por cobrar (ganado − carro) y lo que se pagó."],
+["Mira tus resultados","En la pestaña <b>Resumen</b>, elige <b>Por día</b>, <b>Por semana</b> o <b>Por mes</b>. También está la tabla <b>Por lugar</b>."],
+["Manda el reporte a tu empresa","En <b>Resumen</b>, elige el período (día, semana, mes o todo) y toca <b>Descargar planilla</b> (Excel) o <b>Descargar PDF</b>. Manda el archivo a tu empresa por correo o WhatsApp. Tu caja personal nunca va incluida."],
+["Caja personal","En la pestaña <b>Caja</b>, anota tus gastos (gasolina, botas, comida…). Los pagos de la empresa entran solos, así siempre ves tu saldo real."]]},
+{id:"team",t:"4. Equipos (gerentes)",steps:[
+["Crea el equipo","En <b>Reglas</b>, abre <b>Soy gerente — crear un equipo</b>, escribe el nombre del equipo y toca <b>Crear equipo</b>."],
+["Agrega a tus técnicos","Cada técnico crea su propia cuenta. Luego escribe su correo de registro en <b>Agregar técnico por correo</b>. También puedes mandar el código del equipo o la invitación por WhatsApp."],
+["Mismo valor o valores distintos","Marca <b>Mismos valores de pago para todo el equipo</b> para que todos usen tus valores, o déjalo sin marcar para que cada técnico use los suyos (cuando cada región paga distinto)."],
+["Sigue al equipo","La pestaña <b>Equipo</b> muestra la semana de todos: totales, quién no mandó report, ranking y resultados por lugar. Filtra por técnico o por lugar y descarga la planilla/PDF del equipo o el cierre de cada técnico."]]},
+{id:"pay",t:"5. Plan y pago",steps:[
+["Prueba gratis","Los primeros 14 días son gratis. Una barra arriba muestra cuántos días quedan."],
+["Cómo pagar","Envía <b>US$ 19.90</b> por <b>Zelle</b> a <b>jgpazotto@gmail.com</b> y manda el comprobante por WhatsApp. Activamos 30 días y la barra muestra el próximo vencimiento. Equipos con 10 técnicos o más: US$ 14.90 por técnico."],
+["Tus datos","Cada técnico ve solo sus datos. El gerente ve los reports y pagos de su equipo, nunca la caja personal. Si tu acceso vence, tus datos siguen guardados."]]}
+]}};
+function pick(){ let l=null; try{ l=localStorage.getItem("locator.lang"); }catch(e){} return G[l]?l:"en"; }
+function apply(l){
+  const D=G[l]; document.documentElement.lang = l==="pt"?"pt-BR":l;
+  document.querySelectorAll("[data-t]").forEach(el=>{ if(D[el.dataset.t]!=null) el.textContent=D[el.dataset.t]; });
+  document.querySelectorAll("[data-l]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.l===l)));
+  document.getElementById("toc").innerHTML=D.sec.map(x=>`<a href="#${x.id}">${x.t}</a>`).join("");
+  let n=0;
+  document.getElementById("sections").innerHTML=D.sec.map(x=>`<section id="${x.id}"><h2>${x.t}</h2><ol class="gsteps">${x.steps.map(([h,p])=>`<li><div class="num">${++n}</div><div><h3>${h}</h3><p>${p}</p></div></li>`).join("")}</ol></section>`).join("");
+  document.title = D.title;
+}
+document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ try{ localStorage.setItem("locator.lang",b.dataset.l); }catch(e){} apply(b.dataset.l); });
+apply(pick());
+</script>
+
+</body>
+</html>
