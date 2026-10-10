@@ -251,5 +251,6 @@ document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ try{ localStora
 apply(pick());
 </script>
 
+<script>if(window!==top){document.querySelectorAll('a[href="app/"],a[href="./?stay"]').forEach(a=>{a.addEventListener("click",e=>{e.preventDefault();parent.postMessage("locator-help-close","*");});});}</script>
 </body>
 </html>
