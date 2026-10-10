@@ -95,6 +95,24 @@ tr.total td{font-weight:700;border-bottom:none}
 .rules label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
 .in{display:flex;align-items:center;gap:4px;color:var(--ink);font-family:var(--mono)}
 .rules input{width:110px}
+.rules input[type=date]{width:170px;white-space:nowrap}
+.helpBtn{background:var(--accent);border:none;color:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;line-height:1.4}
+#helpOv{position:fixed;inset:0;z-index:50;background:var(--bg,#111);display:flex;flex-direction:column}
+#helpOv[hidden]{display:none}
+#helpOv .hb{display:flex;justify-content:flex-end;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;border-bottom:1px solid var(--line)}
+#helpOv iframe{flex:1;width:100%;border:0;background:#fff}
+#ratesTable table{font-size:13px}
+#ratesTable th{white-space:normal;letter-spacing:0;padding:6px 4px}
+#ratesTable td{padding:8px 4px}
+#ratesTable td:first-child{white-space:nowrap}
+.rateAdd{display:grid;gap:10px;margin-top:12px}
+.rateAdd .raVals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rateAdd label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.rateAdd .raVals label{align-items:flex-end;text-align:right}
+.rateAdd .in{width:100%;justify-content:flex-end}
+.rateAdd .raVals input{width:100%;max-width:110px;text-align:right}
+.rateAdd input[type=date]{width:170px}
+.rateAdd button{justify-self:start}
 .empty{color:var(--muted);padding:18px;text-align:center}
 .sec{display:flex;flex-direction:column;gap:14px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:9;max-width:90vw}
@@ -205,7 +223,7 @@ tr.total td{font-weight:700;border-bottom:none}
 <div id="scrApp" class="wrap" hidden>
   <header class="top">
     <div class="brand"><img src="icon-192.png?v=2" alt=""><h1>Loca<span>tor</span></h1><p class="note" id="ruleLine" hidden></p></div>
-    <div class="row"><span class="note" id="who"></span><a class="link" href="../guide.html" target="_blank" rel="noopener" data-i18n="helpLink"></a><select class="langSel" aria-label="Idioma / Language"></select><button type="button" class="link" data-logout data-i18n="logout"></button></div>
+    <div class="row"><span class="note" id="who"></span><button type="button" class="helpBtn" data-help data-i18n="helpLink"></button><select class="langSel" aria-label="Idioma / Language"></select><button type="button" class="link" data-logout data-i18n="logout"></button></div>
   </header>
 
   <div id="trialBar" class="trial" hidden></div>
@@ -213,7 +231,7 @@ tr.total td{font-weight:700;border-bottom:none}
     <h2 style="margin:0 0 4px" data-i18n="wcTitle"></h2>
     <p class="note" style="margin:0" id="wcTrial"></p>
     <ol><li data-i18n="wc1"></li><li data-i18n="wc2"></li><li data-i18n="wc3"></li><li data-i18n="wc4"></li></ol>
-    <div class="row" style="gap:10px;flex-wrap:wrap"><button type="button" class="primary" id="wcOk" data-i18n="wcOk"></button><a class="link" href="../guide.html" target="_blank" rel="noopener" data-i18n="helpLink"></a></div>
+    <div class="row" style="gap:10px;flex-wrap:wrap"><button type="button" class="primary" id="wcOk" data-i18n="wcOk"></button><button type="button" class="helpBtn" data-help data-i18n="helpLink"></button></div>
   </div>
   <nav class="tabs" role="tablist" id="tabs">
     <button type="button" role="tab" data-tab="semana" aria-selected="true" data-i18n="tabWeek"></button>
@@ -297,11 +315,13 @@ tr.total td{font-weight:700;border-bottom:none}
       <div id="cotaOnly">
       <h2 style="margin-top:20px" data-i18n="ratePeriods"></h2>
       <div class="tbl-wrap" id="ratesTable"></div>
-      <div class="row" style="margin-top:10px">
-        <input type="date" id="newRateFrom">
-        <span class="in" title="1"><span class="note" id="nrL1"></span> $<input type="number" id="newRateV1" min="0" step="0.5" style="width:64px"></span>
-        <span class="in" title="2"><span class="note" id="nrL2"></span> $<input type="number" id="newRateVal" min="0" step="0.5" style="width:64px"></span>
-        <span class="in" title="3"><span class="note" id="nrL3"></span> $<input type="number" id="newRateV3" min="0" step="0.5" style="width:64px"></span>
+      <div class="rateAdd">
+        <label for="newRateFrom"><span data-i18n="from"></span><input type="date" id="newRateFrom"></label>
+        <div class="raVals">
+          <label for="newRateV1"><span id="nrL1"></span><span class="in">$<input type="number" id="newRateV1" min="0" step="0.5" inputmode="decimal"></span></label>
+          <label for="newRateVal"><span id="nrL2"></span><span class="in">$<input type="number" id="newRateVal" min="0" step="0.5" inputmode="decimal"></span></label>
+          <label for="newRateV3"><span id="nrL3"></span><span class="in">$<input type="number" id="newRateV3" min="0" step="0.5" inputmode="decimal"></span></label>
+        </div>
         <button type="button" id="addRate" data-i18n="addPeriod"></button>
       </div>
       </div>
@@ -373,7 +393,7 @@ const PAGAMENTO_INFO = {
    IDIOMAS
    ============================================================ */
 const I18N = {
- pt:{ ftHow:"Como a empresa paga a metragem de cada ticket", modeCota:"Por cota: a cada tamanho de cota = 1 cota × valor da cota", modeFaixas:"Por faixas de metragem (a sua tabela)", cotaPrev:(a,b,c,v1,d,e,v2)=>`Fica assim: 1 a ${a} ft = $0 · ${b} a ${c} ft = ${v1} · ${d} a ${e} ft = ${v2} · e assim por diante.`, tierFrom:"De", tierTo:"Até", tierPay:"Paga", tierAdd:"+ Adicionar faixa", tierAbove:x=>`Acima de ${x} ft:`, tierEach:"a cada", tierNote:"Vale por ticket. Exemplo: 1 a 500 = $0 · 501 a 1001 = $4 · acima de 1001: +$4 a cada 501 ft.", sumOn:"Cotas pela soma do dia (soma de todos os ft ÷ tamanho da cota)", sumFrom:"Vale a partir de:", sumNote:"Desligado = ticket por ticket. Os dias antes da data continuam calculados ticket por ticket.", daySumRow:n=>`Soma do dia ÷ ${n}`, helpLink:"❓ Como usar", allTechs:"Todos os técnicos", allLocs:"Todos os locais", addByEmail:"Adicionar técnico pelo e-mail", addBtn:"Adicionar", addByEmailNote:"O técnico cria a conta dele no Locator e você adiciona pelo e-mail do cadastro. Também dá para mandar o código acima.", sameRules:"Mesmos valores de pagamento para toda a equipe", diffRulesNote:"Cada técnico usa os valores da conta dele (bom quando cada região paga diferente).", tSameOn:"A equipe agora usa os seus valores", tSameOff:"Cada técnico usa os próprios valores", tNotFound:"Nenhuma conta com esse e-mail. Peça para ele se cadastrar primeiro.", tOtherTeam:"Essa pessoa já está em outra equipe", tAdded:n=>`${n} entrou na equipe`, flagWord:"bandeira", alertWord:"alerta", tabTeam:"Equipe", teamTitle:"Equipe", teamIntro:"Faz parte de uma equipe? Coloque o código que o seu gerente mandou. Equipes com 10 técnicos ou mais: cada um paga só US$ 14.90 por mês.", teamJoin:"Entrar na equipe", teamImManager:"Sou gerente — criar uma equipe", teamCreateTxt:"Você recebe um código para mandar aos técnicos. Eles entram com o código, cada um paga o seu (US$ 14.90 a partir de 10 técnicos), e você vê o relatório de todos.", teamNamePh:"Nome da equipe (ex.: ITG Austin)", teamCreate:"Criar equipe",
+ pt:{ ftHow:"Como a empresa paga a metragem de cada ticket", modeCota:"Por cota: a cada tamanho de cota = 1 cota × valor da cota", modeFaixas:"Por faixas de metragem (a sua tabela)", cotaPrev:(a,b,c,v1,d,e,v2)=>`Fica assim: 1 a ${a} ft = $0 · ${b} a ${c} ft = ${v1} · ${d} a ${e} ft = ${v2} · e assim por diante.`, tierFrom:"De", tierTo:"Até", tierPay:"Paga", tierAdd:"+ Adicionar faixa", tierAbove:x=>`Acima de ${x} ft:`, tierEach:"a cada", tierNote:"Vale por ticket. Exemplo: 1 a 500 = $0 · 501 a 1001 = $4 · acima de 1001: +$4 a cada 501 ft.", sumOn:"Cotas pela soma do dia (soma de todos os ft ÷ tamanho da cota)", sumFrom:"Vale a partir de:", sumNote:"Desligado = ticket por ticket. Os dias antes da data continuam calculados ticket por ticket.", daySumRow:n=>`Soma do dia ÷ ${n}`, helpLink:"Como usar", allTechs:"Todos os técnicos", allLocs:"Todos os locais", addByEmail:"Adicionar técnico pelo e-mail", addBtn:"Adicionar", addByEmailNote:"O técnico cria a conta dele no Locator e você adiciona pelo e-mail do cadastro. Também dá para mandar o código acima.", sameRules:"Mesmos valores de pagamento para toda a equipe", diffRulesNote:"Cada técnico usa os valores da conta dele (bom quando cada região paga diferente).", tSameOn:"A equipe agora usa os seus valores", tSameOff:"Cada técnico usa os próprios valores", tNotFound:"Nenhuma conta com esse e-mail. Peça para ele se cadastrar primeiro.", tOtherTeam:"Essa pessoa já está em outra equipe", tAdded:n=>`${n} entrou na equipe`, flagWord:"bandeira", alertWord:"alerta", tabTeam:"Equipe", teamTitle:"Equipe", teamIntro:"Faz parte de uma equipe? Coloque o código que o seu gerente mandou. Equipes com 10 técnicos ou mais: cada um paga só US$ 14.90 por mês.", teamJoin:"Entrar na equipe", teamImManager:"Sou gerente — criar uma equipe", teamCreateTxt:"Você recebe um código para mandar aos técnicos. Eles entram com o código, cada um paga o seu (US$ 14.90 a partir de 10 técnicos), e você vê o relatório de todos.", teamNamePh:"Nome da equipe (ex.: ITG Austin)", teamCreate:"Criar equipe",
   teamYouManager:"Você é o gerente. Mande o código ou o convite para os técnicos:", copyInvite:"Copiar convite", sendInvite:"Enviar convite", teamManagerNote:"As regras de pagamento que você salvar abaixo valem para a equipe inteira. O caixa pessoal de cada técnico continua privado.",
   teamYouMember:"Seu gerente vê os seus reports e pagamentos. O seu caixa pessoal continua só seu.", teamRulesFromManager:"As regras de pagamento são definidas pelo gerente.", teamLeave:"Sair da equipe",
   inviteMsg:(n,c,l)=>`Entre na equipe ${n} no Locator! Código: ${c}\n${l}`, teamRank:"Ranking da semana", teamXlsx:"Planilha da equipe", teamPdf:"PDF da equipe", teamNote:"Toque em PDF ou Planilha para baixar o fechamento de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sem report nesta semana:", missToday:"ainda não mandou hoje", lastReport:"Último report", manager:"gerente", sheet:"Planilha", teamEmpty:"Ninguém na equipe ainda. Mande o código para os técnicos.", teamReport:"Fechamento da equipe", teamCodeOpt:"Código da equipe (opcional)", teamDiscount:"desconto de equipe",
@@ -388,7 +408,7 @@ const I18N = {
   tagline:"Tickets, ft e pagamentos do técnico de locate", login:"Entrar", signup:"Criar conta", email:"E-mail", password:"Senha", passwordNew:"Senha (mínimo 6)", forgot:"Esqueci a senha",
   firstName:"Nome", lastName:"Sobrenome", phone:"Telefone", signupNote:"Você ganha 14 dias grátis. Depois, US$ 19.90 por mês.",
   recheck:"Já paguei, verificar de novo", logout:"Sair", tabWeek:"Semana", tabSummary:"Resumo", tabCash:"Caixa", tabRules:"Regras", tabAdmin:"Cadastros",
-  pasteTitle:"Colar report", serviceDay:"Dia do serviço", allWeeks:"Todas as semanas", pDay:"Por dia", pWeek:"Por semana", pMonth:"Por mês", month:"Mês", dayCol:"Dia", monthNote:"No mês, carro e pago contam pelas semanas que começam naquele mês.", export:"Baixar planilha (.csv)",
+  pasteTitle:"Colar report", serviceDay:"Dia do serviço", allWeeks:"Todas as semanas", pDay:"Por dia", pWeek:"Por semana", pMonth:"Por mês", month:"Mês", dayCol:"Dia", monthNote:"Cada semana entra no mês em que ela fecha (ex.: 27/09 a 03/10 conta em outubro).", export:"Baixar planilha (.csv)",
   summaryNote:"A receber = ganho − desconto do carro. Diferença = pago − a receber. Toque numa semana para abrir.",
   cashBalance:"Saldo do caixa", cashNote:"Entra o que a empresa pagou em cada semana. Sai o que você gasta (gasolina, material, comida…).",
   cashAdd:"Lançar no caixa", expense:"Gasto", income:"Entrada", add:"Lançar", moves:"Movimentos", descPh:"Descrição (ex.: gasolina)",
@@ -420,7 +440,7 @@ const I18N = {
   aTypeEmail:"Digite seu e-mail acima e toque de novo em Esqueci a senha.", aResetSent:"Enviamos um link para criar uma senha nova.", aResetFail:"Não consegui enviar o e-mail.",
   newPass:"Digite a nova senha (mínimo 6):", passChanged:"Senha trocada", passFail:"Não consegui trocar a senha",
   csvHead:["Semana","Data","Dia","Local","Ticket","ft","Marcação","Cotas","Valor cota","$ ticket","$ ft","Total"], csvWeeks:["Semana","Início","Tickets","Ganho","Carro","A receber","Pago","Diferença"], csvCash:["Caixa: data","Descrição","Valor","Saldo"], noFt:"sem metragem", dupSaved:"já salvo", location:"Local do serviço", locPh:"Cidade, estado (ex.: Austin, TX)", byLocation:"Por local", noLoc:"sem local", locCol:"Local" },
- en:{ ftHow:"How the company pays the footage of each ticket", modeCota:"By block: every block size = 1 block × block value", modeFaixas:"By footage ranges (your own table)", cotaPrev:(a,b,c,v1,d,e,v2)=>`That means: 1 to ${a} ft = $0 · ${b} to ${c} ft = ${v1} · ${d} to ${e} ft = ${v2} · and so on.`, tierFrom:"From", tierTo:"To", tierPay:"Pays", tierAdd:"+ Add range", tierAbove:x=>`Above ${x} ft:`, tierEach:"every", tierNote:"Per ticket. Example: 1 to 500 = $0 · 501 to 1001 = $4 · above 1001: +$4 every 501 ft.", sumOn:"Blocks from the day total (all footage added up ÷ block size)", sumFrom:"Starting on:", sumNote:"Off = ticket by ticket. Days before this date stay calculated ticket by ticket.", daySumRow:n=>`Day total ÷ ${n}`, helpLink:"❓ How to use", allTechs:"All technicians", allLocs:"All locations", addByEmail:"Add technician by email", addBtn:"Add", addByEmailNote:"The technician creates their own Locator account and you add them by the sign-up email. You can also send the code above.", sameRules:"Same pay rates for the whole team", diffRulesNote:"Each technician uses the rates in their own account (good when each region pays differently).", tSameOn:"The team now uses your rates", tSameOff:"Each technician uses their own rates", tNotFound:"No account with that email. Ask them to sign up first.", tOtherTeam:"This person is already on another team", tAdded:n=>`${n} joined the team`, flagWord:"flag", alertWord:"alert", tabTeam:"Team", teamTitle:"Team", teamIntro:"Part of a team? Enter the code your manager sent you. Teams with 10+ technicians: each one pays only US$ 14.90 per month.", teamJoin:"Join team", teamImManager:"I'm a manager — create a team", teamCreateTxt:"You get a code to send to your technicians. They join with it, each one pays their own (US$ 14.90 from 10 technicians), and you see everyone's report.", teamNamePh:"Team name (e.g. ITG Austin)", teamCreate:"Create team",
+ en:{ ftHow:"How the company pays the footage of each ticket", modeCota:"By block: every block size = 1 block × block value", modeFaixas:"By footage ranges (your own table)", cotaPrev:(a,b,c,v1,d,e,v2)=>`That means: 1 to ${a} ft = $0 · ${b} to ${c} ft = ${v1} · ${d} to ${e} ft = ${v2} · and so on.`, tierFrom:"From", tierTo:"To", tierPay:"Pays", tierAdd:"+ Add range", tierAbove:x=>`Above ${x} ft:`, tierEach:"every", tierNote:"Per ticket. Example: 1 to 500 = $0 · 501 to 1001 = $4 · above 1001: +$4 every 501 ft.", sumOn:"Blocks from the day total (all footage added up ÷ block size)", sumFrom:"Starting on:", sumNote:"Off = ticket by ticket. Days before this date stay calculated ticket by ticket.", daySumRow:n=>`Day total ÷ ${n}`, helpLink:"How to use", allTechs:"All technicians", allLocs:"All locations", addByEmail:"Add technician by email", addBtn:"Add", addByEmailNote:"The technician creates their own Locator account and you add them by the sign-up email. You can also send the code above.", sameRules:"Same pay rates for the whole team", diffRulesNote:"Each technician uses the rates in their own account (good when each region pays differently).", tSameOn:"The team now uses your rates", tSameOff:"Each technician uses their own rates", tNotFound:"No account with that email. Ask them to sign up first.", tOtherTeam:"This person is already on another team", tAdded:n=>`${n} joined the team`, flagWord:"flag", alertWord:"alert", tabTeam:"Team", teamTitle:"Team", teamIntro:"Part of a team? Enter the code your manager sent you. Teams with 10+ technicians: each one pays only US$ 14.90 per month.", teamJoin:"Join team", teamImManager:"I'm a manager — create a team", teamCreateTxt:"You get a code to send to your technicians. They join with it, each one pays their own (US$ 14.90 from 10 technicians), and you see everyone's report.", teamNamePh:"Team name (e.g. ITG Austin)", teamCreate:"Create team",
   teamYouManager:"You are the manager. Send the code or the invite to your technicians:", copyInvite:"Copy invite", sendInvite:"Send invite", teamManagerNote:"The pay rules you save below apply to the whole team. Each technician's personal cash box stays private.",
   teamYouMember:"Your manager sees your reports and payments. Your personal cash box stays private.", teamRulesFromManager:"Pay rules are set by the manager.", teamLeave:"Leave team",
   inviteMsg:(n,c,l)=>`Join team ${n} on Locator! Code: ${c}\n${l}`, teamRank:"This week's ranking", teamXlsx:"Team spreadsheet", teamPdf:"Team PDF", teamNote:"Tap PDF or Spreadsheet to download each technician's report.", teamTechs:"Technicians", teamMissing:"No report this week:", missToday:"hasn't sent today yet", lastReport:"Last report", manager:"manager", sheet:"Spreadsheet", teamEmpty:"No one on the team yet. Send the code to your technicians.", teamReport:"Team report", teamCodeOpt:"Team code (optional)", teamDiscount:"team discount",
@@ -435,7 +455,7 @@ const I18N = {
   tagline:"Tickets, footage and pay for locate technicians", login:"Log in", signup:"Create account", email:"Email", password:"Password", passwordNew:"Password (min. 6)", forgot:"Forgot password",
   firstName:"First name", lastName:"Last name", phone:"Phone", signupNote:"You get 14 days free. After that, US$ 19.90 per month.",
   recheck:"I paid, check again", logout:"Log out", tabWeek:"Week", tabSummary:"Summary", tabCash:"Cash", tabRules:"Rules", tabAdmin:"Sign-ups",
-  pasteTitle:"Paste report", serviceDay:"Service day", allWeeks:"All weeks", pDay:"By day", pWeek:"By week", pMonth:"By month", month:"Month", dayCol:"Day", monthNote:"By month, car and paid count by the weeks starting in that month.", export:"Download spreadsheet (.csv)",
+  pasteTitle:"Paste report", serviceDay:"Service day", allWeeks:"All weeks", pDay:"By day", pWeek:"By week", pMonth:"By month", month:"Month", dayCol:"Day", monthNote:"Each week counts in the month it closes (e.g. Sep 27 – Oct 3 counts in October).", export:"Download spreadsheet (.csv)",
   summaryNote:"To receive = earned − car deduction. Difference = paid − to receive. Tap a week to open it.",
   cashBalance:"Cash balance", cashNote:"In: what the company paid each week. Out: what you spend (gas, supplies, food…).",
   cashAdd:"Add to cash", expense:"Expense", income:"Income", add:"Add", moves:"Entries", descPh:"Description (e.g. gas)",
@@ -467,7 +487,7 @@ const I18N = {
   aTypeEmail:"Type your email above and tap Forgot password again.", aResetSent:"We sent a link to set a new password.", aResetFail:"Couldn't send the email.",
   newPass:"Type the new password (min. 6):", passChanged:"Password changed", passFail:"Couldn't change the password",
   csvHead:["Week","Date","Day","Location","Ticket","ft","Flag","Blocks","Block value","$ ticket","$ ft","Total"], csvWeeks:["Week","Start","Tickets","Earned","Car","To receive","Paid","Difference"], csvCash:["Cash: date","Description","Amount","Balance"], noFt:"no footage", dupSaved:"already saved", location:"Service location", locPh:"City, state (e.g. Austin, TX)", byLocation:"By location", noLoc:"no location", locCol:"Location" },
- es:{ ftHow:"Cómo paga la empresa los pies de cada ticket", modeCota:"Por bloque: cada tamaño de bloque = 1 bloque × valor del bloque", modeFaixas:"Por rangos de pies (tu propia tabla)", cotaPrev:(a,b,c,v1,d,e,v2)=>`Queda así: 1 a ${a} pies = $0 · ${b} a ${c} pies = ${v1} · ${d} a ${e} pies = ${v2} · y así sucesivamente.`, tierFrom:"Desde", tierTo:"Hasta", tierPay:"Paga", tierAdd:"+ Agregar rango", tierAbove:x=>`Arriba de ${x} pies:`, tierEach:"cada", tierNote:"Por ticket. Ejemplo: 1 a 500 = $0 · 501 a 1001 = $4 · arriba de 1001: +$4 cada 501 pies.", sumOn:"Bloques por el total del día (todos los pies sumados ÷ tamaño del bloque)", sumFrom:"A partir de:", sumNote:"Apagado = ticket por ticket. Los días antes de la fecha siguen calculados ticket por ticket.", daySumRow:n=>`Total del día ÷ ${n}`, helpLink:"❓ Cómo usar", allTechs:"Todos los técnicos", allLocs:"Todos los lugares", addByEmail:"Agregar técnico por correo", addBtn:"Agregar", addByEmailNote:"El técnico crea su propia cuenta en Locator y tú lo agregas por el correo del registro. También puedes mandar el código de arriba.", sameRules:"Mismos valores de pago para todo el equipo", diffRulesNote:"Cada técnico usa los valores de su cuenta (bueno cuando cada región paga diferente).", tSameOn:"El equipo ahora usa tus valores", tSameOff:"Cada técnico usa sus propios valores", tNotFound:"No hay cuenta con ese correo. Pídele que se registre primero.", tOtherTeam:"Esta persona ya está en otro equipo", tAdded:n=>`${n} entró al equipo`, flagWord:"bandera", alertWord:"alerta", tabTeam:"Equipo", teamTitle:"Equipo", teamIntro:"¿Eres parte de un equipo? Escribe el código que te mandó tu gerente. Equipos con 10 técnicos o más: cada uno paga solo US$ 14.90 al mes.", teamJoin:"Entrar al equipo", teamImManager:"Soy gerente — crear un equipo", teamCreateTxt:"Recibes un código para mandar a tus técnicos. Entran con el código, cada uno paga lo suyo (US$ 14.90 desde 10 técnicos) y tú ves el reporte de todos.", teamNamePh:"Nombre del equipo (ej.: ITG Austin)", teamCreate:"Crear equipo",
+ es:{ ftHow:"Cómo paga la empresa los pies de cada ticket", modeCota:"Por bloque: cada tamaño de bloque = 1 bloque × valor del bloque", modeFaixas:"Por rangos de pies (tu propia tabla)", cotaPrev:(a,b,c,v1,d,e,v2)=>`Queda así: 1 a ${a} pies = $0 · ${b} a ${c} pies = ${v1} · ${d} a ${e} pies = ${v2} · y así sucesivamente.`, tierFrom:"Desde", tierTo:"Hasta", tierPay:"Paga", tierAdd:"+ Agregar rango", tierAbove:x=>`Arriba de ${x} pies:`, tierEach:"cada", tierNote:"Por ticket. Ejemplo: 1 a 500 = $0 · 501 a 1001 = $4 · arriba de 1001: +$4 cada 501 pies.", sumOn:"Bloques por el total del día (todos los pies sumados ÷ tamaño del bloque)", sumFrom:"A partir de:", sumNote:"Apagado = ticket por ticket. Los días antes de la fecha siguen calculados ticket por ticket.", daySumRow:n=>`Total del día ÷ ${n}`, helpLink:"Cómo usar", allTechs:"Todos los técnicos", allLocs:"Todos los lugares", addByEmail:"Agregar técnico por correo", addBtn:"Agregar", addByEmailNote:"El técnico crea su propia cuenta en Locator y tú lo agregas por el correo del registro. También puedes mandar el código de arriba.", sameRules:"Mismos valores de pago para todo el equipo", diffRulesNote:"Cada técnico usa los valores de su cuenta (bueno cuando cada región paga diferente).", tSameOn:"El equipo ahora usa tus valores", tSameOff:"Cada técnico usa sus propios valores", tNotFound:"No hay cuenta con ese correo. Pídele que se registre primero.", tOtherTeam:"Esta persona ya está en otro equipo", tAdded:n=>`${n} entró al equipo`, flagWord:"bandera", alertWord:"alerta", tabTeam:"Equipo", teamTitle:"Equipo", teamIntro:"¿Eres parte de un equipo? Escribe el código que te mandó tu gerente. Equipos con 10 técnicos o más: cada uno paga solo US$ 14.90 al mes.", teamJoin:"Entrar al equipo", teamImManager:"Soy gerente — crear un equipo", teamCreateTxt:"Recibes un código para mandar a tus técnicos. Entran con el código, cada uno paga lo suyo (US$ 14.90 desde 10 técnicos) y tú ves el reporte de todos.", teamNamePh:"Nombre del equipo (ej.: ITG Austin)", teamCreate:"Crear equipo",
   teamYouManager:"Eres el gerente. Manda el código o la invitación a tus técnicos:", copyInvite:"Copiar invitación", sendInvite:"Enviar invitación", teamManagerNote:"Las reglas de pago que guardes abajo valen para todo el equipo. La caja personal de cada técnico sigue privada.",
   teamYouMember:"Tu gerente ve tus reports y pagos. Tu caja personal sigue siendo solo tuya.", teamRulesFromManager:"Las reglas de pago las define el gerente.", teamLeave:"Salir del equipo",
   inviteMsg:(n,c,l)=>`¡Entra al equipo ${n} en Locator! Código: ${c}\n${l}`, teamRank:"Ranking de la semana", teamXlsx:"Planilla del equipo", teamPdf:"PDF del equipo", teamNote:"Toca PDF o Planilla para descargar el cierre de cada técnico.", teamTechs:"Técnicos", teamMissing:"Sin report esta semana:", missToday:"todavía no mandó hoy", lastReport:"Último report", manager:"gerente", sheet:"Planilla", teamEmpty:"Nadie en el equipo todavía. Manda el código a tus técnicos.", teamReport:"Cierre del equipo", teamCodeOpt:"Código del equipo (opcional)", teamDiscount:"descuento de equipo",
@@ -482,7 +502,7 @@ const I18N = {
   tagline:"Tickets, pies y pagos del técnico de locate", login:"Entrar", signup:"Crear cuenta", email:"Correo", password:"Contraseña", passwordNew:"Contraseña (mínimo 6)", forgot:"Olvidé mi contraseña",
   firstName:"Nombre", lastName:"Apellido", phone:"Teléfono", signupNote:"Tienes 14 días gratis. Después, US$ 19.90 al mes.",
   recheck:"Ya pagué, verificar de nuevo", logout:"Salir", tabWeek:"Semana", tabSummary:"Resumen", tabCash:"Caja", tabRules:"Reglas", tabAdmin:"Registros",
-  pasteTitle:"Pegar report", serviceDay:"Día del servicio", allWeeks:"Todas las semanas", pDay:"Por día", pWeek:"Por semana", pMonth:"Por mes", month:"Mes", dayCol:"Día", monthNote:"Por mes, carro y pagado cuentan por las semanas que empiezan en ese mes.", export:"Descargar planilla (.csv)",
+  pasteTitle:"Pegar report", serviceDay:"Día del servicio", allWeeks:"Todas las semanas", pDay:"Por día", pWeek:"Por semana", pMonth:"Por mes", month:"Mes", dayCol:"Día", monthNote:"Cada semana cuenta en el mes en que cierra (ej.: 27/09 al 03/10 cuenta en octubre).", export:"Descargar planilla (.csv)",
   summaryNote:"Por cobrar = ganado − descuento del carro. Diferencia = pagado − por cobrar. Toca una semana para abrirla.",
   cashBalance:"Saldo de caja", cashNote:"Entra lo que la empresa pagó cada semana. Sale lo que gastas (gasolina, material, comida…).",
   cashAdd:"Registrar en caja", expense:"Gasto", income:"Ingreso", add:"Registrar", moves:"Movimientos", descPh:"Descripción (ej.: gasolina)",
@@ -540,6 +560,8 @@ const todayISO = () => iso(new Date());
 const DOW = i => T("dow")[i];
 const dLabel = s => { const d=parseISO(s), m=T("mon")[d.getMonth()]; return lang==="en" ? `${m} ${d.getDate()}` : `${d.getDate()} ${m}`; };
 const dFull = s => s ? `${dLabel(s)} ${s.slice(0,4)}` : "—";
+const wMonth = w => addDays(w,6).slice(0,7);
+const monthOf = d => wMonth(weekStart(d));
 const weekStart = s => { const wd=(typeof rules!=="undefined"&&rules.wd)||0; const d=parseISO(s); d.setDate(d.getDate()-((d.getDay()-wd+7)%7)); return iso(d); };
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2800); }
 function show(id){ ["scrLang","scrAuth","scrWait","scrApp"].forEach(x=>$("#"+x).hidden = x!==id); }
@@ -728,8 +750,8 @@ function renderDias(){
 }
 function renderMeses(){
   const by={}; const get=m=>by[m]=by[m]||{days:new Set(),tk:0,g:0,car:0,paid:0,hasPaid:false};
-  reports.forEach(r=>{ const o=get(r.date.slice(0,7)); o.days.add(r.date); o.tk+=tCount(r); o.g+=repCalc(r).total; });
-  allWeeks().filter(w=>weekNum(w)>=1).forEach(w=>{ const W=weekData(w), o=get(w.slice(0,7)); o.car+=W.carro; if(W.paid!=null){o.paid+=W.paid;o.hasPaid=true;} });
+  reports.filter(r=>weekNum(weekStart(r.date))>=1).forEach(r=>{ const o=get(monthOf(r.date)); o.days.add(r.date); o.tk+=tCount(r); o.g+=repCalc(r).total; });
+  allWeeks().filter(w=>weekNum(w)>=1).forEach(w=>{ const W=weekData(w), o=get(wMonth(w)); o.car+=W.carro; if(W.paid!=null){o.paid+=W.paid;o.hasPaid=true;} });
   const ms=Object.keys(by).sort().reverse();
   if(!ms.length){ $("#weeksTable").innerHTML=`<div class="empty">${T("noWeeks")}</div>`; return; }
   const loc={pt:"pt-BR",en:"en-US",es:"es-ES"}[lang]||"pt-BR";
@@ -744,7 +766,7 @@ function fillExp(){
   const per=$("#expPer").value, sel=$("#expWhich"); let opts=[];
   if(per==="dia") opts=[...new Set(reports.map(r=>r.date))].sort().reverse().map(d=>[d,`${DOW(parseISO(d).getDay())} ${dFull(d)}`]);
   else if(per==="semana") opts=allWeeks().filter(w=>weekNum(w)>=1).reverse().map(w=>[w,`${T("week")} ${weekNum(w)} · ${dLabel(w)} – ${dLabel(addDays(w,6))}`]);
-  else if(per==="mes") opts=[...new Set(reports.map(r=>r.date.slice(0,7)))].sort().reverse().map(m=>[m,monthName(m)]);
+  else if(per==="mes") opts=[...new Set(reports.map(r=>monthOf(r.date)))].sort().reverse().map(m=>[m,monthName(m)]);
   const cur=sel.value; sel.innerHTML=opts.map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join(""); sel.hidden=per==="tudo"; if(opts.some(o=>o[0]===cur)) sel.value=cur;
 }
 function monthName(m){ const loc={pt:"pt-BR",en:"en-US",es:"es-ES"}[lang]||"pt-BR"; const nm=new Date(+m.slice(0,4),+m.slice(5,7)-1,1).toLocaleDateString(loc,{month:"long",year:"numeric"}); return nm.charAt(0).toUpperCase()+nm.slice(1); }
@@ -754,13 +776,13 @@ async function exportXLSX(fmt, perA, whichA){
   let inP, label;
   if(per==="dia"){ inP=d=>d===which; label=dFull(which); }
   else if(per==="semana"){ inP=d=>weekStart(d)===which; label=`${T("week")} ${weekNum(which)} (${dFull(which)} – ${dFull(addDays(which,6))})`; }
-  else if(per==="mes"){ inP=d=>d.slice(0,7)===which; label=monthName(which); }
+  else if(per==="mes"){ inP=d=>monthOf(d)===which; label=monthName(which); }
   else { inP=d=>weekNum(weekStart(d))>=1; label=T("pAll"); }
   const reps=[...reports].filter(r=>inP(r.date)).sort((a,b)=>a.date.localeCompare(b.date));
   if(!reps.length) return toast(T("noWeeks"));
   let tk=0,ft=0,ct=0,g=0; reps.forEach(r=>{ const c=repCalc(r); tk+=c.n; ct+=c.cotas; g+=c.total; ft+=r.tickets.reduce((a,t)=>a+(+t.ft||0),0); });
   let car=null, paid=null;
-  if(per!=="dia"){ const ws=allWeeks().filter(w=>weekNum(w)>=1 && (per==="semana"?w===which:per==="mes"?w.slice(0,7)===which:true)); car=0; let hp=false, p=0; ws.forEach(w=>{ const W=weekData(w); car+=W.carro; if(W.paid!=null){hp=true;p+=W.paid;} }); paid=hp?p:null; }
+  if(per!=="dia"){ const ws=allWeeks().filter(w=>weekNum(w)>=1 && (per==="semana"?w===which:per==="mes"?wMonth(w)===which:true)); car=0; let hp=false, p=0; ws.forEach(w=>{ const W=weekData(w); car+=W.carro; if(W.paid!=null){hp=true;p+=W.paid;} }); paid=hp?p:null; }
   const name=`${perfil.nome||""} ${perfil.sobrenome||""}`.trim();
   const X=T("xl");
   const resumo=[[ "Locator — "+X.title ],[X.tech, name],[X.period, label],[X.made, dFull(todayISO())],[],
@@ -953,7 +975,7 @@ function renderRegras(){
   const rs=[...rules.rates].sort((a,b)=>a.from.localeCompare(b.from));
   const n=rules.size||501, L=[`1–${fmt(n-1)} ft`,`${fmt(n)}–${fmt(2*n-1)} ft`,`${fmt(2*n)}+ ft`]; ["nrL1","nrL2","nrL3"].forEach((id,i)=>$("#"+id).textContent=L[i]);
   const tv=r=>r.tiers||[0,r.block,r.block];
-  $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th>${L.map(l=>`<th class="r">${l}</th>`).join("")}<th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td>${tv(r).map(v=>`<td class="r num">${money(+v)}</td>`).join("")}<td class="r">${rs.length>1&&!teamRulesLocked()?`<button type="button" class="link danger" data-ratedel="${r.from}">${T("remove")}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
+  $("#ratesTable").innerHTML=`<table><thead><tr><th>${T("from")}</th>${L.map(l=>`<th class="r">${l}</th>`).join("")}<th></th></tr></thead><tbody>${rs.map(r=>`<tr><td class="num">${r.from<="2000-12-31"?T("sinceAlways"):dFull(r.from)}</td>${tv(r).map(v=>`<td class="r num">${money(+v)}</td>`).join("")}<td class="r">${rs.length>1&&!teamRulesLocked()?`<button type="button" class="link danger" data-ratedel="${r.from}" title="${T("remove")}" aria-label="${T("remove")}">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`;
   if(perfil){ for(const [id,k] of [["mNome","nome"],["mSobre","sobrenome"],["mTel","telefone"]]){ const el=$("#"+id); if(document.activeElement!==el) el.value=perfil[k]||""; } }
 }
 function renderAdmin(){
@@ -1243,5 +1265,10 @@ if(URL_EQUIPE){ $("#sTeam").value=URL_EQUIPE; }
 boot().then(()=>{ if(/signup/.test(location.search+location.hash) && !$("#scrAuth").hidden) $("#swSign").click(); });
 </script>
 <a class="wafab" id="waFab" href="https://wa.me/19546016730" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/></svg></a>
+<div id="helpOv" hidden><div class="hb"><button type="button" data-helpclose>✕</button></div><iframe title="guide"></iframe></div>
+<script>
+document.addEventListener("click",e=>{ if(e.target.closest("[data-help]")){ const o=document.getElementById("helpOv"), f=o.querySelector("iframe"); if(!f.src) f.src="../guide.html?inapp=1"; o.hidden=false; } if(e.target.closest("[data-helpclose]")) document.getElementById("helpOv").hidden=true; });
+window.addEventListener("message",e=>{ if(e.data==="locator-help-close") document.getElementById("helpOv").hidden=true; });
+</script>
 </body>
 </html>
