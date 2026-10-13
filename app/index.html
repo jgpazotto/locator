@@ -843,7 +843,7 @@ async function exportPDF(resumo, diasA, tick, fname, name, label){
   }
 }
 /* ===================== EQUIPE ===================== */
-function inviteLink(){ return `https://locator.jgpazotto.com/app/?equipe=${empresa?.codigo||""}`; }
+function inviteLink(){ return `https://locatorpay.com/app/?equipe=${empresa?.codigo||""}`; }
 function renderTeamPanel(){
   const el=$("#teamPanel"); if(!el||!perfil) return;
   if(!perfil.empresa_id||!empresa){
