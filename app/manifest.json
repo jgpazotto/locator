@@ -1,6 +1,6 @@
 {
-  "name": "Locator",
-  "short_name": "Locator",
+  "name": "Locator Pay",
+  "short_name": "Locator Pay",
   "description": "Controle de tickets, ft e pagamentos para técnicos de locate.",
   "start_url": "./index.html",
   "scope": "./",
