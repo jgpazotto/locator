@@ -105,6 +105,7 @@ tr.total td{font-weight:700;border-bottom:none}
 #ratesTable th{white-space:normal;letter-spacing:0;padding:6px 4px}
 #ratesTable td{padding:8px 4px}
 #ratesTable td:first-child{white-space:nowrap}
+tr.proj td{color:var(--muted)}
 .rateAdd{display:grid;gap:10px;margin-top:12px}
 .rateAdd .raVals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .rateAdd label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
@@ -579,7 +580,9 @@ const rangeIdx = ft => { const n=rules.size||501; ft=+ft||0; return ft<n?0:(ft<2
 const cotaValue = (ft, date) => { const e=rateEntry(date); return e.tiers? (+e.tiers[rangeIdx(ft)]||0) : (+e.block||0); };
 const hasTiers = date => !!rateEntry(date).tiers;
 const cotas = ft => Math.max(0, Math.floor((+ft||0)/rules.size));
-const tCount = r => Math.max(+r.declared||0, r.tickets.length);
+const isProj = t => /project|projeto|proyecto/i.test(t.flag||"") && !(+t.ft>0); // fica para outro dia: não conta
+const paidRows = r => r.tickets.filter(t=>!isProj(t));
+const tCount = r => Math.max(+r.declared||0, paidRows(r).length);
 const sumMode = date => false; // soma do dia só para mostrar, não entra no ganho
 const ftTotal = r => r.tickets.reduce((a,t)=>a+(+t.ft||0),0);
 const tierOn = () => false; // modo "faixas" antigo desligado
@@ -594,8 +597,8 @@ function repCalc(r){ const b=rateFor(r.date), sm=sumMode(r.date), fsum=ftTotal(r
   return {n, cotas:c??0, tier, rate:b, sum:sm, ftSum:fsum, tk:n*rules.ticket, ft:ftv, total:n*rules.ticket+ftv}; }
 /* linhas da planilha/PDF para um report (12 colunas do csvHead) */
 function tickRows(r){ const c=repCalc(r), ws=weekStart(r.date), dw=DOW(parseISO(r.date).getDay()), out=[];
-  r.tickets.forEach(t=>{ const k=cotas(t.ft); if(c.tier){ const v=tierValue(t.ft); out.push([weekNum(ws),r.date,dw,r.loc,t.ticket,+t.ft||0,t.flag,"","",rules.ticket,v,rules.ticket+v]); return; } const cv=cotaValue(t.ft,r.date); out.push([weekNum(ws),r.date,dw,r.loc,t.ticket,+t.ft||0,t.flag,k,cv,rules.ticket,k*cv,rules.ticket+k*cv]); });
-  const ex=c.n-r.tickets.length; if(ex>0) out.push([weekNum(ws),r.date,dw,r.loc,`+${ex} ${T("noFt")}`,0,"",c.sum?"":0,c.rate,ex*rules.ticket,c.sum?"":0,ex*rules.ticket]);
+  r.tickets.forEach(t=>{ const k=cotas(t.ft); if(c.tier){ const v=tierValue(t.ft); out.push([weekNum(ws),r.date,dw,r.loc,t.ticket,+t.ft||0,t.flag,"","",rules.ticket,v,rules.ticket+v]); return; } const cv=cotaValue(t.ft,r.date), tv=isProj(t)?0:rules.ticket; out.push([weekNum(ws),r.date,dw,r.loc,t.ticket,+t.ft||0,t.flag,k,cv,tv,k*cv,tv+k*cv]); });
+  const ex=c.n-paidRows(r).length; if(ex>0) out.push([weekNum(ws),r.date,dw,r.loc,`+${ex} ${T("noFt")}`,0,"",c.sum?"":0,c.rate,ex*rules.ticket,c.sum?"":0,ex*rules.ticket]);
   if(c.sum) out.push([weekNum(ws),r.date,dw,r.loc,T("daySumRow")(rules.size),c.ftSum,"",c.cotas,c.rate,"",c.ft,c.ft]);
   return out; }
 const firstWeek = () => weekStart(rules.start || (reports.map(r=>r.date).sort()[0]) || todayISO());
@@ -656,8 +659,8 @@ function renderRuleLine(){
 }
 function ticketTable(r, dupSet){
   const c=repCalc(r);
-  const rows=r.tickets.map((t,i)=>{ const q=cotas(t.ft), fv=q*cotaValue(t.ft,r.date); return `<tr><td class="num">${i+1}</td><td class="num">${esc(t.ticket)}${dupSet&&dupSet.has(t.ticket)?` <span class="dup">${T("dupSaved")}</span>`:''}</td><td>${esc(t.flag)}</td><td class="r num">${t.ft?fmt(t.ft):"—"}</td><td class="r num">${q==null?"·":q}</td><td class="r num">${money(rules.ticket)}</td><td class="r num">${(q==null&&!c.tier)?"·":money(fv)}</td><td class="r num money">${money(rules.ticket+fv)}</td></tr>`; }).join("");
-  const extra=c.n-r.tickets.length;
+  const rows=r.tickets.map((t,i)=>{ const q=cotas(t.ft), fv=q*cotaValue(t.ft,r.date), pj=isProj(t), tv=pj?0:rules.ticket; return `<tr${pj?' class="proj"':''}><td class="num">${i+1}</td><td class="num">${esc(t.ticket)}${dupSet&&dupSet.has(t.ticket)?` <span class="dup">${T("dupSaved")}</span>`:''}</td><td>${esc(t.flag)}</td><td class="r num">${t.ft?fmt(t.ft):"—"}</td><td class="r num">${q==null?"·":q}</td><td class="r num">${money(tv)}</td><td class="r num">${(q==null&&!c.tier)?"·":money(fv)}</td><td class="r num money">${money(tv+fv)}</td></tr>`; }).join("");
+  const extra=c.n-paidRows(r).length;
   const extraRow=extra>0?`<tr><td></td><td colspan="4" class="note">+${extra} ${T("noFtTickets")}</td><td class="r num">${money(extra*rules.ticket)}</td><td></td><td class="r num money">${money(extra*rules.ticket)}</td></tr>`:"";
   return `<div class="tbl-wrap"><table><thead><tr><th>#</th><th>${T("ticket")}</th><th>${T("flag")}</th><th class="r">ft</th><th class="r">${T("blocks")}</th><th class="r">${T("perTicketCol")}</th><th class="r">${T("perFtCol")}${hasTiers(r.date)?"":` (${money(c.rate)})`}</th><th class="r">${T("total")}</th></tr></thead><tbody>${rows}${extraRow}
   ${c.sum?`<tr><td></td><td colspan="2" class="note">${T("daySumRow")(rules.size)}</td><td class="r num"><b>${fmt(c.ftSum)}</b></td><td class="r num"><b>${c.cotas}</b></td><td></td><td class="r num">${money(c.ft)}</td><td class="r num money">${money(c.ft)}</td></tr>`:""}
@@ -700,11 +703,12 @@ function editorHTML(r){
 }
 function renderDrafts(){
   const el=$("#drafts"); if(!drafts.length){ el.innerHTML=""; return; }
-  const existing=new Set(); reports.forEach(r=>r.tickets.forEach(t=>existing.add(t.ticket)));
+  const existing=new Set(); reports.forEach(r=>r.tickets.forEach(t=>{ if(!isProj(t)) existing.add(t.ticket); }));
   const date=$("#pDate").value;
   el.innerHTML=drafts.map(d=>{
     const r={date:date||todayISO(), declared:d.declared, tickets:d.rows};
-    const ok=d.declared==null?"":d.declared===d.rows.length?`<span class="chip ok">${d.rows.length} ${T("readOf")} ${d.declared} ${T("tickets")} ✓</span>`:`<span class="chip bad">${T("readMismatch")(d.rows.length,d.declared)}</span>`;
+    const np=paidRows(r).length, pj=d.rows.length-np, pjc=pj?` <span class="chip">${pj} Project · $0</span>`:"";
+    const ok=(d.declared==null?"":d.declared===np?`<span class="chip ok">${np} ${T("readOf")} ${d.declared} ${T("tickets")} ✓</span>`:`<span class="chip bad">${T("readMismatch")(np,d.declared)}</span>`)+pjc;
     return `<div class="draft"><div class="row"><b>${esc(d.tech)}</b>${ok}</div>${ticketTable(r,existing)}</div>`;
   }).join("")+`<div class="draft row end" style="flex-direction:row">
     ${date?`<span class="note">${T("willSave")} <b>${DOW(parseISO(date).getDay())} ${dLabel(date)}</b></span>`:`<span class="chip bad">${T("chooseDay")}</span>`}
